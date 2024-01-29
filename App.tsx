@@ -1,12 +1,28 @@
-import React from 'react';
-import { StatusBar } from 'expo-status-bar';
+import * as Font from 'expo-font';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { theme } from './theme';
 
 export default function App() {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  async function loadFonts(callback: () => void) {
+    await Font.loadAsync({
+      'Lato-Bold': require('./assets/fonts/Lato-Bold.ttf'),
+      'Lato-Regular': require('./assets/fonts/Lato-Regular.ttf'),
+    });
+    callback();
+  }
+
+  useEffect(() => {
+    if (!fontsLoaded) {
+      loadFonts(() => setFontsLoaded(true));      
+    }
+  }, [fontsLoaded]);
+  
   return (
     <View style={styles.container}>
-      <Text>Hello champi</Text>
-      <StatusBar style="auto" />
+      {fontsLoaded ? <Text style={styles.text}>Hello champi</Text> : <></>}
     </View>
   );
 }
@@ -14,8 +30,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.backgroundColor,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  text: {
+    color: theme.textColor,
+    fontFamily: 'Lato-Bold',
+  }
 });
