@@ -3,7 +3,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { NativeRouter, Route, Routes } from 'react-router-native';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, SafeAreaView } from 'react-native';
+import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { theme } from './theme';
 import Home from './screens/Home';
 
@@ -26,7 +26,7 @@ export default function App() {
   
   return (
     <GestureHandlerRootView style={styles.wrapper}>
-      <SafeAreaView style={styles.screen}>
+        <KeyboardAvoidingView style={styles.wrapper} behavior={Platform.select({ios: 'padding', android: 'height'})}>
         <View style={styles.container}>
           <StatusBar style="light" />      
           {fontsLoaded ? (
@@ -37,7 +37,7 @@ export default function App() {
           </NativeRouter>
           ) : <></>}
         </View>
-      </SafeAreaView> 
+        </KeyboardAvoidingView>
     </GestureHandlerRootView>      
   );
 }
@@ -49,14 +49,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.backgroundColor,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 40
   },
-  screen: {
-    flex: 1,
-    backgroundColor: theme.backgroundColor,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
 });
