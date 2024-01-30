@@ -1,27 +1,49 @@
-import React from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { theme } from '../../theme';
 
 function Home () {
-  return <View style={styles.screen}>
-  <Image style={styles.image} source={require('../../assets/soccerball.png')} />
-  <Text style={styles.text}>Dream Team</Text>
-  <Text style={styles.secondaryText}>Entra ahora y unete a los partidos de fútbol en Montería</Text>
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['50%'], []);
 
-  <View style={styles.buttonGroup}>
-    <Pressable>
-      <View style={styles.button}>
-        <Text style={styles.buttonText}>Iniciar sesión</Text>
-      </View>
-    </Pressable>
+  const handleExpand = () => bottomSheetRef?.current?.expand()
+  const handleClose = () => bottomSheetRef?.current?.close()
 
-    <Pressable>
-      <View style={styles.buttonSecondary}>
-        <Text style={styles.buttonSecondaryText}>Registrarme</Text>
+  return (
+  <>
+    <View style={styles.screen}>
+      <Image style={styles.image} source={require('../../assets/soccerball.png')} />
+      <Text style={styles.text}>Dream Team</Text>
+      <Text style={styles.secondaryText}>Entra ahora y unete a los partidos de fútbol en Montería</Text>
+
+      <View style={styles.buttonGroup}>
+        <Pressable onPress={() => handleExpand()}>
+          <View style={styles.button}>
+            <Text style={styles.buttonText}>Iniciar sesión</Text>
+          </View>
+        </Pressable>
+
+        <Pressable>
+          <View style={styles.buttonSecondary}>
+            <Text style={styles.buttonSecondaryText}>Registrarme</Text>
+          </View>
+        </Pressable>
+      </View>        
+    </View>
+
+    <BottomSheet
+      ref={bottomSheetRef}
+      index={-1}
+      snapPoints={snapPoints}
+      enablePanDownToClose={true}
+    >
+      <View style={styles.contentContainer}>
+        <Text>Awesome 🎉</Text>
       </View>
-    </Pressable>
-  </View>
-</View>
+    </BottomSheet>
+  </>
+  );
 }
 
 export default Home;
@@ -87,5 +109,9 @@ const styles = StyleSheet.create({
   buttonSecondaryText: {
     fontSize: 18,
     color: '#C4C4C4',
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
   }
 });

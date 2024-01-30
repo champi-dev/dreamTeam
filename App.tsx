@@ -1,4 +1,5 @@
 import * as Font from 'expo-font';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
 import { NativeRouter, Route, Routes } from 'react-router-native';
 import { StatusBar } from 'expo-status-bar';
@@ -24,22 +25,27 @@ export default function App() {
   }, [fontsLoaded]);
   
   return (
-    <SafeAreaView style={styles.screen}>
-      <View style={styles.container}>
-      <StatusBar style="light" />      
-      {fontsLoaded ? (
-        <NativeRouter>
-          <Routes>
-            <Route path="/" Component={Home} />
-          </Routes>
-        </NativeRouter>
-      ) : <></>}
-    </View>
-    </SafeAreaView>    
+    <GestureHandlerRootView style={styles.wrapper}>
+      <SafeAreaView style={styles.screen}>
+        <View style={styles.container}>
+          <StatusBar style="light" />      
+          {fontsLoaded ? (
+          <NativeRouter>
+            <Routes>
+              <Route path="/" Component={Home} />
+            </Routes>
+          </NativeRouter>
+          ) : <></>}
+        </View>
+      </SafeAreaView> 
+    </GestureHandlerRootView>      
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1
+  },
   container: {
     flex: 1,
     backgroundColor: theme.backgroundColor,
