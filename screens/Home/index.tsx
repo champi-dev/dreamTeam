@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View, Image, Pressable, SafeAreaView, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, Pressable, SafeAreaView } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomButton from '../../components/CustomButton';
 import { theme } from '../../theme';

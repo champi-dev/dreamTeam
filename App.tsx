@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { theme } from './theme';
 import Home from './screens/Home';
+import Main from './screens/Main';
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -33,6 +34,7 @@ export default function App() {
           <NativeRouter>
             <Routes>
               <Route path="/" Component={Home} />
+              <Route path="/main" Component={Main} />
             </Routes>
           </NativeRouter>
           ) : <></>}

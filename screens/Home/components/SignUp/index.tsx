@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native';
+import { useNavigate } from 'react-router-native';
 import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
 import PasswordIcon from '../../../../assets/svgs/PasswordIcon';
@@ -10,6 +11,9 @@ interface SignUpProps {
 }
 
 function SignUp ({ onChangeMode }: SignUpProps) {
+  const navigate = useNavigate();
+  const handleSignUp = () => navigate('/main');
+  
   return (  
     <>
       <View style={styles.inputContainer}>
@@ -29,7 +33,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         <ShowIcon style={styles.inputIconBack} />
       </View>
     
-      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={() => {}} text="Registrarme" />
+      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" />
 
       <Pressable onPress={() => onChangeMode('login')}>
         <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Iniciar sesión</Text></Text>

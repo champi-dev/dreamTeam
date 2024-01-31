@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-native';
 import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native';
 import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
@@ -10,6 +11,9 @@ interface LoginProps {
 }
 
 function Login ({ onChangeMode }: LoginProps) {
+  const navigate = useNavigate();
+  const handleLogin = () => navigate('/main');
+
   return (
     <>
       <View style={styles.inputContainer}>
@@ -25,7 +29,7 @@ function Login ({ onChangeMode }: LoginProps) {
 
       <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
     
-      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={() => {}} text="Iniciar sesión" />
+      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleLogin} text="Iniciar sesión" />
 
       <Pressable onPress={() => onChangeMode('signup')}>
         <Text style={styles.footerText}>¿No tienes una cuenta? <Text style={styles.footerTextLink}>Regístrate</Text></Text>
