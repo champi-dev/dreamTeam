@@ -1,20 +1,24 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View, Image, Pressable, SafeAreaView, TextInput } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomButton from '../../components/CustomButton';
 import { theme } from '../../theme';
-import EmailIcon from '../../assets/svgs/EmailIcon';
-import PasswordIcon from '../../assets/svgs/PasswordIcon';
-import ShowIcon from '../../assets/svgs/ShowIcon';
+import Login from './components/Login';
+import SignUp from './components/SignUp';
+
+type Mode = 'login' | 'signup';
 
 function Home () {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = React.useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['60%'], []);
 
-  const handleExpand = () => {
+  const [currentMode, setCurrentMode] = useState<Mode>('login');
+
+  const handleExpand = (mode: Mode) => {
     bottomSheetRef?.current?.expand()
     setIsBottomSheetOpen(true)
+    setCurrentMode(mode)
   }
   const handleClose = () => {
     bottomSheetRef?.current?.close()
@@ -30,8 +34,8 @@ function Home () {
         <Text style={styles.secondaryText}>Entra ahora y unete a los partidos de fútbol en Montería</Text>
 
         <View style={styles.buttonGroup}>
-          <CustomButton type="primary" style={styles.buttonContainer} onPress={() => handleExpand()} text="Iniciar sesión" />
-          <CustomButton type="secondary" onPress={() => handleExpand()} text="Registrarme" />
+          <CustomButton type="primary" style={styles.buttonContainer} onPress={() => handleExpand('login')} text="Iniciar sesión" />
+          <CustomButton type="secondary" onPress={() => handleExpand('signup')} text="Registrarme" />
         </View> 
       </View>            
     </SafeAreaView>
@@ -52,23 +56,8 @@ function Home () {
       >
         <View style={styles.bottomSheetContent}>
             <Text style={styles.bottomSheetText}>Bienvenido</Text>
-
-            <View style={styles.inputContainer}>
-              <TextInput placeholder="Correo electrónico" placeholderTextColor="#65656B" style={styles.bottomSheetInput} />
-              <EmailIcon style={styles.inputIconFront} />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <TextInput placeholder="Contraseña" placeholderTextColor="#65656B" style={styles.bottomSheetInput} />
-              <PasswordIcon style={styles.inputIconFront} />
-              <ShowIcon style={styles.inputIconBack} />
-            </View>
-
-            <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
-         
-            <CustomButton type="primary" style={[styles.buttonContainer, styles.bottomSheetButton]}  onPress={() => {}} text="Iniciar sesión" />
-
-            <Text style={styles.footerText}>¿No tienes una cuenta? <Text style={styles.footerTextLink}>Regístrate</Text></Text>
+            {currentMode === 'login' ? <Login onChangeMode={setCurrentMode} /> : <></>}
+            {currentMode === 'signup' ? <SignUp onChangeMode={setCurrentMode} /> : <></>}
         </View>
       </BottomSheet> 
   </>
@@ -144,52 +133,4 @@ const styles = StyleSheet.create({
     fontFamily: 'Lato-Bold',
     marginBottom: 32
   },
-  inputContainer: {
-    position: 'relative',
-  },
-  inputIconFront: {
-    position: 'absolute',
-    top: 22,
-    left: 16,
-    width: 20,
-    height: 18
-  },
-  inputIconBack: {
-    position: 'absolute',
-    top: 22,
-    right: 16,
-    width: 20,
-    height: 18
-  },
-  bottomSheetInput: {
-    height: 64,
-    backgroundColor: '#181829', 
-    borderRadius: 16, 
-    marginBottom: 16, 
-    paddingHorizontal: 16, 
-    paddingVertical: 20, 
-    color: '#FFFFFF',
-    fontSize: 14,
-    paddingLeft: 48
-  },
-  forgotPassword: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontFamily: 'Lato-Regular',
-    alignSelf: 'flex-end',
-    marginBottom: 42
-  },
-  bottomSheetButton: {
-    width: '100%',
-    marginBottom: 24
-  },
-  footerText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Lato-Regular',
-    alignSelf: 'center'
-  },
-  footerTextLink: {
-    color: '#246BFD'
-  }
 });
