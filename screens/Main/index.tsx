@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+import Profile from "./components/Profile";
 import HomeIcon from "../../assets/svgs/HomeIcon";
 import ChartIcon from "../../assets/svgs/ChartIcon";
 import SoccerballIcon from "../../assets/svgs/SoccerballIcon";
@@ -7,7 +8,8 @@ import ProfileIcon from "../../assets/svgs/ProfileIcon";
 
 function Main () {
   return <View style={styles.container}>
-    <Text>Main</Text>
+    <Profile />
+
     <View style={styles.bottomBar}>
       <View style={styles.bottomBarIcons}>
         <HomeIcon style={styles.icon} />
