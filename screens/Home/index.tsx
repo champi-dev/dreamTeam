@@ -1,6 +1,7 @@
 import React, { useMemo, useRef } from 'react';
 import { StyleSheet, Text, View, Image, Pressable, SafeAreaView, TextInput } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
+import CustomButton from '../../components/CustomButton';
 import { theme } from '../../theme';
 import EmailIcon from '../../assets/svgs/EmailIcon';
 import PasswordIcon from '../../assets/svgs/PasswordIcon';
@@ -29,17 +30,8 @@ function Home () {
         <Text style={styles.secondaryText}>Entra ahora y unete a los partidos de fútbol en Montería</Text>
 
         <View style={styles.buttonGroup}>
-          <Pressable onPress={() => handleExpand()} style={styles.buttonContainer}>
-            <View style={styles.button}>
-              <Text style={styles.buttonText}>Iniciar sesión</Text>
-            </View>
-          </Pressable>
-
-          <Pressable>
-            <View style={styles.buttonSecondary}>
-              <Text style={styles.buttonSecondaryText}>Registrarme</Text>
-            </View>
-          </Pressable>
+          <CustomButton type="primary" style={styles.buttonContainer} onPress={() => handleExpand()} text="Iniciar sesión" />
+          <CustomButton type="secondary" onPress={() => handleExpand()} text="Registrarme" />
         </View> 
       </View>            
     </SafeAreaView>
@@ -73,12 +65,8 @@ function Home () {
             </View>
 
             <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
-
-            <Pressable onPress={() => handleExpand()} style={[styles.buttonContainer, styles.bottomSheetButton]}>
-              <View style={styles.button}>
-                <Text style={styles.buttonText}>Iniciar sesión</Text>
-              </View>
-            </Pressable>
+         
+            <CustomButton type="primary" style={[styles.buttonContainer, styles.bottomSheetButton]}  onPress={() => {}} text="Iniciar sesión" />
 
             <Text style={styles.footerText}>¿No tienes una cuenta? <Text style={styles.footerTextLink}>Regístrate</Text></Text>
         </View>
@@ -129,28 +117,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: '60%',
-  },
-  button: {
-    backgroundColor: '#246BFD',
-    height: 63,
-    width: '100%',
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  buttonText: {
-    fontSize: 18,
-    color: '#FFFFFF',
-    fontWeight: 'bold'
-  },
-  buttonSecondary: {
-    height: 63,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonSecondaryText: {
-    fontSize: 18,
-    color: '#C4C4C4',
   },
   contentContainer: {
     flex: 1,
