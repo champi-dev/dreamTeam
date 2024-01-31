@@ -33,8 +33,8 @@ export default function App() {
           {fontsLoaded ? (
           <NativeRouter>
             <Routes>
-              <Route path="/" Component={Home} />
-              <Route path="/main" Component={Main} />
+              <Route path="/" element={<Home />} />
+              <Route path="/main/*" element={<Main />} />
             </Routes>
           </NativeRouter>
           ) : <></>}

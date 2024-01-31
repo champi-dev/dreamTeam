@@ -1,5 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
+import { Routes, Route, useLocation } from "react-router";
 import Profile from "./components/Profile";
 import HomeIcon from "../../assets/svgs/HomeIcon";
 import ChartIcon from "../../assets/svgs/ChartIcon";
@@ -7,15 +8,19 @@ import SoccerballIcon from "../../assets/svgs/SoccerballIcon";
 import ProfileIcon from "../../assets/svgs/ProfileIcon";
 
 function Main () {
+  const { pathname } = useLocation();
+
   return <View style={styles.container}>
-    <Profile />
+    <Routes>
+      <Route path="/profile" element={<Profile />} />
+    </Routes>
 
     <View style={styles.bottomBar}>
       <View style={styles.bottomBarIcons}>
-        <HomeIcon style={styles.icon} />
-        <ChartIcon style={styles.icon} />
-        <SoccerballIcon style={styles.icon} />
-        <ProfileIcon style={styles.icon} />
+        <HomeIcon style={styles.icon} active={pathname === '/main/matches'} />
+        <ChartIcon style={styles.icon} active={pathname === '/main/matchesStats'} />
+        <SoccerballIcon style={styles.icon} active={pathname === '/main/playerStats'} />
+        <ProfileIcon style={styles.icon} active={pathname === '/main/profile'} />
       </View>
     </View>
   </View>

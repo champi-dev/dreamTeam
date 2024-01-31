@@ -13,7 +13,7 @@ interface SignUpProps {
 
 function SignUp ({ onChangeMode }: SignUpProps) {
   const navigate = useNavigate();
-  const handleSignUp = () => navigate('/main');
+  const handleSignUp = () => navigate('/main/profile');
   
   return (  
     <>

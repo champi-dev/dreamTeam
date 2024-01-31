@@ -13,7 +13,7 @@ interface LoginProps {
 
 function Login ({ onChangeMode }: LoginProps) {
   const navigate = useNavigate();
-  const handleLogin = () => navigate('/main');
+  const handleLogin = () => navigate('/main/profile');
 
   return (
     <>
