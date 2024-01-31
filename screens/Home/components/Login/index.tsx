@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-native';
-import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Text, Pressable } from 'react-native';
+import CustomInput from '../../../../components/CustomInput';
 import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
 import PasswordIcon from '../../../../assets/svgs/PasswordIcon';
@@ -16,16 +17,20 @@ function Login ({ onChangeMode }: LoginProps) {
 
   return (
     <>
-      <View style={styles.inputContainer}>
-        <TextInput placeholder="Correo electrónico" placeholderTextColor="#65656B" style={styles.bottomSheetInput} />
-        <EmailIcon style={styles.inputIconFront} />
-      </View>
+      <CustomInput 
+        placeholder="Correo electrónico" 
+        placeholderTextColor="#65656B" 
+        value="" 
+        FrontIcon={EmailIcon}
+      />
 
-      <View style={styles.inputContainer}>
-        <TextInput placeholder="Contraseña" placeholderTextColor="#65656B" style={styles.bottomSheetInput} />
-        <PasswordIcon style={styles.inputIconFront} />
-        <ShowIcon style={styles.inputIconBack} />
-      </View>
+      <CustomInput 
+        placeholder="Contraseña" 
+        placeholderTextColor="#65656B" 
+        value="" 
+        FrontIcon={PasswordIcon}
+        BackIcon={ShowIcon}
+      />
 
       <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
     

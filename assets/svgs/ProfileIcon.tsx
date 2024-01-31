@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import Svg, { Path, G } from 'react-native-svg';
 
 // @ts-ignore
-function ProfileIcon ({ style }): React.JSX.Element {
+function ProfileIcon ({ style }: {style?: any | undefined}): React.JSX.Element {
   return <View style={style}>
   <Svg width="16" height="20" viewBox="0 0 16 20" fill="none">
   <G id="Profile">

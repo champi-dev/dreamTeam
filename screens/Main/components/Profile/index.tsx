@@ -1,6 +1,9 @@
 import React from "react";
 import { View, Image, StyleSheet, SafeAreaView, Text } from "react-native";
+import CustomInput from "../../../../components/CustomInput";
 import EditIcon from "../../../../assets/svgs/EditIcon";
+import ProfileIcon from "../../../../assets/svgs/ProfileIcon";
+import SoccerballIcon from "../../../../assets/svgs/SoccerballIcon";
 
 function Profile () {
   return <SafeAreaView style={styles.container}>
@@ -10,7 +13,26 @@ function Profile () {
         <EditIcon style={styles.editIcon} />
       </View>   
 
-      <Text style={styles.profileText}>Cristian Mejia</Text>   
+      <Text style={styles.profileText}>Cristian Mejia</Text>  
+
+      <View style={styles.infoGroup}>
+        <CustomInput 
+          placeholder="Nombre" 
+          placeholderTextColor="#65656B" 
+          value="Cristian Mejia" 
+          FrontIcon={ProfileIcon}
+          styling="secondary"
+        />
+
+        <CustomInput 
+          placeholder="Goles" 
+          placeholderTextColor="#65656B" 
+          value="10" 
+          FrontIcon={SoccerballIcon}
+          styling="secondary"
+          disabled
+        />
+      </View> 
     </View>
   </SafeAreaView>
 }
@@ -52,5 +74,8 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     color: "#FFF",
     fontFamily: "Lato-Bold",
+  },
+  infoGroup: {
+    width: '100%',
   }
 });
