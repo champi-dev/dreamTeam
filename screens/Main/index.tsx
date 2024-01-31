@@ -1,26 +1,44 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Routes, Route, useLocation } from "react-router";
+import { View, StyleSheet, Pressable } from "react-native";
+import { Routes, Route, useLocation, useNavigate } from "react-router";
 import Profile from "./components/Profile";
+import Matches from "./components/Matches";
+import MatchesStats from "./components/MatchesStats";
+import PlayerStats from "./components/PlayerStats";
 import HomeIcon from "../../assets/svgs/HomeIcon";
 import ChartIcon from "../../assets/svgs/ChartIcon";
 import SoccerballIcon from "../../assets/svgs/SoccerballIcon";
 import ProfileIcon from "../../assets/svgs/ProfileIcon";
 
 function Main () {
+  const navigate = useNavigate();
   const { pathname } = useLocation();
 
   return <View style={styles.container}>
     <Routes>
       <Route path="/profile" element={<Profile />} />
+      <Route path="/matches" element={<Matches />} />
+      <Route path="/matchesStats" element={<MatchesStats />} />
+      <Route path="/playerStats" element={<PlayerStats />} />
     </Routes>
 
     <View style={styles.bottomBar}>
       <View style={styles.bottomBarIcons}>
-        <HomeIcon style={styles.icon} active={pathname === '/main/matches'} />
-        <ChartIcon style={styles.icon} active={pathname === '/main/matchesStats'} />
-        <SoccerballIcon style={styles.icon} active={pathname === '/main/playerStats'} />
-        <ProfileIcon style={styles.icon} active={pathname === '/main/profile'} />
+        <Pressable onPress={() => navigate('/main/matches')}>
+          <HomeIcon style={styles.icon} active={pathname === '/main/matches'} />
+        </Pressable>
+
+        <Pressable onPress={() => navigate('/main/matchesStats')}>
+          <ChartIcon style={styles.icon} active={pathname === '/main/matchesStats'} />
+        </Pressable>
+
+        <Pressable onPress={() => navigate('/main/playerStats')}>
+          <SoccerballIcon style={styles.icon} active={pathname === '/main/playerStats'} />
+        </Pressable>
+
+        <Pressable onPress={() => navigate('/main/profile')}>
+          <ProfileIcon style={styles.icon} active={pathname === '/main/profile'} />
+        </Pressable>
       </View>
     </View>
   </View>
