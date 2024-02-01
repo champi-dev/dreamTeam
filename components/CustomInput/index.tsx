@@ -9,13 +9,14 @@ interface CustomInputProps {
   BackIcon?: React.FC;
   styling?: 'primary' | 'secondary';
   disabled?: boolean;
+  style?: any;
 }
 
-function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled }: CustomInputProps) {
+function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled, style }: CustomInputProps) {
   const [innerValue, setInnerValue] = useState(value);
 
   return (
-    <View style={styles.inputContainer}>
+    <View style={[styles.inputContainer, style && style]}>
         <TextInput placeholder={placeholder} placeholderTextColor={placeholderTextColor} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]} value={innerValue} onChangeText={value => !disabled && setInnerValue(value)} editable={!disabled} />
         {!!FrontIcon ? <View style={styles.inputIconFront}><FrontIcon /></View> : <></>}
         {!!BackIcon ? <View style={styles.inputIconBack}><BackIcon /></View> : <></>}

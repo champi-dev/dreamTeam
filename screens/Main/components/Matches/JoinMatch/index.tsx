@@ -46,12 +46,14 @@ function JoinMatch () {
         </View>
       </View>
     </ScrollView>
-
-    <View style={styles.createMatchButton}>
-      <LinearGradient style={styles.gradient} colors={['#F4A58A', '#ED6B4E']}>
-        <PlusIcon style={styles.plusIcon} />
-      </LinearGradient>
-    </View>
+    
+      <View style={styles.createMatchButton}>      
+        <LinearGradient style={styles.gradient} colors={['#F4A58A', '#ED6B4E']}>
+          <Pressable onPress={() => navigate('/main/matches/createMatch')}>
+          <PlusIcon style={styles.plusIcon} />
+          </Pressable>   
+        </LinearGradient>        
+      </View>    
   </>
   );
 }

@@ -26,7 +26,7 @@ function Main () {
       <View style={styles.bottomBarIcons}>
         <Pressable onPress={() => navigate('/main/matches')}>
           <HomeIcon style={styles.icon} active={
-            pathname === '/main/matches' || pathname === '/main/matches/notifications'
+            pathname === '/main/matches' || pathname === '/main/matches/notifications' || pathname === '/main/matches/createMatch'
           } />
         </Pressable>
 
