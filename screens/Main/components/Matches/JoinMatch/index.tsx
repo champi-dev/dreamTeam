@@ -19,6 +19,7 @@ function JoinMatch () {
     </View>
 
       <ScrollView style={styles.matchesGroup}>{/* [TODO]: Change to flatlist */}
+        <Pressable onPress={() => navigate('/main/matches/selectSide')}>
         <View style={styles.matchOverview}>
           <View style={styles.matchOverviewContent}>
           <ScrollView contentContainerStyle={styles.topTeam} horizontal>
@@ -45,6 +46,7 @@ function JoinMatch () {
           <Text style={styles.actionText}>Elegir lado</Text>
         </View>
       </View>
+        </Pressable>        
     </ScrollView>
     
       <View style={styles.createMatchButton}>      

@@ -4,6 +4,7 @@ import { View, StyleSheet, SafeAreaView } from "react-native";
 import JoinMatch from "./JoinMatch";
 import Notifications from "./Notifications";
 import CreateMatch from "./CreateMatch";
+import SelectSide from "./SelectSide";
 
 function Matches () {
   return (
@@ -13,6 +14,7 @@ function Matches () {
           <Route path="/" element={<JoinMatch />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/createMatch" element={<CreateMatch />} />
+          <Route path="/selectSide" element={<SelectSide />} />
         </Routes>
       </View>      
     </SafeAreaView>
