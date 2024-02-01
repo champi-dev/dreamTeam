@@ -16,16 +16,18 @@ function Main () {
 
   return <View style={styles.container}>
     <Routes>
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/matches" element={<Matches />} />
+      <Route path="/matches/*" element={<Matches />} />
       <Route path="/matchesStats" element={<MatchesStats />} />
       <Route path="/playerStats" element={<PlayerStats />} />
+      <Route path="/profile" element={<Profile />} />
     </Routes>
 
     <View style={styles.bottomBar}>
       <View style={styles.bottomBarIcons}>
         <Pressable onPress={() => navigate('/main/matches')}>
-          <HomeIcon style={styles.icon} active={pathname === '/main/matches'} />
+          <HomeIcon style={styles.icon} active={
+            pathname === '/main/matches' || pathname === '/main/matches/notifications'
+          } />
         </Pressable>
 
         <Pressable onPress={() => navigate('/main/matchesStats')}>
