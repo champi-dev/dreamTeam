@@ -9,7 +9,7 @@ function Profile () {
   return <SafeAreaView style={styles.container}>
     <View style={styles.content}>
       <View style={styles.profileImageContainer}>
-        <Image style={styles.profileImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fcrismenu.jpeg?alt=media&token=3abdc79f-35d0-473f-b06d-3fc6d62fd437" }} />
+        <Image style={styles.profileImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fcrismenu.jpeg?alt=media&token=3abdc79f-35d0-473f-b06d-3fc6d62fd437", cache: "force-cache" }} />
         <EditIcon style={styles.editIcon} />
       </View>   
 
