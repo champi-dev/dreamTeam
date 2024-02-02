@@ -24,21 +24,21 @@ function Main () {
 
     <View style={styles.bottomBar}>
       <View style={styles.bottomBarIcons}>
-        <Pressable onPress={() => navigate('/main/matches')}>
+        <Pressable style={styles.iconWrapper}  onPress={() => navigate('/main/matches')}>
           <HomeIcon style={styles.icon} active={
             pathname === '/main/matches' || pathname === '/main/matches/notifications' || pathname === '/main/matches/createMatch'
           } />
         </Pressable>
 
-        <Pressable onPress={() => navigate('/main/matchesStats')}>
+        <Pressable  style={styles.iconWrapper} onPress={() => navigate('/main/matchesStats')}>
           <ChartIcon style={styles.icon} active={pathname === '/main/matchesStats'} />
         </Pressable>
 
-        <Pressable onPress={() => navigate('/main/playerStats')}>
+        <Pressable  style={styles.iconWrapper} onPress={() => navigate('/main/playerStats')}>
           <SoccerballIcon style={styles.icon} active={pathname === '/main/playerStats'} />
         </Pressable>
 
-        <Pressable onPress={() => navigate('/main/profile')}>
+        <Pressable  style={styles.iconWrapper} onPress={() => navigate('/main/profile')}>
           <ProfileIcon style={styles.icon} active={pathname === '/main/profile'} />
         </Pressable>
       </View>
@@ -65,7 +65,13 @@ const styles = StyleSheet.create({
     flex: 1, 
     flexDirection: "row", 
     justifyContent: "space-around", 
-    alignItems: "center" 
+    alignItems: "center" ,
+  },
+  iconWrapper: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
   },
   icon: {
     width: 20,
