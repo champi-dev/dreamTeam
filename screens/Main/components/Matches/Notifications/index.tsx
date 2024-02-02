@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
     flex: 1
   },
   notification: {
-    height: 68,
     width: "100%",
     backgroundColor: "#2B2B3D",
     borderRadius: 16,
