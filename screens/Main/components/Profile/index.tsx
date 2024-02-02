@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, SafeAreaView, Text } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  View,
+  Image,
+  StyleSheet,
+  SafeAreaView,
+  Text,
+  Pressable
+} from 'react-native';
 import CustomInput from '../../../../components/CustomInput';
 import EditIcon from '../../../../assets/svgs/EditIcon';
 import ProfileIcon from '../../../../assets/svgs/ProfileIcon';
@@ -7,10 +14,24 @@ import SoccerballIcon from '../../../../assets/svgs/SoccerballIcon';
 import { User, mockUser } from './mockData';
 import { LoadingSkeleton } from './components/LoadingSkeleton';
 import { PressableOpacity } from '../../../../components/PresableOpacity';
+import BottomSheet from '@gorhom/bottom-sheet';
+import CustomButton from '../../../../components/CustomButton';
 
 function Profile() {
   const [userInfo, setUserInfo] = useState<User>();
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState<boolean>(true);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
+
+  const editPictureBottomSheetRef = useRef<BottomSheet>(null);
+  const openBottomSheet = () => {
+    editPictureBottomSheetRef.current?.expand();
+    setIsBottomSheetOpen(true);
+  };
+  const closeBottomSheet = () => {
+    editPictureBottomSheetRef.current?.close();
+    setIsBottomSheetOpen(false);
+  };
+  const snapPoints = useMemo(() => [300], []);
 
   const getUserInfoEndpoint = () => {
     return new Promise<User>((resolve) => {
@@ -49,7 +70,7 @@ function Profile() {
                 cache: 'force-cache'
               }}
             />
-            <PressableOpacity>
+            <PressableOpacity onPress={openBottomSheet}>
               <EditIcon style={styles.editIcon} />
             </PressableOpacity>
           </View>
@@ -76,6 +97,27 @@ function Profile() {
           </View>
         </View>
       )}
+
+      {isBottomSheetOpen && (
+        <Pressable onPress={closeBottomSheet} style={styles.backdrop} />
+      )}
+
+      <BottomSheet
+        index={-1}
+        snapPoints={snapPoints}
+        ref={editPictureBottomSheetRef}
+        backgroundStyle={styles.bottomSheetBackground}
+      >
+        <View style={styles.bottomSheetContainer}>
+          <CustomButton type='primary' onPress={() => {}} text='Escoger foto' />
+          <CustomButton type='primary' onPress={() => {}} text='Tomar foto' />
+          <CustomButton
+            type='secondary'
+            onPress={() => {}}
+            text='Borrar foto'
+          />
+        </View>
+      </BottomSheet>
     </SafeAreaView>
   );
 }
@@ -83,6 +125,20 @@ function Profile() {
 export default Profile;
 
 const styles = StyleSheet.create({
+  backdrop: {
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+    backgroundColor: '#000000',
+    opacity: 0.3
+  },
+  bottomSheetBackground: {
+    backgroundColor: '#181829'
+  },
+  bottomSheetContainer: {
+    padding: 24,
+    gap: 16
+  },
   container: {
     flex: 1
   },
