@@ -16,6 +16,7 @@ import { LoadingSkeleton } from './components/LoadingSkeleton';
 import { PressableOpacity } from '../../../../components/PresableOpacity';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { EditProfilePictureBottomSheetContent } from './components/EditProfilePictureBottomSheetContent';
+import ProfilePictureIcon from '../../../../assets/svgs/ProfilePictureIcon';
 
 function Profile() {
   const [userInfo, setUserInfo] = useState<User>();
@@ -65,13 +66,24 @@ function Profile() {
       ) : (
         <View style={styles.content}>
           <View style={styles.profileImageContainer}>
-            <Image
-              style={styles.profileImage}
-              source={{
-                uri: profilePicture,
-                cache: 'force-cache'
-              }}
-            />
+            {profilePicture.length ? (
+              <Image
+                style={styles.profileImage}
+                source={{
+                  uri: profilePicture,
+                  cache: 'force-cache'
+                }}
+              />
+            ) : (
+              <View style={styles.profilePictureIconContainer}>
+                <ProfilePictureIcon
+                  width={100}
+                  height={100}
+                  fill='#65656B'
+                  style={styles.profilePictureIcon}
+                />
+              </View>
+            )}
             <PressableOpacity onPress={openBottomSheet}>
               <EditIcon style={styles.editIcon} />
             </PressableOpacity>
@@ -153,6 +165,17 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 200
+  },
+  profilePictureIconContainer: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    alignContent: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#222232'
+  },
+  profilePictureIcon: {
+    alignSelf: 'center'
   },
   editIcon: {
     width: 32,
