@@ -15,12 +15,13 @@ import { User, mockUser } from './mockData';
 import { LoadingSkeleton } from './components/LoadingSkeleton';
 import { PressableOpacity } from '../../../../components/PresableOpacity';
 import BottomSheet from '@gorhom/bottom-sheet';
-import CustomButton from '../../../../components/CustomButton';
+import { EditProfilePictureBottomSheetContent } from './components/EditProfilePictureBottomSheetContent';
 
 function Profile() {
   const [userInfo, setUserInfo] = useState<User>();
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState<boolean>(true);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
+  const [profilePicture, setProfilePicture] = useState<string>('');
 
   const editPictureBottomSheetRef = useRef<BottomSheet>(null);
   const openBottomSheet = () => {
@@ -45,6 +46,7 @@ function Profile() {
     try {
       const response = await getUserInfoEndpoint();
       setUserInfo(response);
+      setProfilePicture(response.profilePicture || '');
     } catch (error) {
       console.error(error);
     } finally {
@@ -66,7 +68,7 @@ function Profile() {
             <Image
               style={styles.profileImage}
               source={{
-                uri: userInfo?.profilePicture,
+                uri: profilePicture,
                 cache: 'force-cache'
               }}
             />
@@ -108,15 +110,11 @@ function Profile() {
         ref={editPictureBottomSheetRef}
         backgroundStyle={styles.bottomSheetBackground}
       >
-        <View style={styles.bottomSheetContainer}>
-          <CustomButton type='primary' onPress={() => {}} text='Escoger foto' />
-          <CustomButton type='primary' onPress={() => {}} text='Tomar foto' />
-          <CustomButton
-            type='secondary'
-            onPress={() => {}}
-            text='Borrar foto'
-          />
-        </View>
+        <EditProfilePictureBottomSheetContent
+          onEditProfilePicture={setProfilePicture}
+          onRemoveProfilePicture={setProfilePicture}
+          onClose={closeBottomSheet}
+        />
       </BottomSheet>
     </SafeAreaView>
   );
@@ -134,10 +132,6 @@ const styles = StyleSheet.create({
   },
   bottomSheetBackground: {
     backgroundColor: '#181829'
-  },
-  bottomSheetContainer: {
-    padding: 24,
-    gap: 16
   },
   container: {
     flex: 1
