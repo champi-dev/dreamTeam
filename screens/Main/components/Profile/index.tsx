@@ -38,6 +38,16 @@ function Profile() {
     }
   };
 
+  const handleNameInputChange = (text: string) => {
+    // @ts-ignore
+    setUserInfo((prev) => {
+      return {
+        ...prev,
+        name: text
+      };
+    });
+  }
+
   const getUserInfoEndpoint = () => {
     return new Promise<User>((resolve) => {
       setTimeout(() => {
@@ -101,6 +111,7 @@ function Profile() {
               value={userInfo?.name ?? ''}
               FrontIcon={ProfileIcon}
               styling='secondary'
+              onChangeText={handleNameInputChange}
             />
 
             <CustomInput

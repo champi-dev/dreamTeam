@@ -27,7 +27,6 @@ export default function App() {
   
   return (
     <GestureHandlerRootView style={styles.wrapper}>
-        <KeyboardAvoidingView style={styles.wrapper} behavior={Platform.select({ios: 'padding', android: 'height'})}>
         <View style={styles.container}>
           <StatusBar style="light" />      
           {fontsLoaded ? (
@@ -39,7 +38,6 @@ export default function App() {
           </NativeRouter>
           ) : <></>}
         </View>
-        </KeyboardAvoidingView>
     </GestureHandlerRootView>      
   );
 }
