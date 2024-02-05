@@ -1,39 +1,42 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Image,
   StyleSheet,
   SafeAreaView,
   Text,
-  Pressable
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import CustomInput from '../../../../components/CustomInput';
 import EditIcon from '../../../../assets/svgs/EditIcon';
 import ProfileIcon from '../../../../assets/svgs/ProfileIcon';
 import SoccerballIcon from '../../../../assets/svgs/SoccerballIcon';
-import { User, mockUser } from './mockData';
+import { mockUser } from './mockData';
 import { LoadingSkeleton } from './components/LoadingSkeleton';
 import { PressableOpacity } from '../../../../components/PresableOpacity';
-import BottomSheet from '@gorhom/bottom-sheet';
-import { EditProfilePictureBottomSheetContent } from './components/EditProfilePictureBottomSheetContent';
+import { User } from '../../../../models/User';
 import ProfilePictureIcon from '../../../../assets/svgs/ProfilePictureIcon';
 
 function Profile() {
   const [userInfo, setUserInfo] = useState<User>();
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState<boolean>(true);
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
   const [profilePicture, setProfilePicture] = useState<string>('');
 
-  const editPictureBottomSheetRef = useRef<BottomSheet>(null);
-  const openBottomSheet = () => {
-    editPictureBottomSheetRef.current?.expand();
-    setIsBottomSheetOpen(true);
+  const handleOptionPress = async () => {
+    const commonOptions: ImagePicker.ImagePickerOptions = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1
+    };
+
+    let selection: ImagePicker.ImagePickerResult | null = null;
+    selection = await ImagePicker.launchImageLibraryAsync(commonOptions);
+
+    if (selection && !selection.canceled) {
+      setProfilePicture(selection.assets[0].uri);
+    }
   };
-  const closeBottomSheet = () => {
-    editPictureBottomSheetRef.current?.close();
-    setIsBottomSheetOpen(false);
-  };
-  const snapPoints = useMemo(() => [300], []);
 
   const getUserInfoEndpoint = () => {
     return new Promise<User>((resolve) => {
@@ -47,7 +50,7 @@ function Profile() {
     try {
       const response = await getUserInfoEndpoint();
       setUserInfo(response);
-      setProfilePicture(response.profilePicture || '');
+      setProfilePicture(response.avatarImgUrl || '');
     } catch (error) {
       console.error(error);
     } finally {
@@ -84,7 +87,7 @@ function Profile() {
                 />
               </View>
             )}
-            <PressableOpacity onPress={openBottomSheet}>
+            <PressableOpacity onPress={handleOptionPress}>
               <EditIcon style={styles.editIcon} />
             </PressableOpacity>
           </View>
@@ -103,7 +106,7 @@ function Profile() {
             <CustomInput
               placeholder='Goles'
               placeholderTextColor='#65656B'
-              value={userInfo?.goals ?? ''}
+              value={`${userInfo?.goals ?? ''}`}
               FrontIcon={SoccerballIcon}
               styling='secondary'
               disabled
@@ -111,23 +114,6 @@ function Profile() {
           </View>
         </View>
       )}
-
-      {isBottomSheetOpen && (
-        <Pressable onPress={closeBottomSheet} style={styles.backdrop} />
-      )}
-
-      <BottomSheet
-        index={-1}
-        snapPoints={snapPoints}
-        ref={editPictureBottomSheetRef}
-        backgroundStyle={styles.bottomSheetBackground}
-      >
-        <EditProfilePictureBottomSheetContent
-          onEditProfilePicture={setProfilePicture}
-          onRemoveProfilePicture={setProfilePicture}
-          onClose={closeBottomSheet}
-        />
-      </BottomSheet>
     </SafeAreaView>
   );
 }
