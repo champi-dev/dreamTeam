@@ -39,7 +39,7 @@ function Profile() {
     return new Promise<User>((resolve) => {
       setTimeout(() => {
         resolve(mockUser);
-      }, 2000);
+      }, 500);
     });
   };
 
