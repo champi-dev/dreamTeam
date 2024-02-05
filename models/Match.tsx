@@ -6,6 +6,7 @@ export interface Match {
   court: string;
   whiteTeam: User[];
   blackTeam: User[];
-  whiteTeamScore: number;
-  blackTeamScore: number;
+  whiteTeamScore?: number;
+  blackTeamScore?: number;
+  playersPerTeam: number;
 }

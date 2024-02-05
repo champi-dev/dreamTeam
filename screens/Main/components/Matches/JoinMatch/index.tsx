@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { View, Text, StyleSheet, Pressable, ScrollView, Image } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import NotificationIcon from "../../../../../assets/svgs/NotificationIcon";
 import PlusIcon from "../../../../../assets/svgs/PlusIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
+import { mockData } from "./mockData";
+import { Match } from "../../../../../models/Match";
+import { getDayName, convertTimeTo12HourFormat } from "../../../../../utils";
 
 function JoinMatch () {
   const navigate = useNavigate();
+  const [matches, setMatches] = useState<Match[]>();
+
+  useEffect(() => {
+    setMatches(mockData);
+  }, [])
 
   return (
     <>
@@ -18,35 +26,35 @@ function JoinMatch () {
       </Pressable>      
     </View>
 
-      <ScrollView style={styles.matchesGroup}>{/* [TODO]: Change to flatlist */}
-        <Pressable onPress={() => navigate('/main/matches/selectSide')}>
-        <View style={styles.matchOverview}>
-          <View style={styles.matchOverviewContent}>
-          <ScrollView contentContainerStyle={styles.topTeam} horizontal>
-            <ShirtIcon style={styles.shirtIcon} fill="#fff" />
-            <Image style={styles.userImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fme.jpeg?alt=media&token=ab25c3f8-a036-4703-8539-034f051b09ed", cache: "force-cache" }} />
-            <Image style={styles.userImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fcrismenu.jpeg?alt=media&token=3abdc79f-35d0-473f-b06d-3fc6d62fd437", cache: "force-cache" }} />
-            <Image style={styles.userImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fsubircorrea.jpeg?alt=media&token=d5910673-c34f-4d2f-99d3-2332b1a515af", cache: "force-cache" }} />
-            <Image style={styles.userImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fsubirfredy.jpeg?alt=media&token=da4975bf-56d0-4c33-8739-1251dce3a744", cache: "force-cache" }} />
+      <ScrollView style={styles.matchesGroup}>
+        {matches?.length ? matches.map((singleMatch, index) => (
+          <Pressable key={index} onPress={() => navigate('/main/matches/selectSide')}>
+          <View style={styles.matchOverview}>
+            <View style={styles.matchOverviewContent}>
+            <ScrollView contentContainerStyle={styles.topTeam} horizontal>
+              <ShirtIcon style={styles.shirtIcon} fill="#fff" />
+              {singleMatch.whiteTeam.map((singlePlayer, playerIndex) => (
+                <Image key={playerIndex} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+              ))}              
+            </ScrollView>
+  
+            <ScrollView contentContainerStyle={styles.bottomTeam} horizontal>
+              <ShirtIcon style={styles.shirtIcon} fill="#000" />
+              {singleMatch.blackTeam.map((singlePlayer, playerIndex) => (
+                <Image key={playerIndex} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+              ))}    
           </ScrollView>
-
-          <ScrollView contentContainerStyle={styles.bottomTeam} horizontal>
-            <ShirtIcon style={styles.shirtIcon} fill="#000" />
-            <Image style={styles.userImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fsubirjuanda.jpeg?alt=media&token=20132049-aa53-4789-8706-e6296969e539", cache: "force-cache" }} />
-          <Image style={styles.userImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fsubirmonroy.jpeg?alt=media&token=a9cbc752-ddce-4f83-a56b-113e8456d380", cache: "force-cache" }} />
-          <Image style={styles.userImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fsubirnepe.jpeg?alt=media&token=da69d071-50e3-459d-8979-5aa686f4b37a", cache: "force-cache" }} />
-          <Image style={styles.userImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fsubirpipe.jpeg?alt=media&token=de4ec99b-61e5-4f5e-a7c2-f7253ac4c535", cache: "force-cache" }} />
-        </ScrollView>
-
-        <Text style={styles.matchText}>Hoy, 8:00 PM</Text>
-        <Text style={styles.matchText}>La F8 Cra 55 #50-5</Text>
-        </View>            
-
-        <View style={styles.actionContainer}>
-          <Text style={styles.actionText}>Elegir lado</Text>
+  
+          <Text style={styles.matchText}>{getDayName(singleMatch.date)} {convertTimeTo12HourFormat(singleMatch.time)}</Text>
+          <Text style={styles.matchText}>{singleMatch.court} {singleMatch.playersPerTeam} vs {singleMatch.playersPerTeam}</Text>
+          </View>            
+  
+          <View style={styles.actionContainer}>
+            <Text style={styles.actionText}>Elegir lado</Text>
+          </View>
         </View>
-      </View>
-        </Pressable>        
+          </Pressable>   
+        )) : <></>}             
     </ScrollView>
     
       <View style={styles.createMatchButton}>      

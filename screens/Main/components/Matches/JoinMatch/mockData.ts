@@ -1,10 +1,10 @@
-import { Match } from "../../../../models/Match"
+import { Match } from "../../../../../models/Match"
 
 export const mockData: Match[] = [
   {
-    date: "2021-05-01",
+    date: "2024-02-05",
     time: "10:00",
-    court: "La Grama F8",
+    court: "F8",
     whiteTeam: [
       {
         name: "Champi",
@@ -57,8 +57,6 @@ export const mockData: Match[] = [
         email: "test@test.com"
       },
     ],
-    whiteTeamScore: 3,
-    blackTeamScore: 2,
     playersPerTeam: 4
   }
 ]
