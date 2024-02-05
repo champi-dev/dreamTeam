@@ -1,12 +1,55 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Text, StyleSheet, View, Pressable, Image } from "react-native";
 import { useNavigate } from 'react-router-native';
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
 import CustomButton from "../../../../../components/CustomButton";
+import { mockData, mockCurrentUser } from "./mockData";
+import { Match } from "../../../../../models/Match";
+import { User } from "../../../../../models/User";
 
 function SelectSide () {
   const navigate = useNavigate();
+  const [match, setMatch] = useState<Match>();
+  const [currentUser, setCurrentUser] = useState<User>();
+  const [selectedSide, setSelectedSide] = useState<'white' | 'black'>('white');
+
+  const handleSelectSide = (side: 'white' | 'black') => {
+    if (side === 'white' && selectedSide !== 'white') {
+      // @ts-ignore
+      setMatch(prevMatch => ({
+        ...prevMatch,
+        // @ts-ignore
+        whiteTeam: [...prevMatch.whiteTeam, currentUser],
+        // @ts-ignore
+        blackTeam: prevMatch.blackTeam.filter(player => player.id !== currentUser?.id)
+      }));
+    }
+
+    if (side === 'black' && selectedSide !== 'black') {
+      // @ts-ignore
+      setMatch(prevMatch => ({
+        ...prevMatch,
+        // @ts-ignore
+        blackTeam: [...prevMatch?.blackTeam, currentUser],
+        // @ts-ignore
+        whiteTeam: prevMatch?.whiteTeam.filter(player => player.id !== currentUser?.id)
+      }));
+    }
+  }
+
+  useEffect(() => {
+    setMatch(mockData)
+    setCurrentUser(mockCurrentUser)
+  }, []);
+
+  useEffect(() => {
+    if (match) {
+      const isUserInWhiteTeam = match.whiteTeam.some(player => player.id === currentUser?.id);
+      setSelectedSide(isUserInWhiteTeam ? 'white' : 'black');
+    }
+  }, [match])
+
 
   return (<>
     <View style={styles.header}>
@@ -18,30 +61,33 @@ function SelectSide () {
 
     <View style={styles.content}>
       <View style={styles.contentLeft}>
-        <View style={styles.iconWrapper}>
-          <ShirtIcon style={styles.shirtIcon} fill="#fff" />
-        </View>
+        <Pressable onPress={() => handleSelectSide('white')}>
+          <View style={[styles.iconWrapper, selectedSide === 'white' && styles.iconWrapperActive]}>
+            <ShirtIcon style={styles.shirtIcon} fill="#fff" />
+          </View>
+        </Pressable>        
 
-        <View style={styles.user}>
-          <Image style={styles.userImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fcrismenu.jpeg?alt=media&token=3abdc79f-35d0-473f-b06d-3fc6d62fd437", cache: "force-cache" }} />
-          <Text style={styles.userText}>Cristian Mejia</Text>
-        </View>
-
-        <View style={styles.user}>
-          <Image style={styles.userImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fme.jpeg?alt=media&token=ab25c3f8-a036-4703-8539-034f051b09ed", cache: "force-cache" }} />
-          <Text style={styles.userText}>Champi</Text>
-        </View>
+        {match?.whiteTeam.length ? match.whiteTeam.map((singlePlayer, index) => (
+          <View style={styles.user} key={index}>
+            <Image style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+            <Text style={styles.userText}>{singlePlayer.name}</Text>
+          </View>
+        )) : <></>}        
       </View>
 
       <View style={styles.contentRight}>
-        <View style={[styles.iconWrapper, styles.iconWrapperInactive]}>
-          <ShirtIcon style={styles.shirtIcon} fill="#000" />
-        </View>
+        <Pressable onPress={() => handleSelectSide('black')}>
+          <View style={[styles.iconWrapper, selectedSide === 'black' && styles.iconWrapperActive]}>
+            <ShirtIcon style={styles.shirtIcon} fill="#000" />
+          </View>
+        </Pressable>        
 
-        <View style={styles.user}>
-          <Image style={styles.userImage} source={{ uri: "https://firebasestorage.googleapis.com/v0/b/dreamteam-c33ca.appspot.com/o/images%2Fsubircorrea.jpeg?alt=media&token=d5910673-c34f-4d2f-99d3-2332b1a515af", cache: "force-cache" }} />
-          <Text style={styles.userText}>Andres Correa</Text>
-        </View>
+        {match?.whiteTeam.length ? match.blackTeam.map((singlePlayer, index) => (
+          <View style={styles.user} key={index}>
+            <Image style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+            <Text style={styles.userText}>{singlePlayer.name}</Text>
+          </View>
+        )) : <></>} 
       </View>
     </View>
 
@@ -89,7 +135,7 @@ const styles = StyleSheet.create({
     height: 44,
   },
   iconWrapper: {
-    backgroundColor: "#2B2B3D",
+    backgroundColor: "#181829",    
     borderRadius: 92,
     width: 92,
     height: 92,
@@ -97,8 +143,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 32
   },
-  iconWrapperInactive: {
-    backgroundColor: "#181829",
+  iconWrapperActive: {
+    backgroundColor: "#2B2B3D",
   },
   user: {
     flexDirection: "row",
