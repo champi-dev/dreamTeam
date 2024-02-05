@@ -1,11 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Text, StyleSheet, View, Pressable } from "react-native";
 import { useNavigate } from 'react-router-native';
+import { mockData } from "./mockData";
+import { Notification } from "../../../../../models/Notification";
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import CloseIcon from "../../../../../assets/svgs/CloseIcon";
 
 function Notifications () {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const navigate = useNavigate();
+
+  const handleDeleteNotification = (matchId: string) => {
+    const newNotifications = notifications.filter(notification => notification.matchId !== matchId);
+    setNotifications(newNotifications);
+  };
+
+  useEffect(() => {
+    setNotifications(mockData)
+  }, []);
 
   return (<>
     <View style={styles.header}>
@@ -14,11 +26,19 @@ function Notifications () {
       </Pressable>
       <Text style={styles.title}>Notificaciones</Text>
     </View>
+  
     <View style={styles.notificationsGroup}>
-      <View style={styles.notification}>
-        <Text style={styles.notificationText}><Text style={styles.notificationTextHighlight}>Carlos Cardona</Text> te ha invitado a un partido</Text>
-        <CloseIcon />
-      </View>
+      {notifications.length ? notifications.map(({ highlightedText, regularText, matchId }) => (
+        <Pressable onPress={() => navigate('/main/matches/selectSide')} key={matchId}>
+          <View style={styles.notification}>
+            <Text style={styles.notificationText}><Text style={styles.notificationTextHighlight}>{highlightedText}</Text> {regularText}</Text>
+
+            <Pressable onPress={() => handleDeleteNotification(matchId)}>
+              <CloseIcon />
+            </Pressable>
+          </View>
+        </Pressable>        
+      )) : <></>}      
     </View>
   </>);
 }
