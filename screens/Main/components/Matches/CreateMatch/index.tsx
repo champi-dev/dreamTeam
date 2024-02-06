@@ -70,7 +70,7 @@ function CreateMatch () {
 
     {invitedPlayers.length ? <View style={styles.invitedPlayers}>
       {invitedPlayers.length ? invitedPlayers.map((singlePlayer) => (
-        <Image key={singlePlayer.id} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+        <Image key={singlePlayer.id} style={[styles.userImage, styles.userImageMargin]} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
       )) : <></>}
     </View> : <></>}
 
@@ -162,6 +162,9 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 36,
     marginRight: 16,
+  },
+  userImageMargin: {
+    marginBottom: 16
   },
   dateGroup: {
     flexDirection: "row",
