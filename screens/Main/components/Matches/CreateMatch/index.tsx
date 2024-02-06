@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Text, StyleSheet, View, Pressable, Image } from "react-native";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { Text, StyleSheet, View, Pressable, Image, ScrollView } from "react-native";
 import { useNavigate } from 'react-router-native';
+import BottomSheet from '@gorhom/bottom-sheet';
 import CustomButton from "../../../../../components/CustomButton";
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import CustomInput from "../../../../../components/CustomInput";
@@ -17,9 +18,36 @@ function CreateMatch () {
   const [searchResultPlayers, setSearchResultPlayers] = useState<User[]>([]);
   const [searchPlayerText, setSearchPlayerText] = useState<string>("");
 
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['60%'], []);
+
+  const handleExpand = () => {
+    bottomSheetRef?.current?.expand()
+  }
+  const handleClose = () => {
+    bottomSheetRef?.current?.close()
+  }
+
+  const handleInvitePlayer = (player: User) => {
+    const alreadyInvited = invitedPlayers.find((singlePlayer) => singlePlayer.id === player.id);
+
+    if (!alreadyInvited){      
+      setInvitedPlayers([...invitedPlayers, player]);
+      return;
+    }
+
+    const filteredPlayers = invitedPlayers.filter((singlePlayer) => singlePlayer.id !== player.id);
+    setInvitedPlayers(filteredPlayers);
+  }
+
+  const isUserInInvitedPlayers = useCallback((userId: string) => {
+    return invitedPlayers.find((singlePlayer) => singlePlayer.id === userId);
+  }, [invitedPlayers]);
+
   useEffect(() => {
-    if (searchPlayerText.length > 3) {
+    if (searchPlayerText.length >= 3) {
       setSearchResultPlayers(mockusersToSearchFrom.filter((singleUser) => singleUser.name.toLowerCase().includes(searchPlayerText.toLowerCase())));
+      handleExpand();
     }
   }, [searchPlayerText])
 
@@ -40,11 +68,11 @@ function CreateMatch () {
       onChangeText={(text) => setSearchPlayerText(text)}
     />
 
-    <View style={styles.invitedPlayers}>
+    {invitedPlayers.length ? <View style={styles.invitedPlayers}>
       {invitedPlayers.length ? invitedPlayers.map((singlePlayer) => (
-        <Image style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+        <Image key={singlePlayer.id} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
       )) : <></>}
-    </View>
+    </View> : <></>}
 
     <CustomInput 
       placeholder="Seleccionar cancha" 
@@ -74,6 +102,31 @@ function CreateMatch () {
     </View>
 
     <CustomButton text="Crear partido" onPress={() => navigate('/main/matches')} type="primary"/>
+
+    <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        backgroundStyle={styles.contentContainer}
+        handleIndicatorStyle={styles.handleIndicator}
+        keyboardBehavior='interactive'
+      >
+        <View style={styles.bottomSheetContent}>
+        <ScrollView>
+          {searchResultPlayers.length ? searchResultPlayers.map((singlePlayer) => (
+            <View style={styles.rowLeft} key={singlePlayer.id}>
+              <Image style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+              <Text style={styles.rowText}>{singlePlayer.name}</Text>
+              <CustomButton text={isUserInInvitedPlayers(singlePlayer.id) ? 'Eliminar' : 'Invitar'} onPress={(e) => {
+                e.stopPropagation();
+                handleInvitePlayer(singlePlayer)
+              }} type="primary" buttonStyle={[styles.inviteBtn, isUserInInvitedPlayers(singlePlayer.id) && styles.inviteBtnDelete]} textStyle={styles.inviteBtnText} />
+            </View>
+          )) : <></>}
+          </ScrollView>
+        </View>
+      </BottomSheet> 
   </>);
 }
 
@@ -102,13 +155,13 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     flexWrap: "wrap",
+    marginBottom: 16
   },
   userImage: {
     width: 36,
     height: 36,
     borderRadius: 36,
     marginRight: 16,
-    marginBottom: 16
   },
   dateGroup: {
     flexDirection: "row",
@@ -117,5 +170,44 @@ const styles = StyleSheet.create({
   },
   dateInput: {
     width: "49%"
+  },
+  contentContainer: {
+    flex: 1,
+    backgroundColor: '#222232'
+  },
+  handleIndicator: {
+    backgroundColor: '#303046' 
+  },
+  bottomSheetContent: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 51
+  },
+  rowLeft: {
+    width: '100%',
+    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rowText: {
+    color: '#fff',
+    fontSize: 12,
+    fontFamily: 'Lato-Regular',
+    marginRight: 'auto',
+  },
+  inviteBtn: {
+    height: 'auto',
+    padding: 8,
+    borderRadius: 8,
+    width: 60
+  },
+  inviteBtnText: {
+    fontSize: 12,
+    fontWeight: 'normal',
+    fontFamily: 'Lato-Regular',
+  },
+  inviteBtnDelete: {
+    backgroundColor: '#FF4D4D',
   }
 });

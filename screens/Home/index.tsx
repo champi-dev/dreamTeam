@@ -9,7 +9,7 @@ import SignUp from './components/SignUp';
 type Mode = 'login' | 'signup';
 
 function Home () {
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = React.useState(false);
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['60%'], []);
 

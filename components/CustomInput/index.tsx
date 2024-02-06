@@ -11,9 +11,10 @@ interface CustomInputProps {
   disabled?: boolean;
   style?: any;
   onChangeText?: (value: string) => void;
+  onBlur?: () => void;
 }
 
-function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled, style, onChangeText }: CustomInputProps) {
+function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled, style, onChangeText, onBlur }: CustomInputProps) {
   const [innerValue, setInnerValue] = useState(value);
 
   const handleChangeText = (value: string) => {
@@ -24,7 +25,7 @@ function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, Bac
 
   return (
     <View style={[styles.inputContainer, style && style]}>
-        <TextInput placeholder={placeholder} placeholderTextColor={placeholderTextColor} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]} value={innerValue} onChangeText={handleChangeText} editable={!disabled} />
+        <TextInput placeholder={placeholder} placeholderTextColor={placeholderTextColor} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]} value={innerValue} onChangeText={handleChangeText} editable={!disabled} onBlur={onBlur} />
         {!!FrontIcon ? <View style={styles.inputIconFront}><FrontIcon /></View> : <></>}
         {!!BackIcon ? <View style={styles.inputIconBack}><BackIcon /></View> : <></>}
       </View>

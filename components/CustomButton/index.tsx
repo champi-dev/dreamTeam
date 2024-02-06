@@ -1,25 +1,27 @@
 import React from 'react';
-import { StyleSheet, Pressable, View, Text } from 'react-native';
+import { StyleSheet, Pressable, View, Text, NativeSyntheticEvent, NativeTouchEvent } from 'react-native';
 
 interface CustomButtonProps {
   type: 'primary' | 'secondary';
-  onPress: () => void;  
+  onPress: (e: NativeSyntheticEvent<NativeTouchEvent>) => void;  
   text: string;
   style?: any;
+  buttonStyle?: any;
+  textStyle?: any;
 }
 
-function CustomButton({ type, onPress, text, style }: CustomButtonProps) {
+function CustomButton({ type, onPress, text, style, buttonStyle, textStyle }: CustomButtonProps) {
   return (
     <>
-      {type === 'primary' ? <Pressable onPress={() => onPress()} style={style}>
-        <View style={styles.button}>
-          <Text style={styles.buttonText}>{text}</Text>
+      {type === 'primary' ? <Pressable onPress={onPress} style={style}>
+        <View style={[styles.button, buttonStyle]}>
+          <Text style={[styles.buttonText, textStyle]}>{text}</Text>
         </View>
       </Pressable> : <></>}
 
-      {type === 'secondary' ? <Pressable onPress={() => onPress()}>
-        <View style={styles.buttonSecondary}>
-          <Text style={styles.buttonSecondaryText}>{text}</Text>
+      {type === 'secondary' ? <Pressable onPress={onPress} style={style}>
+        <View style={[styles.buttonSecondary, buttonStyle]}>
+          <Text style={[styles.buttonSecondaryText, textStyle]}>{text}</Text>
         </View>
       </Pressable> : <></>}
     </>
@@ -35,7 +37,8 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 16,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    padding: 16
   },
   buttonText: {
     fontSize: 18,
