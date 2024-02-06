@@ -13,11 +13,14 @@ import { User } from "../../../../../models/User";
 import { mockusersToSearchFrom } from "./mockData";
 import InvitePlayers from "./components/InvitePlayers";
 
+type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
+
 function CreateMatch () {
   const navigate = useNavigate();
   const [invitedPlayers, setInvitedPlayers] = useState<User[]>([]);
   const [searchResultPlayers, setSearchResultPlayers] = useState<User[]>([]);
   const [searchPlayerText, setSearchPlayerText] = useState<string>("");
+  const [selectedBottomSheetView, setSelectedBottomSheetView] = useState<BottomSheetView>("invitePlayers");
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['60%'], []);
