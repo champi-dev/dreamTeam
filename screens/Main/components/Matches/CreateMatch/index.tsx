@@ -11,6 +11,7 @@ import DateIcon from "../../../../../assets/svgs/DateIcon";
 import ClockIcon from "../../../../../assets/svgs/ClockIcon";
 import { User } from "../../../../../models/User";
 import { mockusersToSearchFrom } from "./mockData";
+import InvitePlayers from "./components/InvitePlayers";
 
 function CreateMatch () {
   const navigate = useNavigate();
@@ -74,13 +75,25 @@ function CreateMatch () {
       )) : <></>}
     </View> : <></>}
 
-    <CustomInput 
-      placeholder="Seleccionar cancha" 
-      placeholderTextColor="#65656B" 
-      value="La Grama F8" 
-      FrontIcon={CourtIcon}
-      styling="secondary"
-    />
+    <View style={styles.courtGroup}>
+      <CustomInput 
+        placeholder="Seleccionar cancha" 
+        placeholderTextColor="#65656B" 
+        value="La Grama F8" 
+        FrontIcon={CourtIcon}
+        styling="secondary"
+        style={styles.courtInput}
+      />
+
+      <CustomInput 
+        placeholder="Modalidad de juego" 
+        placeholderTextColor="#65656B" 
+        value="9 vs 9" 
+        FrontIcon={CourtIcon}
+        styling="secondary"
+        style={styles.modalityInput}
+      />
+    </View>    
 
     <View style={styles.dateGroup}>
       <CustomInput 
@@ -113,18 +126,11 @@ function CreateMatch () {
         keyboardBehavior='interactive'
       >
         <View style={styles.bottomSheetContent}>
-          <ScrollView>
-            {searchResultPlayers.length ? searchResultPlayers.map((singlePlayer) => (
-              <View style={styles.rowLeft} key={singlePlayer.id}>
-                <Image style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
-                <Text style={styles.rowText}>{singlePlayer.name}</Text>
-                <CustomButton text={isUserInInvitedPlayers(singlePlayer.id) ? 'Eliminar' : 'Invitar'} onPress={(e) => {
-                  e.stopPropagation();
-                  handleInvitePlayer(singlePlayer)
-                }} type="primary" buttonStyle={[styles.inviteBtn, isUserInInvitedPlayers(singlePlayer.id) && styles.inviteBtnDelete]} textStyle={styles.inviteBtnText} />
-              </View>
-            )) : <></>}
-            </ScrollView>
+          <InvitePlayers
+            searchResultPlayers={searchResultPlayers} 
+            handleInvitePlayer={handleInvitePlayer} 
+            isUserInInvitedPlayers={isUserInInvitedPlayers} 
+          />
         </View>
       </BottomSheet> 
   </>);
@@ -155,7 +161,6 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     flexWrap: "wrap",
-    marginBottom: 16
   },
   userImage: {
     width: 36,
@@ -212,5 +217,15 @@ const styles = StyleSheet.create({
   },
   inviteBtnDelete: {
     backgroundColor: '#FF4D4D',
+  },
+  courtGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  courtInput: {
+    width: "49%"
+  },
+  modalityInput: {
+    width: "49%"
   }
 });

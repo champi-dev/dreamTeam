@@ -1,4 +1,5 @@
 import { User } from "../../../../../models/User"
+import { Court } from "../../../../../models/Court";
 
 export const mockusersToSearchFrom: User[] = [
   {
@@ -58,3 +59,19 @@ export const mockusersToSearchFrom: User[] = [
     email: "test@test.com"
   },
 ];
+
+export const mockCourts: Court[] = [
+  {
+    id: "test1",
+    name: "La Grama F8",
+    address: "Calle 1",
+    modalities: ["9 vs 9", "6 vs 6"],
+  },
+  {
+    id: "test2",
+    name: "Área chica",
+    address: "Calle 2",
+    modalities: ["7 vs 7", "6 vs 6", "5 vs 5"],
+  }
+];
+
