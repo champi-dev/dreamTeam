@@ -113,18 +113,18 @@ function CreateMatch () {
         keyboardBehavior='interactive'
       >
         <View style={styles.bottomSheetContent}>
-        <ScrollView>
-          {searchResultPlayers.length ? searchResultPlayers.map((singlePlayer) => (
-            <View style={styles.rowLeft} key={singlePlayer.id}>
-              <Image style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
-              <Text style={styles.rowText}>{singlePlayer.name}</Text>
-              <CustomButton text={isUserInInvitedPlayers(singlePlayer.id) ? 'Eliminar' : 'Invitar'} onPress={(e) => {
-                e.stopPropagation();
-                handleInvitePlayer(singlePlayer)
-              }} type="primary" buttonStyle={[styles.inviteBtn, isUserInInvitedPlayers(singlePlayer.id) && styles.inviteBtnDelete]} textStyle={styles.inviteBtnText} />
-            </View>
-          )) : <></>}
-          </ScrollView>
+          <ScrollView>
+            {searchResultPlayers.length ? searchResultPlayers.map((singlePlayer) => (
+              <View style={styles.rowLeft} key={singlePlayer.id}>
+                <Image style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+                <Text style={styles.rowText}>{singlePlayer.name}</Text>
+                <CustomButton text={isUserInInvitedPlayers(singlePlayer.id) ? 'Eliminar' : 'Invitar'} onPress={(e) => {
+                  e.stopPropagation();
+                  handleInvitePlayer(singlePlayer)
+                }} type="primary" buttonStyle={[styles.inviteBtn, isUserInInvitedPlayers(singlePlayer.id) && styles.inviteBtnDelete]} textStyle={styles.inviteBtnText} />
+              </View>
+            )) : <></>}
+            </ScrollView>
         </View>
       </BottomSheet> 
   </>);
