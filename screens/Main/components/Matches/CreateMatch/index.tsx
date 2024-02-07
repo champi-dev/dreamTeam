@@ -9,8 +9,10 @@ import SearchIcon from "../../../../../assets/svgs/SearchIcon";
 import CourtIcon from "../../../../../assets/svgs/CourtIcon";
 import DateIcon from "../../../../../assets/svgs/DateIcon";
 import ClockIcon from "../../../../../assets/svgs/ClockIcon";
+import ProfileIcon from "../../../../../assets/svgs/ProfileIcon";
 import { User } from "../../../../../models/User";
-import { mockusersToSearchFrom } from "./mockData";
+import { Court } from "../../../../../models/Court";
+import { mockusersToSearchFrom, mockCourts } from "./mockData";
 import InvitePlayers from "./components/InvitePlayers";
 
 type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
@@ -21,6 +23,10 @@ function CreateMatch () {
   const [searchResultPlayers, setSearchResultPlayers] = useState<User[]>([]);
   const [searchPlayerText, setSearchPlayerText] = useState<string>("");
   const [selectedBottomSheetView, setSelectedBottomSheetView] = useState<BottomSheetView>("invitePlayers");
+  const [availableCourts, setAvailableCourts] = useState<Court[]>([]);
+  const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
+  const [selectedModality, setSelectedModality] = useState<string>("");
+
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['60%'], []);
@@ -53,7 +59,18 @@ function CreateMatch () {
       setSearchResultPlayers(mockusersToSearchFrom.filter((singleUser) => singleUser.name.toLowerCase().includes(searchPlayerText.toLowerCase())));
       handleExpand();
     }
-  }, [searchPlayerText])
+  }, [searchPlayerText]);
+
+  useEffect(() => {
+    setAvailableCourts(mockCourts);
+  }, [])
+
+  useEffect(() => {
+    if (availableCourts.length) {
+      setSelectedCourt(availableCourts[0]);
+      setSelectedModality(availableCourts[0].modalities[0]);
+    }
+  }, [availableCourts])
 
   return (<>
     <View style={styles.header}>
@@ -70,6 +87,7 @@ function CreateMatch () {
       FrontIcon={SearchIcon}
       styling="secondary"
       onChangeText={(text) => setSearchPlayerText(text)}
+      onFocus={() => setSelectedBottomSheetView("invitePlayers")}
     />
 
     {invitedPlayers.length ? <View style={styles.invitedPlayers}>
@@ -80,22 +98,32 @@ function CreateMatch () {
 
     <View style={styles.courtGroup}>
       <CustomInput 
-        placeholder="Seleccionar cancha" 
+        placeholder="Cancha" 
         placeholderTextColor="#65656B" 
-        value="La Grama F8" 
+        value={selectedCourt?.name || ""} 
         FrontIcon={CourtIcon}
         styling="secondary"
         style={styles.courtInput}
-      />
+        disabled
+        onPressIn={() => {
+          setSelectedBottomSheetView("selectCourt");
+          handleExpand();
+        }}
+      />  
 
       <CustomInput 
-        placeholder="Modalidad de juego" 
+        placeholder="Modalidad" 
         placeholderTextColor="#65656B" 
-        value="9 vs 9" 
-        FrontIcon={CourtIcon}
+        value={selectedModality}
+        FrontIcon={ProfileIcon}
         styling="secondary"
         style={styles.modalityInput}
-      />
+        disabled
+        onPressIn={() => {
+          setSelectedBottomSheetView("selectModality");
+          handleExpand();
+        }}
+      />    
     </View>    
 
     <View style={styles.dateGroup}>
@@ -129,11 +157,31 @@ function CreateMatch () {
         keyboardBehavior='interactive'
       >
         <View style={styles.bottomSheetContent}>
-          <InvitePlayers
-            searchResultPlayers={searchResultPlayers} 
-            handleInvitePlayer={handleInvitePlayer} 
-            isUserInInvitedPlayers={isUserInInvitedPlayers} 
-          />
+          {selectedBottomSheetView === "invitePlayers" ? (
+            <InvitePlayers
+              searchResultPlayers={searchResultPlayers} 
+              handleInvitePlayer={handleInvitePlayer} 
+              isUserInInvitedPlayers={isUserInInvitedPlayers} 
+            />
+          ) : <></>}          
+
+          {selectedBottomSheetView === "selectCourt" ? (
+            <ScrollView>
+              {availableCourts.length ? availableCourts.map((singleCourt) => (
+                <Pressable 
+                  key={singleCourt.id}
+                  onPress={() => {
+                    setSelectedCourt(singleCourt);
+                    setSelectedModality(singleCourt.modalities[0]);
+                    handleClose();
+                  }}>
+                  <View style={styles.rowLeft}>
+                    <Text style={styles.rowText}>{singleCourt.name}</Text>
+                  </View>
+                </Pressable>
+              )) : <></>}
+            </ScrollView>
+          ) : <></>}   
         </View>
       </BottomSheet> 
   </>);
@@ -230,5 +278,5 @@ const styles = StyleSheet.create({
   },
   modalityInput: {
     width: "49%"
-  }
+  },
 });
