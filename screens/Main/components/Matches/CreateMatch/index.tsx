@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { Text, StyleSheet, View, Pressable, Image, ScrollView } from "react-native";
+import { Text, StyleSheet, View, Pressable, Image } from "react-native";
 import { useNavigate } from 'react-router-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomButton from "../../../../../components/CustomButton";
@@ -14,6 +14,8 @@ import { User } from "../../../../../models/User";
 import { Court } from "../../../../../models/Court";
 import { mockusersToSearchFrom, mockCourts } from "./mockData";
 import InvitePlayers from "./components/InvitePlayers";
+import SelectCourt from "./components/SelectCourt";
+import SelectModality from "./components/SelectModality";
 
 type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
 
@@ -166,21 +168,20 @@ function CreateMatch () {
           ) : <></>}          
 
           {selectedBottomSheetView === "selectCourt" ? (
-            <ScrollView>
-              {availableCourts.length ? availableCourts.map((singleCourt) => (
-                <Pressable 
-                  key={singleCourt.id}
-                  onPress={() => {
-                    setSelectedCourt(singleCourt);
-                    setSelectedModality(singleCourt.modalities[0]);
-                    handleClose();
-                  }}>
-                  <View style={styles.rowLeft}>
-                    <Text style={styles.rowText}>{singleCourt.name}</Text>
-                  </View>
-                </Pressable>
-              )) : <></>}
-            </ScrollView>
+            <SelectCourt 
+              availableCourts={availableCourts} 
+              setSelectedCourt={setSelectedCourt} 
+              setSelectedModality={setSelectedModality} 
+              handleClose={handleClose}
+            />
+          ) : <></>}  
+
+          {selectedBottomSheetView === "selectModality" ? (
+            <SelectModality 
+              selectedCourt={selectedCourt} 
+              setSelectedModality={setSelectedModality} 
+              handleClose={handleClose}
+            />
           ) : <></>}   
         </View>
       </BottomSheet> 
