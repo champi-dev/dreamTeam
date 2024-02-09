@@ -106,7 +106,7 @@ function CreateMatch () {
         FrontIcon={CourtIcon}
         styling="secondary"
         style={styles.courtInput}
-        disabled
+        asButton
         onPressIn={() => {
           setSelectedBottomSheetView("selectCourt");
           handleExpand();
@@ -120,7 +120,7 @@ function CreateMatch () {
         FrontIcon={ProfileIcon}
         styling="secondary"
         style={styles.modalityInput}
-        disabled
+        asButton
         onPressIn={() => {
           setSelectedBottomSheetView("selectModality");
           handleExpand();

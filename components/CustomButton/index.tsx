@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     color: '#FFFFFF',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    fontFamily: 'Lato-Bold',
   },
   buttonSecondary: {
     height: 63,
@@ -53,5 +54,6 @@ const styles = StyleSheet.create({
   buttonSecondaryText: {
     fontSize: 18,
     color: '#C4C4C4',
+    fontFamily: 'Lato-Regular',
   },
 });

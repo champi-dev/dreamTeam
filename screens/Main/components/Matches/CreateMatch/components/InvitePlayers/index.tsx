@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
     height: 'auto',
     padding: 8,
     borderRadius: 8,
-    width: 60
   },
   inviteBtnText: {
     fontSize: 12,

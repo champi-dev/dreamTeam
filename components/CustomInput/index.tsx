@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TextInput } from 'react-native';
+import { StyleSheet, View, TextInput, Pressable, Text} from 'react-native';
 
 interface CustomInputProps {
   placeholder: string;
@@ -14,9 +14,10 @@ interface CustomInputProps {
   onBlur?: () => void;
   onFocus?: () => void;
   onPressIn?: () => void;
+  asButton?: boolean;
 }
 
-function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled, style, onChangeText, onBlur, onFocus, onPressIn }: CustomInputProps) {
+function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled, style, onChangeText, onBlur, onFocus, onPressIn, asButton }: CustomInputProps) {
   const [innerValue, setInnerValue] = useState(value);
 
   const handleChangeText = (value: string) => {
@@ -31,7 +32,16 @@ function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, Bac
 
   return (
     <View style={[styles.inputContainer, style && style]}>
-        <TextInput placeholder={placeholder} placeholderTextColor={placeholderTextColor} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]} value={innerValue} onChangeText={handleChangeText} editable={!disabled} onBlur={onBlur} onFocus={onFocus} onPressIn={onPressIn} />
+        {asButton ? (
+          <Pressable onPress={onPressIn} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]}>
+            <Text style={styles.asButtonText}>{value}</Text>
+          </Pressable>
+        ) : <></>}
+
+        {!asButton ? (
+          <TextInput placeholder={placeholder} placeholderTextColor={placeholderTextColor} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]} value={innerValue} onChangeText={handleChangeText} editable={!disabled} onBlur={onBlur} onFocus={onFocus} onPressIn={onPressIn} />
+        ) : <></>}        
+
         {!!FrontIcon ? <View style={styles.inputIconFront}><FrontIcon /></View> : <></>}
         {!!BackIcon ? <View style={styles.inputIconBack}><BackIcon /></View> : <></>}
       </View>
@@ -67,9 +77,16 @@ const styles = StyleSheet.create({
     paddingVertical: 20, 
     color: '#FFFFFF',
     fontSize: 14,
-    paddingLeft: 48
+    paddingLeft: 48,
+    justifyContent: 'center',
+    fontFamily: 'Lato-Regular',
   },
   bottomSheetInputSecondary: {
     backgroundColor: '#222232', 
+  },
+  asButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: 'Lato-Regular',
   }
 });
