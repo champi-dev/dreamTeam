@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { Text, StyleSheet, View, Pressable, Image } from "react-native";
 import { useNavigate } from 'react-router-native';
 import BottomSheet from '@gorhom/bottom-sheet';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import CustomButton from "../../../../../components/CustomButton";
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import CustomInput from "../../../../../components/CustomInput";
@@ -28,7 +29,10 @@ function CreateMatch () {
   const [availableCourts, setAvailableCourts] = useState<Court[]>([]);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
   const [selectedModality, setSelectedModality] = useState<string>("");
-
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [datePickerMode, setDatePickerMode] = useState<"date" | "time">("date");
+  const [matchDate, setMatchDate] = useState<Date | null>(null);
+  const [matchTime, setMatchTime] = useState<Date | null>(null);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['60%'], []);
@@ -52,9 +56,27 @@ function CreateMatch () {
     setInvitedPlayers(filteredPlayers);
   }
 
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+  
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date: Date) => {
+    if (datePickerMode === "date") {
+      setMatchDate(date);
+    }
+    if (datePickerMode === "time") {
+      setMatchTime(date);
+    }
+    hideDatePicker();
+  };
+
   const isUserInInvitedPlayers = useCallback((userId: string) => {
     return invitedPlayers.find((singlePlayer) => singlePlayer.id === userId);
-  }, [invitedPlayers]);
+  }, [invitedPlayers]);  
 
   useEffect(() => {
     if (searchPlayerText.length >= 3) {
@@ -132,18 +154,28 @@ function CreateMatch () {
       <CustomInput 
         placeholder="Dia" 
         placeholderTextColor="#65656B" 
-        value="" 
+        value={matchDate ? matchDate.toLocaleDateString() : ""}
         FrontIcon={DateIcon}
         styling="secondary"
         style={styles.dateInput}
+        asButton
+        onPressIn={() => {
+          setDatePickerMode("date");
+          showDatePicker();
+        }}
       />
       <CustomInput 
         placeholder="Hora" 
         placeholderTextColor="#65656B" 
-        value="" 
+        value={matchTime ? matchTime.toLocaleTimeString() : ""}
         FrontIcon={ClockIcon}
         styling="secondary"
         style={styles.dateInput}
+        asButton
+        onPressIn={() => {
+          setDatePickerMode("time");
+          showDatePicker();
+        }}
       />
     </View>
 
@@ -185,6 +217,13 @@ function CreateMatch () {
           ) : <></>}   
         </View>
       </BottomSheet> 
+
+      <DateTimePickerModal
+        isVisible={isDatePickerVisible}
+        mode={datePickerMode}
+        onConfirm={handleConfirm}
+        onCancel={hideDatePicker}
+      />
   </>);
 }
 

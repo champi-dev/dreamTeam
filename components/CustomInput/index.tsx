@@ -34,7 +34,8 @@ function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, Bac
     <View style={[styles.inputContainer, style && style]}>
         {asButton ? (
           <Pressable onPress={onPressIn} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]}>
-            <Text style={styles.asButtonText}>{value}</Text>
+            {value ? <Text style={styles.asButtonText}>{value}</Text> : <></>}
+            {!value ? <Text style={[styles.asButtonText, {color: placeholderTextColor}]}>{placeholder}</Text> : <></>}
           </Pressable>
         ) : <></>}
 
