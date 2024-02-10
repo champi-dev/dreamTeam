@@ -5,16 +5,32 @@ import { LinearGradient } from 'expo-linear-gradient';
 import NotificationIcon from "../../../../../assets/svgs/NotificationIcon";
 import PlusIcon from "../../../../../assets/svgs/PlusIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
-import { mockData } from "./mockData";
+import { mockData, mockUser } from "./mockData";
 import { Match } from "../../../../../models/Match";
 import { getDayName, convertTimeTo12HourFormat } from "../../../../../utils";
+import { User } from "../../../../../models/User";
 
 function JoinMatch () {
   const navigate = useNavigate();
   const [matches, setMatches] = useState<Match[]>();
+  const [currentUser, setCurrentUser] = useState<User>();
+
+  const userOwnsMatch = (match: Match) => {
+    return match.ownerId === currentUser?.id;
+  };
+
+  const handleMatchPress = (match: Match) => {
+    if (userOwnsMatch(match)) {
+      navigate('/main/matches/enterMatchResult');
+      return;
+    }
+
+    navigate('/main/matches/selectSide');
+  }
 
   useEffect(() => {
     setMatches(mockData);
+    setCurrentUser(mockUser);
   }, [])
 
   return (
@@ -28,7 +44,7 @@ function JoinMatch () {
 
       <ScrollView style={styles.matchesGroup}>
         {matches?.length ? matches.map((singleMatch, index) => (
-          <Pressable key={index} onPress={() => navigate('/main/matches/selectSide')}>
+          <Pressable key={index} onPress={() => handleMatchPress(singleMatch)}>
           <View style={styles.matchOverview}>
             <View style={styles.matchOverviewContent}>
             <ScrollView contentContainerStyle={styles.topTeam} horizontal>
@@ -50,7 +66,7 @@ function JoinMatch () {
           </View>            
   
           <View style={styles.actionContainer}>
-            <Text style={styles.actionText}>Elegir lado</Text>
+            <Text style={styles.actionText}>{userOwnsMatch(singleMatch) ? 'Ingresar resultado' : 'Elegir lado'}</Text>
           </View>
         </View>
           </Pressable>   

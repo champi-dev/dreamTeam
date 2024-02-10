@@ -22,6 +22,7 @@ function Login ({ onChangeMode }: LoginProps) {
         placeholderTextColor="#65656B" 
         value="" 
         FrontIcon={EmailIcon}
+        style={styles.input}
       />
 
       <CustomInput 
@@ -30,6 +31,7 @@ function Login ({ onChangeMode }: LoginProps) {
         value="" 
         FrontIcon={PasswordIcon}
         BackIcon={ShowIcon}
+        style={styles.input}
       />
 
       <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
@@ -46,6 +48,9 @@ function Login ({ onChangeMode }: LoginProps) {
 export default Login;
 
 const styles = StyleSheet.create({
+  input: {
+    marginBottom: 16
+  },
   inputContainer: {
     position: 'relative',
   },

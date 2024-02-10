@@ -22,6 +22,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         placeholderTextColor="#65656B" 
         value="" 
         FrontIcon={EmailIcon}
+        style={styles.input}
       />
 
       <CustomInput 
@@ -30,6 +31,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         value="" 
         FrontIcon={PasswordIcon}
         BackIcon={ShowIcon}
+        style={styles.input}
       />
 
       <CustomInput 
@@ -38,6 +40,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         value="" 
         FrontIcon={PasswordIcon}
         BackIcon={ShowIcon}
+        style={styles.input}
       />
     
       <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" />
@@ -52,6 +55,9 @@ function SignUp ({ onChangeMode }: SignUpProps) {
 export default SignUp;
 
 const styles = StyleSheet.create({
+  input: {
+    marginBottom: 16
+  },
   inputContainer: {
     position: 'relative',
   },

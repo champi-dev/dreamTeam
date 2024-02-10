@@ -5,6 +5,7 @@ import JoinMatch from "./JoinMatch";
 import Notifications from "./Notifications";
 import CreateMatch from "./CreateMatch";
 import SelectSide from "./SelectSide";
+import EnterMatchResult from "./EnterMatchResult";
 
 function Matches () {
   return (
@@ -15,6 +16,7 @@ function Matches () {
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/createMatch" element={<CreateMatch />} />
           <Route path="/selectSide" element={<SelectSide />} />
+          <Route path="/enterMatchResult" element={<EnterMatchResult />} />
         </Routes>
       </View>      
     </SafeAreaView>

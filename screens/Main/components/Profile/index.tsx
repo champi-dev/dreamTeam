@@ -112,6 +112,7 @@ function Profile() {
               FrontIcon={ProfileIcon}
               styling='secondary'
               onChangeText={handleNameInputChange}
+              style={styles.input}
             />
 
             <CustomInput
@@ -121,6 +122,7 @@ function Profile() {
               FrontIcon={SoccerballIcon}
               styling='secondary'
               disabled
+              style={styles.input}
             />
           </View>
         </View>
@@ -132,6 +134,9 @@ function Profile() {
 export default Profile;
 
 const styles = StyleSheet.create({
+  input: {
+    marginBottom: 16
+  },
   backdrop: {
     position: 'absolute',
     height: '100%',

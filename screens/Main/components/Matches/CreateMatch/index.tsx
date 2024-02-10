@@ -112,6 +112,7 @@ function CreateMatch () {
       styling="secondary"
       onChangeText={(text) => setSearchPlayerText(text)}
       onFocus={() => setSelectedBottomSheetView("invitePlayers")}
+      style={styles.input}
     />
 
     {invitedPlayers.length ? <View style={styles.invitedPlayers}>
@@ -230,6 +231,9 @@ function CreateMatch () {
 export default CreateMatch;
 
 const styles = StyleSheet.create({
+  input: {
+    marginBottom: 16,
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -265,7 +269,7 @@ const styles = StyleSheet.create({
   dateGroup: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 'auto'
+    marginBottom: 'auto',
   },
   dateInput: {
     width: "49%"
@@ -312,6 +316,7 @@ const styles = StyleSheet.create({
   courtGroup: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginBottom: 16
   },
   courtInput: {
     width: "49%"
