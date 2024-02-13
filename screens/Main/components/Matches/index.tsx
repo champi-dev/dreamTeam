@@ -6,6 +6,7 @@ import Notifications from "./Notifications";
 import CreateMatch from "./CreateMatch";
 import SelectSide from "./SelectSide";
 import EnterMatchResult from "./EnterMatchResult";
+import PastMatchResult from "./PastMatchResult";
 
 function Matches () {
   return (
@@ -17,6 +18,7 @@ function Matches () {
           <Route path="/createMatch" element={<CreateMatch />} />
           <Route path="/selectSide" element={<SelectSide />} />
           <Route path="/enterMatchResult" element={<EnterMatchResult />} />
+          <Route path="/pastMatchResult" element={<PastMatchResult />} />
         </Routes>
       </View>      
     </SafeAreaView>

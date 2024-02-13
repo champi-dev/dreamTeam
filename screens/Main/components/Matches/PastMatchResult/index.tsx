@@ -7,15 +7,10 @@ import SoccerballIcon from "../../../../../assets/svgs/SoccerballIcon";
 import CustomInput from "../../../../../components/CustomInput";
 import { mockData } from "./mockData";
 import { Match } from "../../../../../models/Match";
-import CustomButton from "../../../../../components/CustomButton";
 
-function EnterMatchResult () {
+function PastMatchResult () {
   const navigate = useNavigate();
   const [matchData, setMatchData] = useState<Match>();
-
-  const handleSave = () => {
-    navigate('/main/matches');
-  }
 
   useEffect(() => {
     setMatchData(mockData);
@@ -37,7 +32,7 @@ function EnterMatchResult () {
           keyboardType="numeric"
             placeholder="Goles" 
             placeholderTextColor="#65656B" 
-            value=""
+            value={matchData?.whiteTeamScore?.toString() || ""}
             FrontIcon={SoccerballIcon}
             styling="secondary"
             style={styles.itemInput}
@@ -50,7 +45,7 @@ function EnterMatchResult () {
           keyboardType="numeric" 
             placeholder="Goles" 
             placeholderTextColor="#65656B" 
-            value=""
+            value={matchData?.blackTeamScore?.toString() || ""}
             FrontIcon={SoccerballIcon}
             styling="secondary"
             style={styles.itemInput}
@@ -65,7 +60,7 @@ function EnterMatchResult () {
               keyboardType="numeric"
               placeholder="Goles" 
               placeholderTextColor="#65656B" 
-              value=""
+              value={singlePlayer.goalsInMatch?.toString() || ""}
               FrontIcon={SoccerballIcon}
               styling="secondary"
               style={styles.itemInput}
@@ -80,7 +75,7 @@ function EnterMatchResult () {
               keyboardType="numeric"
               placeholder="Goles" 
               placeholderTextColor="#65656B" 
-              value=""
+              value={singlePlayer.goalsInMatch?.toString() || ""}
               FrontIcon={SoccerballIcon}
               styling="secondary"
               style={styles.itemInput}
@@ -88,12 +83,11 @@ function EnterMatchResult () {
           </View>
         )) : <></>}
       </ScrollView>
-      <CustomButton text="Guardar" type="primary" onPress={handleSave} />   
     </View>
   </>);
 }
 
-export default EnterMatchResult;
+export default PastMatchResult;
 
 const styles = StyleSheet.create({
   header: {
