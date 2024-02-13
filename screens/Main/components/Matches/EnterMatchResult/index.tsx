@@ -1,13 +1,21 @@
-import React from "react";
-import { Text, StyleSheet, View, Pressable, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, StyleSheet, View, Pressable, ScrollView, Image } from "react-native";
 import { useNavigate } from 'react-router-native';
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
 import SoccerballIcon from "../../../../../assets/svgs/SoccerballIcon";
 import CustomInput from "../../../../../components/CustomInput";
+import { mockData } from "./mockData";
+import { Match } from "../../../../../models/Match";
+import CustomButton from "../../../../../components/CustomButton";
 
 function EnterMatchResult () {
   const navigate = useNavigate();
+  const [matchData, setMatchData] = useState<Match>();
+
+  useEffect(() => {
+    setMatchData(mockData);
+  }, []);
 
   return (<>
     <View style={styles.header}>
@@ -18,19 +26,65 @@ function EnterMatchResult () {
     </View>
 
     <View style={styles.content}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.item}>
           <ShirtIcon style={styles.shirtIcon} fill="#fff" />
           <CustomInput 
+          keyboardType="numeric"
             placeholder="Goles" 
             placeholderTextColor="#65656B" 
-            value="3"
+            value=""
             FrontIcon={SoccerballIcon}
             styling="secondary"
             style={styles.itemInput}
           />
         </View>
-      </ScrollView>      
+
+        <View style={styles.item}>
+          <ShirtIcon style={styles.shirtIcon} fill="#000" />
+          <CustomInput
+          keyboardType="numeric" 
+            placeholder="Goles" 
+            placeholderTextColor="#65656B" 
+            value=""
+            FrontIcon={SoccerballIcon}
+            styling="secondary"
+            style={styles.itemInput}
+          />
+        </View>
+
+        {!!matchData ? matchData.whiteTeam.map((singlePlayer) => (
+          <View style={styles.item} key={singlePlayer.id}>
+            <Image key={singlePlayer.id} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+            <Text style={styles.userName}>{singlePlayer.name}</Text>
+            <CustomInput 
+              keyboardType="numeric"
+              placeholder="Goles" 
+              placeholderTextColor="#65656B" 
+              value=""
+              FrontIcon={SoccerballIcon}
+              styling="secondary"
+              style={styles.itemInput}
+            />
+          </View>
+        )) : <></>}
+        {!!matchData ? matchData.blackTeam.map((singlePlayer) => (
+          <View style={styles.item} key={singlePlayer.id}>
+            <Image key={singlePlayer.id} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+            <Text style={styles.userName}>{singlePlayer.name}</Text>
+            <CustomInput 
+              keyboardType="numeric"
+              placeholder="Goles" 
+              placeholderTextColor="#65656B" 
+              value=""
+              FrontIcon={SoccerballIcon}
+              styling="secondary"
+              style={styles.itemInput}
+            />
+          </View>
+        )) : <></>}
+      </ScrollView>
+      <CustomButton text="Guardar" type="primary" onPress={() => {}} />   
     </View>
   </>);
 }
@@ -68,8 +122,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     alignItems: "center",
+    marginBottom: 16
   },
   itemInput: {
     flexGrow: 1,
+  },
+  userImage: {
+    width: 36,
+    height: 36,
+    borderRadius: 36,
+    marginRight: 16,
+  },
+  userName: {
+    color: "#fff",
+    fontFamily: "Lato-Regular",
+    fontSize: 12,
+    marginRight: 16,
+    width: "40%"
   }
+
 });
