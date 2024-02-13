@@ -4,4 +4,5 @@ export interface User {
   email: string;
   goals: number;
   avatarImgUrl?: string;
+  goalsInMatch?: number;
 }

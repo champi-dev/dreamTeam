@@ -3,9 +3,15 @@ import { View, Text, SafeAreaView, StyleSheet, ScrollView, Image } from "react-n
 import ShirtIcon from "../../../../assets/svgs/ShirtIcon";
 import { Match } from "../../../../models/Match";
 import { mockData } from "./mockData";
+import { PressableOpacity } from "../../../../components/PresableOpacity";
+import { useNavigate } from "react-router-native";
 
 function MatchesStats () {
   const [matches, setMatches] = useState<Match[]>([]);
+  const navigate = useNavigate();
+  const handleMatchOverViewPress = () => {
+    navigate('/Main/Matches/PastMatchResult');
+  }
 
   useEffect(() => {
     setMatches(mockData);
@@ -16,7 +22,7 @@ function MatchesStats () {
       <View style={styles.content}>
         <Text style={styles.title}>Partidos jugados</Text>
         {matches.length ? matches.map((singleMatch, index) => (
-          <View key={index} style={styles.matchOverview}>
+          <PressableOpacity onPress={handleMatchOverViewPress} key={index} style={styles.matchOverview}>
           <View style={styles.matchOverviewContent}>
           <ScrollView contentContainerStyle={styles.topTeam} horizontal>
             <ShirtIcon style={styles.shirtIcon} fill="#fff" />
@@ -42,7 +48,7 @@ function MatchesStats () {
               <Text style={styles.actionText}>{singleMatch.blackTeamScore}</Text>
             </View>
           </View>
-        </View>
+        </PressableOpacity>
         )) : <></>}
       </View>
     </SafeAreaView>
