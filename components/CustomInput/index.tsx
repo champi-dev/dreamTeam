@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TextInput, Pressable, Text} from 'react-native';
+import { StyleSheet, View, TextInput, Pressable, Text, TextInputProps} from 'react-native';
 
-interface CustomInputProps {
+interface CustomInputProps extends TextInputProps {
   placeholder: string;
   placeholderTextColor: string;
   value: string;
@@ -17,7 +17,7 @@ interface CustomInputProps {
   asButton?: boolean;
 }
 
-function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled, style, onChangeText, onBlur, onFocus, onPressIn, asButton }: CustomInputProps) {
+function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled, style, onChangeText, onBlur, onFocus, onPressIn, asButton, ...rest }: CustomInputProps) {
   const [innerValue, setInnerValue] = useState(value);
 
   const handleChangeText = (value: string) => {
@@ -40,7 +40,7 @@ function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, Bac
         ) : <></>}
 
         {!asButton ? (
-          <TextInput placeholder={placeholder} placeholderTextColor={placeholderTextColor} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]} value={innerValue} onChangeText={handleChangeText} editable={!disabled} onBlur={onBlur} onFocus={onFocus} onPressIn={onPressIn} />
+          <TextInput {...rest} placeholder={placeholder} placeholderTextColor={placeholderTextColor} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]} value={innerValue} onChangeText={handleChangeText} editable={!disabled} onBlur={onBlur} onFocus={onFocus} onPressIn={onPressIn} />
         ) : <></>}        
 
         {!!FrontIcon ? <View style={styles.inputIconFront}><FrontIcon /></View> : <></>}
