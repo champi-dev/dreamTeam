@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-native';
 import { StyleSheet, Text, Pressable } from 'react-native';
 import CustomInput from '../../../../components/CustomInput';
@@ -15,30 +15,48 @@ function Login ({ onChangeMode }: LoginProps) {
   const navigate = useNavigate();
   const handleLogin = () => navigate('/main/matches');
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const validateEmail = (email : string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  const isEmailValid = validateEmail(email);
+  const isPasswordValid = password.length >= 8;
+  const isFormValid = isEmailValid && isPasswordValid;
+
   return (
     <>
       <CustomInput 
         placeholder="Correo electrónico" 
         placeholderTextColor="#65656B" 
-        value="" 
+        value={email}
         FrontIcon={EmailIcon}
         style={styles.input}
+        onChangeText={(text) => setEmail(text)}
+        isValid={isEmailValid}
+        errorText="Correo electrónico inválido"
       />
 
       <CustomInput 
         placeholder="Contraseña" 
         placeholderTextColor="#65656B" 
-        value="" 
+        value={password}
         FrontIcon={PasswordIcon}
         BackIcon={ShowIcon}
         style={styles.input}
+        onChangeText={(text) => setPassword(text)}
+        isValid={isPasswordValid}
+        errorText="Mínimo 8 caracteres"
       />
 
       <Pressable onPress={() => onChangeMode('forgotPassword')}>
         <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
       </Pressable>
     
-      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleLogin} text="Iniciar sesión" />
+      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleLogin} text="Iniciar sesión" disabled={!isFormValid} />
 
       <Pressable onPress={() => onChangeMode('signup')}>
         <Text style={styles.footerText}>¿No tienes una cuenta? <Text style={styles.footerTextLink}>Regístrate</Text></Text>

@@ -8,13 +8,18 @@ interface CustomButtonProps {
   style?: any;
   buttonStyle?: any;
   textStyle?: any;
+  disabled?: boolean;
 }
 
-function CustomButton({ type, onPress, text, style, buttonStyle, textStyle }: CustomButtonProps) {
+function CustomButton({ type, onPress, text, style, buttonStyle, textStyle, disabled }: CustomButtonProps) {
   return (
     <>
-      {type === 'primary' ? <Pressable onPress={onPress} style={style}>
-        <View style={[styles.button, buttonStyle]}>
+      {type === 'primary' ? <Pressable onPress={(e) => {
+        if (!disabled || disabled === undefined) {
+          onPress(e);
+        }
+      }} style={style}>
+        <View style={[styles.button, buttonStyle, disabled && styles.buttonDisabled]}>
           <Text style={[styles.buttonText, textStyle]}>{text}</Text>
         </View>
       </Pressable> : <></>}
@@ -56,4 +61,7 @@ const styles = StyleSheet.create({
     color: '#C4C4C4',
     fontFamily: 'Lato-Regular',
   },
+  buttonDisabled: {
+    backgroundColor: '#3C3C3C',
+  }
 });
