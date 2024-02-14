@@ -8,7 +8,7 @@ import PasswordIcon from '../../../../assets/svgs/PasswordIcon';
 import ShowIcon from '../../../../assets/svgs/ShowIcon';
 
 interface LoginProps {
-  onChangeMode: (mode: 'login' | 'signup') => void;
+  onChangeMode: (mode: 'login' | 'signup' | 'forgotPassword') => void;
 }
 
 function Login ({ onChangeMode }: LoginProps) {
@@ -34,7 +34,9 @@ function Login ({ onChangeMode }: LoginProps) {
         style={styles.input}
       />
 
-      <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
+      <Pressable onPress={() => onChangeMode('forgotPassword')}>
+        <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
+      </Pressable>
     
       <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleLogin} text="Iniciar sesión" />
 
@@ -88,7 +90,8 @@ const styles = StyleSheet.create({
   },
   bottomSheetButton: {
     width: '100%',
-    marginBottom: 24
+    marginBottom: 24,
+    marginTop: 'auto'
   },
   footerText: {
     color: '#FFFFFF',

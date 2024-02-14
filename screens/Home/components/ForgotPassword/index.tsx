@@ -1,21 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, Pressable } from 'react-native';
-import { useNavigate } from 'react-router-native';
 import CustomInput from '../../../../components/CustomInput';
 import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
-import PasswordIcon from '../../../../assets/svgs/PasswordIcon';
-import ShowIcon from '../../../../assets/svgs/ShowIcon';
 
-interface SignUpProps {
-  onChangeMode: (mode: 'login' | 'signup') => void;
+interface LoginProps {
+  onChangeMode: (mode: 'login' | 'signup' | 'forgotPassword') => void;
 }
 
-function SignUp ({ onChangeMode }: SignUpProps) {
-  const navigate = useNavigate();
-  const handleSignUp = () => navigate('/main/profile');
-  
-  return (  
+function ForgotPassword ({ onChangeMode }: LoginProps) {
+  return (
     <>
       <CustomInput 
         placeholder="Correo electrónico" 
@@ -23,36 +17,18 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         value="" 
         FrontIcon={EmailIcon}
         style={styles.input}
-      />
-
-      <CustomInput 
-        placeholder="Contraseña" 
-        placeholderTextColor="#65656B" 
-        value="" 
-        FrontIcon={PasswordIcon}
-        BackIcon={ShowIcon}
-        style={styles.input}
-      />
-
-      <CustomInput 
-        placeholder="Confirmar contraseña" 
-        placeholderTextColor="#65656B" 
-        value="" 
-        FrontIcon={PasswordIcon}
-        BackIcon={ShowIcon}
-        style={styles.input}
-      />
+      /> 
     
-      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" />
+      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={() => {}} text="Enviar correo" />
 
       <Pressable onPress={() => onChangeMode('login')}>
-        <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Iniciar sesión</Text></Text>
+        <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Inicia sesion</Text></Text>
       </Pressable>      
     </>
   );
 }
 
-export default SignUp;
+export default ForgotPassword;
 
 const styles = StyleSheet.create({
   input: {
