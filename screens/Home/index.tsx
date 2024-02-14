@@ -5,8 +5,9 @@ import CustomButton from '../../components/CustomButton';
 import { theme } from '../../theme';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
+import ForgotPassword from './components/ForgotPassword';
 
-type Mode = 'login' | 'signup';
+type Mode = 'login' | 'signup' | 'forgotPassword';
 
 function Home () {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
@@ -55,9 +56,9 @@ function Home () {
         keyboardBehavior='interactive'
       >
         <View style={styles.bottomSheetContent}>
-            <Text style={styles.bottomSheetText}>Bienvenido</Text>
             {currentMode === 'login' ? <Login onChangeMode={setCurrentMode} /> : <></>}
             {currentMode === 'signup' ? <SignUp onChangeMode={setCurrentMode} /> : <></>}
+            {currentMode === 'forgotPassword' ? <ForgotPassword onChangeMode={setCurrentMode} /> : <></>}
         </View>
       </BottomSheet> 
   </>
