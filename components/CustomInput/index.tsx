@@ -15,15 +15,23 @@ interface CustomInputProps extends TextInputProps {
   onFocus?: () => void;
   onPressIn?: () => void;
   asButton?: boolean;
+  isValid?: boolean;
+  errorText?: string;
 }
 
-function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled, style, onChangeText, onBlur, onFocus, onPressIn, asButton, ...rest }: CustomInputProps) {
+function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled, style, onChangeText, onBlur, onFocus, onPressIn, asButton, isValid, errorText, ...rest }: CustomInputProps) {
   const [innerValue, setInnerValue] = useState(value);
+  const [innerIsValid, setInnerIsValid] = useState(true);
 
   const handleChangeText = (value: string) => {
     if (disabled) return;
     setInnerValue(value);
     onChangeText && onChangeText(value);
+  };
+
+  const handleOnBlur = () => {
+    isValid !== undefined && setInnerIsValid(isValid);
+    onBlur && onBlur();
   };
 
   useEffect(() => {
@@ -40,7 +48,11 @@ function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, Bac
         ) : <></>}
 
         {!asButton ? (
-          <TextInput {...rest} placeholder={placeholder} placeholderTextColor={placeholderTextColor} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]} value={innerValue} onChangeText={handleChangeText} editable={!disabled} onBlur={onBlur} onFocus={onFocus} onPressIn={onPressIn} />
+          <>
+            <TextInput {...rest} placeholder={placeholder} placeholderTextColor={placeholderTextColor} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]} value={innerValue} onChangeText={handleChangeText} editable={!disabled} onBlur={handleOnBlur} onFocus={onFocus} onPressIn={onPressIn} />
+
+            {innerIsValid === false ? <Text style={styles.errorText}>{errorText}</Text> : <></>}
+          </>
         ) : <></>}        
 
         {!!FrontIcon ? <View style={styles.inputIconFront}><FrontIcon /></View> : <></>}
@@ -88,5 +100,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontFamily: 'Lato-Regular',
+  },
+  errorText: {
+    color: '#FF4D4F', 
+    fontSize: 12, 
+    marginTop: 8, 
+    fontFamily: 'Lato-Regular'
   }
 });
