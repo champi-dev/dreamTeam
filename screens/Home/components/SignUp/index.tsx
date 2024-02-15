@@ -7,6 +7,7 @@ import EmailIcon from '../../../../assets/svgs/EmailIcon';
 import PasswordIcon from '../../../../assets/svgs/PasswordIcon';
 import ShowIcon from '../../../../assets/svgs/ShowIcon';
 import { validateEmail } from '../../../../utils';
+import { useKeyboard } from '../../../../hooks/keyboard';
 
 interface SignUpProps {
   onChangeMode: (mode: 'login' | 'signup') => void;
@@ -15,6 +16,7 @@ interface SignUpProps {
 function SignUp ({ onChangeMode }: SignUpProps) {
   const navigate = useNavigate();
   const handleSignUp = () => navigate('/main/profile');
+  const keyboardShown = useKeyboard();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -62,11 +64,19 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         errorText="Las contraseñas deben coincidirs"
       />
     
-      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" disabled={!isFormValid}/>
-
-      <Pressable onPress={() => onChangeMode('login')}>
-        <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Iniciar sesión</Text></Text>
-      </Pressable>      
+      {
+        keyboardShown ? (
+          <></>
+        ) : (
+          <>
+            <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" disabled={!isFormValid}/>
+      
+            <Pressable onPress={() => onChangeMode('login')}>
+              <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Iniciar sesión</Text></Text>
+            </Pressable>      
+          </>
+        )
+      }
     </>
   );
 }

@@ -6,6 +6,8 @@ import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
 import PasswordIcon from '../../../../assets/svgs/PasswordIcon';
 import ShowIcon from '../../../../assets/svgs/ShowIcon';
+import { useKeyboard } from '../../../../hooks/keyboard';
+import { validateEmail } from '../../../../utils';
 
 interface LoginProps {
   onChangeMode: (mode: 'login' | 'signup' | 'forgotPassword') => void;
@@ -14,14 +16,10 @@ interface LoginProps {
 function Login ({ onChangeMode }: LoginProps) {
   const navigate = useNavigate();
   const handleLogin = () => navigate('/main/matches');
+  const keyboardShown = useKeyboard();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const validateEmail = (email : string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
 
   const isEmailValid = validateEmail(email);
   const isPasswordValid = password.length >= 8;
@@ -56,11 +54,17 @@ function Login ({ onChangeMode }: LoginProps) {
         <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
       </Pressable>
     
-      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleLogin} text="Iniciar sesión" disabled={!isFormValid} />
+    {keyboardShown ? (
+      <></>
+      ) : (
+      <>    
+        <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleLogin} text="Iniciar sesión" disabled={!isFormValid} />
 
-      <Pressable onPress={() => onChangeMode('signup')}>
-        <Text style={styles.footerText}>¿No tienes una cuenta? <Text style={styles.footerTextLink}>Regístrate</Text></Text>
-      </Pressable>      
+        <Pressable onPress={() => onChangeMode('signup')}>
+          <Text style={styles.footerText}>¿No tienes una cuenta? <Text style={styles.footerTextLink}>Regístrate</Text></Text>
+        </Pressable>  
+      </>
+      )}     
     </>
   );
 }
