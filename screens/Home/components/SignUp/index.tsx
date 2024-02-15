@@ -61,7 +61,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         onChangeText={(text) => setConfirmPassword(text)}
         isValid={isConfirmPasswordValid}
         BackIcon={ShowIcon}
-        errorText="Las contraseñas deben coincidirs"
+        errorText="Las contraseñas deben coincidir"
       />
     
       {

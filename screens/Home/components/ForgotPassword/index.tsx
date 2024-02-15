@@ -1,29 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, Pressable } from 'react-native';
 import CustomInput from '../../../../components/CustomInput';
 import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
+import { validateEmail } from '../../../../utils';
+import { useKeyboard } from '../../../../hooks/keyboard';
 
 interface LoginProps {
   onChangeMode: (mode: 'login' | 'signup' | 'forgotPassword') => void;
 }
 
 function ForgotPassword ({ onChangeMode }: LoginProps) {
+  const [email, setEmail] = useState('');
+  const keyboardShown = useKeyboard();
+
+  const isEmailValid = validateEmail(email);
+
   return (
     <>
       <CustomInput 
         placeholder="Correo electrónico" 
         placeholderTextColor="#65656B" 
-        value="" 
         FrontIcon={EmailIcon}
         style={styles.input}
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+        isValid={isEmailValid}
+        errorText="Correo electrónico inválido"
       /> 
     
-      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={() => {}} text="Enviar correo" />
+      {
+        keyboardShown ? (
+          <></>
+        ) : (
+          <>
+            <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={() => {}} text="Enviar correo" disabled={!isEmailValid}/>
 
-      <Pressable onPress={() => onChangeMode('login')}>
-        <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Inicia sesion</Text></Text>
-      </Pressable>      
+            <Pressable onPress={() => onChangeMode('login')}>
+              <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Inicia sesion</Text></Text>
+            </Pressable>      
+          </>
+        )
+      }
     </>
   );
 }
