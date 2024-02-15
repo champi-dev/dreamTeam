@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, Pressable } from 'react-native';
 import { useNavigate } from 'react-router-native';
 import CustomInput from '../../../../components/CustomInput';
@@ -6,6 +6,7 @@ import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
 import PasswordIcon from '../../../../assets/svgs/PasswordIcon';
 import ShowIcon from '../../../../assets/svgs/ShowIcon';
+import { validateEmail } from '../../../../utils';
 
 interface SignUpProps {
   onChangeMode: (mode: 'login' | 'signup') => void;
@@ -14,36 +15,54 @@ interface SignUpProps {
 function SignUp ({ onChangeMode }: SignUpProps) {
   const navigate = useNavigate();
   const handleSignUp = () => navigate('/main/profile');
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const isEmailValid = validateEmail(email);
+  const isPasswordValid = password.length >= 8;
+  const isConfirmPasswordValid = confirmPassword === password;
+  const isFormValid = isEmailValid && isPasswordValid && isConfirmPasswordValid;
   
   return (  
     <>
       <CustomInput 
         placeholder="Correo electrónico" 
         placeholderTextColor="#65656B" 
-        value="" 
         FrontIcon={EmailIcon}
         style={styles.input}
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+        isValid={isEmailValid}
+        errorText="Correo electrónico inválido"
       />
 
       <CustomInput 
         placeholder="Contraseña" 
         placeholderTextColor="#65656B" 
-        value="" 
         FrontIcon={PasswordIcon}
-        BackIcon={ShowIcon}
         style={styles.input}
+        value={password} 
+        onChangeText={(text) => setPassword(text)}
+        isValid={isPasswordValid}
+        BackIcon={ShowIcon}
+        errorText="Contraseña Invalida"
       />
 
       <CustomInput 
         placeholder="Confirmar contraseña" 
         placeholderTextColor="#65656B" 
-        value="" 
         FrontIcon={PasswordIcon}
-        BackIcon={ShowIcon}
         style={styles.input}
+        value={confirmPassword}
+        onChangeText={(text) => setConfirmPassword(text)}
+        isValid={isConfirmPasswordValid}
+        BackIcon={ShowIcon}
+        errorText="Las contraseñas deben coincidirs"
       />
     
-      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" />
+      <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" disabled={!isFormValid}/>
 
       <Pressable onPress={() => onChangeMode('login')}>
         <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Iniciar sesión</Text></Text>
