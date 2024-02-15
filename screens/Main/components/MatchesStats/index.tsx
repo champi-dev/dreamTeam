@@ -10,7 +10,7 @@ function MatchesStats () {
   const [matches, setMatches] = useState<Match[]>([]);
   const navigate = useNavigate();
   const handleMatchOverViewPress = () => {
-    navigate('/Main/Matches/PastMatchResult');
+    navigate('/main/matches/pastMatchResult');
   }
 
   useEffect(() => {

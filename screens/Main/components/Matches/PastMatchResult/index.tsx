@@ -36,6 +36,7 @@ function PastMatchResult () {
             FrontIcon={SoccerballIcon}
             styling="secondary"
             style={styles.itemInput}
+            disabled
           />
         </View>
 
@@ -49,6 +50,7 @@ function PastMatchResult () {
             FrontIcon={SoccerballIcon}
             styling="secondary"
             style={styles.itemInput}
+            disabled
           />
         </View>
 
@@ -64,6 +66,7 @@ function PastMatchResult () {
               FrontIcon={SoccerballIcon}
               styling="secondary"
               style={styles.itemInput}
+              disabled
             />
           </View>
         )) : <></>}
@@ -79,6 +82,7 @@ function PastMatchResult () {
               FrontIcon={SoccerballIcon}
               styling="secondary"
               style={styles.itemInput}
+              disabled
             />
           </View>
         )) : <></>}
