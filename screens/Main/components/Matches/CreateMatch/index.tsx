@@ -34,6 +34,7 @@ function CreateMatch () {
   const [matchDate, setMatchDate] = useState<Date | null>(null);
   const [matchTime, setMatchTime] = useState<Date | null>(null);
 
+  const isFormValid = selectedCourt && selectedModality && matchDate && matchTime;
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['60%'], []);
 
@@ -180,7 +181,7 @@ function CreateMatch () {
       />
     </View>
 
-    <CustomButton text="Crear partido" onPress={() => navigate('/main/matches')} type="primary"/>
+    <CustomButton text="Crear partido" onPress={() => navigate('/main/matches')} type="primary" disabled={!isFormValid} />
 
     <BottomSheet
         ref={bottomSheetRef}
