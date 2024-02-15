@@ -31,7 +31,7 @@ function Main () {
         </Pressable>
 
         <Pressable  style={styles.iconWrapper} onPress={() => navigate('/main/matchesStats')}>
-          <ChartIcon style={styles.icon} active={pathname === '/main/matchesStats'} />
+          <ChartIcon style={styles.icon} active={pathname === '/main/matchesStats' || pathname === '/main/matches/pastMatchResult'} />
         </Pressable>
 
         <Pressable  style={styles.iconWrapper} onPress={() => navigate('/main/playerStats')}>
