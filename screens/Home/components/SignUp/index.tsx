@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, Pressable } from 'react-native';
 import { useNavigate } from 'react-router-native';
-import { signUp } from '../../../../firebase';
+import { signUp, createUser } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
 import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
@@ -21,6 +21,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const isEmailValid = validateEmail(email);
   const isPasswordValid = password.length >= 8;
@@ -31,9 +32,22 @@ function SignUp ({ onChangeMode }: SignUpProps) {
     // refreshToken
     // expirationTime
     // data.stsTokenManager.accessToken
+    setIsLoading(true);
     const { error, data } = await signUp({ email, password });
+    if (error) {
+      setIsLoading(false);
+      return;
+    }
 
-    if (error) return;
+    // @ts-ignore
+    const { error: createUserError } = await createUser({ email, id: data.uid});
+
+    if (createUserError) {
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(false);
     navigate('/main/profile')
   }
   
@@ -79,7 +93,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
           <></>
         ) : (
           <>
-            <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" disabled={!isFormValid}/>
+            <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" disabled={!isFormValid || isLoading}/>
       
             <Pressable onPress={() => onChangeMode('login')}>
               <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Iniciar sesión</Text></Text>
