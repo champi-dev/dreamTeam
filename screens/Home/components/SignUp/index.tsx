@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, Pressable } from 'react-native';
 import { useNavigate } from 'react-router-native';
+import { signUp } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
 import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
@@ -15,7 +16,6 @@ interface SignUpProps {
 
 function SignUp ({ onChangeMode }: SignUpProps) {
   const navigate = useNavigate();
-  const handleSignUp = () => navigate('/main/profile');
   const keyboardShown = useKeyboard();
 
   const [email, setEmail] = useState('');
@@ -26,6 +26,16 @@ function SignUp ({ onChangeMode }: SignUpProps) {
   const isPasswordValid = password.length >= 8;
   const isConfirmPasswordValid = confirmPassword === password;
   const isFormValid = isEmailValid && isPasswordValid && isConfirmPasswordValid;
+
+  const handleSignUp = async () => {
+    // refreshToken
+    // expirationTime
+    // data.stsTokenManager.accessToken
+    const { error, data } = await signUp({ email, password });
+
+    if (error) return;
+    navigate('/main/profile')
+  }
   
   return (  
     <>
