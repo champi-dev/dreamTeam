@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, Pressable } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { passwordReset } from '../../../../firebase/authentication';
 import CustomInput from '../../../../components/CustomInput';
 import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
 import { validateEmail } from '../../../../utils';
 import { useKeyboard } from '../../../../hooks/keyboard';
+import { PressableOpacity } from '../../../../components/PresableOpacity';
 
 interface LoginProps {
   onChangeMode: (mode: 'login' | 'signup' | 'forgotPassword') => void;
@@ -51,9 +52,9 @@ function ForgotPassword ({ onChangeMode }: LoginProps) {
           <>
             <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handlePasswordReset} text={emailSent ? 'Revisa tu correo' : 'Enviar correo'} disabled={!isEmailValid || isLoading || emailSent}/>
 
-            <Pressable onPress={() => onChangeMode('login')}>
+            <PressableOpacity onPress={() => onChangeMode('login')}>
               <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Inicia sesion</Text></Text>
-            </Pressable>      
+            </PressableOpacity>      
           </>
         )
       }

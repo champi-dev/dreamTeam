@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { View, Text, StyleSheet, Pressable, ScrollView, Image, FlatList, ListRenderItemInfo } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image, FlatList, ListRenderItemInfo } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import NotificationIcon from "../../../../../assets/svgs/NotificationIcon";
 import PlusIcon from "../../../../../assets/svgs/PlusIcon";
@@ -9,6 +9,7 @@ import { mockData, mockUser } from "./mockData";
 import { Match } from "../../../../../models/Match";
 import { getDayName, convertTimeTo12HourFormat } from "../../../../../utils";
 import { User } from "../../../../../models/User";
+import { PressableOpacity } from "../../../../../components/PresableOpacity";
 
 function JoinMatch () {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ function JoinMatch () {
 
   const renderItem = ({item}: ListRenderItemInfo<Match>) => {
     return (
-      <Pressable onPress={() => handleMatchPress(item)}>
+      <PressableOpacity onPress={() => handleMatchPress(item)}>
         <View style={styles.matchOverview}>
           <View style={styles.matchOverviewContent}>
             <ScrollView contentContainerStyle={styles.topTeam} horizontal>
@@ -60,7 +61,7 @@ function JoinMatch () {
             <Text style={styles.actionText}>{userOwnsMatch(item) ? 'Ingresar resultado' : 'Elegir lado'}</Text>
           </View>
         </View>
-      </Pressable> 
+      </PressableOpacity> 
     );
   }
 
@@ -68,9 +69,9 @@ function JoinMatch () {
     <>
       <View style={styles.topContent}>
         <Text style={styles.title}>Partidos</Text>
-        <Pressable onPress={() => navigate('/main/matches/notifications')}>
+        <PressableOpacity onPress={() => navigate('/main/matches/notifications')}>
           <NotificationIcon style={styles.notificationIcon}/>
-        </Pressable>      
+        </PressableOpacity>      
       </View>
 
       <FlatList
@@ -81,9 +82,9 @@ function JoinMatch () {
     
       <View style={styles.createMatchButton}>      
         <LinearGradient style={styles.gradient} colors={['#F4A58A', '#ED6B4E']}>
-          <Pressable onPress={() => navigate('/main/matches/createMatch')}>
+          <PressableOpacity onPress={() => navigate('/main/matches/createMatch')}>
           <PlusIcon style={styles.plusIcon} />
-          </Pressable>   
+          </PressableOpacity>   
         </LinearGradient>        
       </View>    
     </>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { Text, StyleSheet, View, Pressable, Image } from "react-native";
+import { Text, StyleSheet, View, Image } from "react-native";
 import { useNavigate } from 'react-router-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -18,6 +18,7 @@ import InvitePlayers from "./components/InvitePlayers";
 import SelectCourt from "./components/SelectCourt";
 import SelectModality from "./components/SelectModality";
 import { useKeyboard } from "../../../../../hooks/keyboard";
+import { PressableOpacity } from "../../../../../components/PresableOpacity";
 
 type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
 
@@ -101,9 +102,9 @@ function CreateMatch () {
 
   return (<>
     <View style={styles.header}>
-      <Pressable onPress={() => navigate('/main/matches')}>
+      <PressableOpacity onPress={() => navigate('/main/matches')}>
         <ArrowLeftIcon style={styles.headerIcon} />
-      </Pressable>
+      </PressableOpacity>
       <Text style={styles.title}>Crear partido</Text>      
     </View>
 

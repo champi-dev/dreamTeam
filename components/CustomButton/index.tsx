@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Pressable, View, Text, NativeSyntheticEvent, NativeTouchEvent } from 'react-native';
+import { StyleSheet, View, Text, NativeSyntheticEvent, NativeTouchEvent } from 'react-native';
+import { PressableOpacity } from '../PresableOpacity';
 
 interface CustomButtonProps {
   type: 'primary' | 'secondary';
@@ -14,21 +15,25 @@ interface CustomButtonProps {
 function CustomButton({ type, onPress, text, style, buttonStyle, textStyle, disabled }: CustomButtonProps) {
   return (
     <>
-      {type === 'primary' ? <Pressable onPress={(e) => {
-        if (!disabled || disabled === undefined) {
-          onPress(e);
-        }
-      }} style={style}>
-        <View style={[styles.button, buttonStyle, disabled && styles.buttonDisabled]}>
-          <Text style={[styles.buttonText, textStyle]}>{text}</Text>
-        </View>
-      </Pressable> : <></>}
+      {type === 'primary' ? 
+        (<PressableOpacity onPress={(e) => {
+          if (!disabled || disabled === undefined) {
+            onPress(e);
+          }
+        }} style={style}>
+          <View style={[styles.button, buttonStyle, disabled && styles.buttonDisabled]}>
+            <Text style={[styles.buttonText, textStyle]}>{text}</Text>
+          </View>
+        </PressableOpacity>)
+        : <></>}
 
-      {type === 'secondary' ? <Pressable onPress={onPress} style={style}>
-        <View style={[styles.buttonSecondary, buttonStyle]}>
-          <Text style={[styles.buttonSecondaryText, textStyle]}>{text}</Text>
-        </View>
-      </Pressable> : <></>}
+      {type === 'secondary' ? 
+        (<PressableOpacity onPress={onPress} style={style}>
+          <View style={[styles.buttonSecondary, buttonStyle]}>
+            <Text style={[styles.buttonSecondaryText, textStyle]}>{text}</Text>
+          </View>
+        </PressableOpacity>)
+      : <></>}
     </>
   );
 }

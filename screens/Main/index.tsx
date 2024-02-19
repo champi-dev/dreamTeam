@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Pressable } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Routes, Route, useLocation, useNavigate } from "react-router";
 import Profile from "./components/Profile";
 import Matches from "./components/Matches";
@@ -9,6 +9,7 @@ import HomeIcon from "../../assets/svgs/HomeIcon";
 import ChartIcon from "../../assets/svgs/ChartIcon";
 import SoccerballIcon from "../../assets/svgs/SoccerballIcon";
 import ProfileIcon from "../../assets/svgs/ProfileIcon";
+import { PressableOpacity } from "../../components/PresableOpacity";
 
 function Main () {
   const navigate = useNavigate();
@@ -24,23 +25,23 @@ function Main () {
 
     <View style={styles.bottomBar}>
       <View style={styles.bottomBarIcons}>
-        <Pressable style={styles.iconWrapper}  onPress={() => navigate('/main/matches')}>
+        <PressableOpacity style={styles.iconWrapper}  onPress={() => navigate('/main/matches')}>
           <HomeIcon style={styles.icon} active={
             pathname === '/main/matches' || pathname === '/main/matches/notifications' || pathname === '/main/matches/createMatch' || pathname === '/main/matches/selectSide' || pathname === '/main/matches/enterMatchResult'
           } />
-        </Pressable>
+        </PressableOpacity>
 
-        <Pressable  style={styles.iconWrapper} onPress={() => navigate('/main/matchesStats')}>
+        <PressableOpacity  style={styles.iconWrapper} onPress={() => navigate('/main/matchesStats')}>
           <ChartIcon style={styles.icon} active={pathname === '/main/matchesStats' || pathname === '/main/matches/pastMatchResult'} />
-        </Pressable>
+        </PressableOpacity>
 
-        <Pressable  style={styles.iconWrapper} onPress={() => navigate('/main/playerStats')}>
+        <PressableOpacity  style={styles.iconWrapper} onPress={() => navigate('/main/playerStats')}>
           <SoccerballIcon style={styles.icon} active={pathname === '/main/playerStats'} />
-        </Pressable>
+        </PressableOpacity>
 
-        <Pressable  style={styles.iconWrapper} onPress={() => navigate('/main/profile')}>
+        <PressableOpacity  style={styles.iconWrapper} onPress={() => navigate('/main/profile')}>
           <ProfileIcon style={styles.icon} active={pathname === '/main/profile'} />
-        </Pressable>
+        </PressableOpacity>
       </View>
     </View>
   </View>
