@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-native';
 import { StyleSheet, Text, Pressable } from 'react-native';
+import { login } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
 import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
@@ -15,11 +16,27 @@ interface LoginProps {
 
 function Login ({ onChangeMode }: LoginProps) {
   const navigate = useNavigate();
-  const handleLogin = () => navigate('/main/matches');
   const keyboardShown = useKeyboard();
-
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const handleLogin = async () => {
+    // refreshToken
+    // expirationTime
+    // data.stsTokenManager.accessToken
+    setIsLoading(true);
+    const { error, data } = await login({ email, password });
+
+    if (error) {
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(false);
+    navigate('/main/matches');
+  };
 
   const isEmailValid = validateEmail(email);
   const isPasswordValid = password.length >= 8;
@@ -58,7 +75,7 @@ function Login ({ onChangeMode }: LoginProps) {
       <></>
       ) : (
       <>    
-        <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleLogin} text="Iniciar sesión" disabled={!isFormValid} />
+        <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleLogin} text="Iniciar sesión" disabled={!isFormValid || isLoading} />
 
         <Pressable onPress={() => onChangeMode('signup')}>
           <Text style={styles.footerText}>¿No tienes una cuenta? <Text style={styles.footerTextLink}>Regístrate</Text></Text>
