@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, ScrollView, View, Text, StyleSheet } from "react-native";
+import { Pressable, View, Text, StyleSheet, FlatList, ListRenderItemInfo } from "react-native";
 import { Court } from "../../../../../../../models/Court";
 
 interface SelectCourtProps {
@@ -9,21 +9,25 @@ interface SelectCourtProps {
 }
 
 function SelectModality ({ selectedCourt, setSelectedModality, handleClose }: SelectCourtProps) {
+  const renderItem = ({item}: ListRenderItemInfo<string>) => {
+    return (
+      <Pressable 
+        onPress={() => {
+          setSelectedModality(item);
+          handleClose();
+        }}>
+        <View style={styles.rowLeft}>
+          <Text style={styles.rowText}>{item}</Text>
+        </View>
+      </Pressable>
+    );
+  }
   return (
-    <ScrollView>
-      {selectedCourt?.modalities.map((singleModality) => (
-        <Pressable 
-          key={singleModality}
-          onPress={() => {
-            setSelectedModality(singleModality);
-            handleClose();
-          }}>
-          <View style={styles.rowLeft}>
-            <Text style={styles.rowText}>{singleModality}</Text>
-          </View>
-        </Pressable>
-      ))}
-    </ScrollView>
+    <FlatList
+      data={selectedCourt?.modalities}
+      keyExtractor={item => item}
+      renderItem={renderItem}
+    />
   );
 }
 

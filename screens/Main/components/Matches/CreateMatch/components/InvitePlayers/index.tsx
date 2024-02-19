@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, View, Image, Text, StyleSheet } from "react-native";
+import { View, Image, Text, StyleSheet, FlatList, ListRenderItemInfo } from "react-native";
 import CustomButton from "../../../../../../../components/CustomButton";
 import { User } from "../../../../../../../models/User";
 
@@ -10,19 +10,30 @@ interface InvitePlayersProps {
 }
 
 function InvitePlayers ({ searchResultPlayers, handleInvitePlayer, isUserInInvitedPlayers }: InvitePlayersProps) {
+
+  const renderItem = ({ item }: ListRenderItemInfo<User>) => (
+    <View style={styles.rowLeft}>
+      <Image style={styles.userImage} source={{ uri: item.avatarImgUrl, cache: "force-cache" }} />
+      <Text style={styles.rowText}>{item.name}</Text>
+      <CustomButton 
+        text={isUserInInvitedPlayers(item.id) ? 'Eliminar' : 'Invitar'} 
+        onPress={(e) => {
+          e.stopPropagation();
+          handleInvitePlayer(item);
+        }} 
+        type="primary" 
+        buttonStyle={[styles.inviteBtn, isUserInInvitedPlayers(item.id) && styles.inviteBtnDelete]} 
+        textStyle={styles.inviteBtnText} 
+      />
+    </View>
+  );
+
   return (
-    <ScrollView>
-      {searchResultPlayers.length ? searchResultPlayers.map((singlePlayer) => (
-        <View style={styles.rowLeft} key={singlePlayer.id}>
-          <Image style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
-          <Text style={styles.rowText}>{singlePlayer.name}</Text>
-          <CustomButton text={isUserInInvitedPlayers(singlePlayer.id) ? 'Eliminar' : 'Invitar'} onPress={(e) => {
-            e.stopPropagation();
-            handleInvitePlayer(singlePlayer)
-          }} type="primary" buttonStyle={[styles.inviteBtn, isUserInInvitedPlayers(singlePlayer.id) && styles.inviteBtnDelete]} textStyle={styles.inviteBtnText} />
-        </View>
-      )) : <></>}
-      </ScrollView>
+    <FlatList 
+      data={searchResultPlayers}
+      keyExtractor={item => item.id}
+      renderItem={renderItem}
+    />
   ); 
 }
 

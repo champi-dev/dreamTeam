@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, ScrollView, View, Text, StyleSheet } from "react-native";
+import { Pressable, View, Text, StyleSheet, FlatList, ListRenderItemInfo } from "react-native";
 import { Court } from "../../../../../../../models/Court";
 
 interface SelectCourtProps {
@@ -10,22 +10,26 @@ interface SelectCourtProps {
 }
 
 function SelectCourt ({ availableCourts, setSelectedCourt, setSelectedModality, handleClose }: SelectCourtProps) {
+  const renderItem = ({item}: ListRenderItemInfo<Court>) => {
+    return (
+      <Pressable 
+        onPress={() => {
+          setSelectedCourt(item);
+          setSelectedModality(item.modalities[0]);
+          handleClose();
+        }}>
+        <View style={styles.rowLeft}>
+          <Text style={styles.rowText}>{item.name}</Text>
+        </View>
+      </Pressable>
+    )
+  }
   return (
-    <ScrollView>
-      {availableCourts.length ? availableCourts.map((singleCourt) => (
-        <Pressable 
-          key={singleCourt.id}
-          onPress={() => {
-            setSelectedCourt(singleCourt);
-            setSelectedModality(singleCourt.modalities[0]);
-            handleClose();
-          }}>
-          <View style={styles.rowLeft}>
-            <Text style={styles.rowText}>{singleCourt.name}</Text>
-          </View>
-        </Pressable>
-      )) : <></>}
-    </ScrollView>
+    <FlatList 
+      data={availableCourts}
+      keyExtractor={item => item.id}
+      renderItem={renderItem}
+    />
   );
 }
 
