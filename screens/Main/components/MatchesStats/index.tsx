@@ -19,19 +19,19 @@ function MatchesStats () {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      <ScrollView style={styles.content}>
         <Text style={styles.title}>Partidos jugados</Text>
         {matches.length ? matches.map((singleMatch, index) => (
           <PressableOpacity onPress={handleMatchOverViewPress} key={index} style={styles.matchOverview}>
           <View style={styles.matchOverviewContent}>
-          <ScrollView contentContainerStyle={styles.topTeam} horizontal>
+          <ScrollView contentContainerStyle={styles.topTeam} horizontal showsHorizontalScrollIndicator={false}>
             <ShirtIcon style={styles.shirtIcon} fill="#fff" />
             {singleMatch.whiteTeam.map((user, userIndex) => (
               <Image key={userIndex} style={styles.userImage} source={{ uri: user.avatarImgUrl, cache: "force-cache" }} />
             ))}
           </ScrollView>
 
-          <ScrollView contentContainerStyle={styles.bottomTeam} horizontal>
+          <ScrollView contentContainerStyle={styles.bottomTeam} horizontal showsHorizontalScrollIndicator={false}>
             <ShirtIcon style={styles.shirtIcon} fill="#000" />
             {singleMatch.blackTeam.map((singleUser, userIndex) => (
               <Image key={userIndex} style={styles.userImage} source={{ uri: singleUser.avatarImgUrl, cache: "force-cache" }} />    
@@ -50,7 +50,7 @@ function MatchesStats () {
           </View>
         </PressableOpacity>
         )) : <></>}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

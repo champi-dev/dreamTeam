@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { View, Text, StyleSheet, Pressable, ScrollView, Image } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView, Image, FlatList, ListRenderItemInfo } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import NotificationIcon from "../../../../../assets/svgs/NotificationIcon";
 import PlusIcon from "../../../../../assets/svgs/PlusIcon";
@@ -33,45 +33,51 @@ function JoinMatch () {
     setCurrentUser(mockUser);
   }, [])
 
-  return (
-    <>
-    <View style={styles.topContent}>
-      <Text style={styles.title}>Partidos</Text>
-      <Pressable onPress={() => navigate('/main/matches/notifications')}>
-        <NotificationIcon style={styles.notificationIcon}/>
-      </Pressable>      
-    </View>
-
-      <ScrollView style={styles.matchesGroup}>
-        {matches?.length ? matches.map((singleMatch, index) => (
-          <Pressable key={index} onPress={() => handleMatchPress(singleMatch)}>
-          <View style={styles.matchOverview}>
-            <View style={styles.matchOverviewContent}>
+  const renderItem = ({item}: ListRenderItemInfo<Match>) => {
+    return (
+      <Pressable onPress={() => handleMatchPress(item)}>
+        <View style={styles.matchOverview}>
+          <View style={styles.matchOverviewContent}>
             <ScrollView contentContainerStyle={styles.topTeam} horizontal>
               <ShirtIcon style={styles.shirtIcon} fill="#fff" />
-              {singleMatch.whiteTeam.map((singlePlayer, playerIndex) => (
+              {item.whiteTeam.map((singlePlayer, playerIndex) => (
                 <Image key={playerIndex} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
               ))}              
             </ScrollView>
-  
+
             <ScrollView contentContainerStyle={styles.bottomTeam} horizontal>
               <ShirtIcon style={styles.shirtIcon} fill="#000" />
-              {singleMatch.blackTeam.map((singlePlayer, playerIndex) => (
+              {item.blackTeam.map((singlePlayer, playerIndex) => (
                 <Image key={playerIndex} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
               ))}    
-          </ScrollView>
-  
-          <Text style={styles.matchText}>{getDayName(singleMatch.date)} {convertTimeTo12HourFormat(singleMatch.time)}</Text>
-          <Text style={styles.matchText}>{singleMatch.court} {singleMatch.playersPerTeam} vs {singleMatch.playersPerTeam}</Text>
+            </ScrollView>
+
+            <Text style={styles.matchText}>{getDayName(item.date)} {convertTimeTo12HourFormat(item.time)}</Text>
+            <Text style={styles.matchText}>{item.court} {item.playersPerTeam} vs {item.playersPerTeam}</Text>
           </View>            
-  
+
           <View style={styles.actionContainer}>
-            <Text style={styles.actionText}>{userOwnsMatch(singleMatch) ? 'Ingresar resultado' : 'Elegir lado'}</Text>
+            <Text style={styles.actionText}>{userOwnsMatch(item) ? 'Ingresar resultado' : 'Elegir lado'}</Text>
           </View>
         </View>
-          </Pressable>   
-        )) : <></>}             
-    </ScrollView>
+      </Pressable> 
+    );
+  }
+
+  return (
+    <>
+      <View style={styles.topContent}>
+        <Text style={styles.title}>Partidos</Text>
+        <Pressable onPress={() => navigate('/main/matches/notifications')}>
+          <NotificationIcon style={styles.notificationIcon}/>
+        </Pressable>      
+      </View>
+
+      <FlatList
+        data={matches}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderItem}
+      />
     
       <View style={styles.createMatchButton}>      
         <LinearGradient style={styles.gradient} colors={['#F4A58A', '#ED6B4E']}>
@@ -80,7 +86,7 @@ function JoinMatch () {
           </Pressable>   
         </LinearGradient>        
       </View>    
-  </>
+    </>
   );
 }
 

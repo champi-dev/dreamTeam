@@ -17,6 +17,7 @@ import { mockusersToSearchFrom, mockCourts } from "./mockData";
 import InvitePlayers from "./components/InvitePlayers";
 import SelectCourt from "./components/SelectCourt";
 import SelectModality from "./components/SelectModality";
+import { useKeyboard } from "../../../../../hooks/keyboard";
 
 type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
 
@@ -33,6 +34,7 @@ function CreateMatch () {
   const [datePickerMode, setDatePickerMode] = useState<"date" | "time">("date");
   const [matchDate, setMatchDate] = useState<Date | null>(null);
   const [matchTime, setMatchTime] = useState<Date | null>(null);
+  const keyboardShown = useKeyboard()
 
   const isFormValid = selectedCourt && selectedModality && matchDate && matchTime;
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -181,7 +183,11 @@ function CreateMatch () {
       />
     </View>
 
-    <CustomButton text="Crear partido" onPress={() => navigate('/main/matches')} type="primary" disabled={!isFormValid} />
+    { 
+      keyboardShown    
+        ? <></>
+        : <CustomButton text="Crear partido" onPress={() => navigate('/main/matches')} type="primary" disabled={!isFormValid} />
+    }
 
     <BottomSheet
         ref={bottomSheetRef}
