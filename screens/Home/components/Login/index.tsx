@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-native';
 import { StyleSheet, Text, Pressable } from 'react-native';
 import { login } from '../../../../firebase';
@@ -9,12 +9,14 @@ import PasswordIcon from '../../../../assets/svgs/PasswordIcon';
 import ShowIcon from '../../../../assets/svgs/ShowIcon';
 import { useKeyboard } from '../../../../hooks/keyboard';
 import { validateEmail } from '../../../../utils';
+import { GlobalContextConfig } from '../../../../globalContext';
 
 interface LoginProps {
   onChangeMode: (mode: 'login' | 'signup' | 'forgotPassword') => void;
 }
 
 function Login ({ onChangeMode }: LoginProps) {
+  const { setAuthToken } = useContext(GlobalContextConfig);
   const navigate = useNavigate();
   const keyboardShown = useKeyboard();
   
@@ -23,9 +25,6 @@ function Login ({ onChangeMode }: LoginProps) {
   const [isLoading, setIsLoading] = useState(false);
   
   const handleLogin = async () => {
-    // refreshToken
-    // expirationTime
-    // data.stsTokenManager.accessToken
     setIsLoading(true);
     const { error, data } = await login({ email, password });
 
@@ -34,6 +33,8 @@ function Login ({ onChangeMode }: LoginProps) {
       return;
     }
 
+    // @ts-ignore
+    setAuthToken && setAuthToken(data.stsTokenManager.accessToken);
     setIsLoading(false);
     navigate('/main/matches');
   };

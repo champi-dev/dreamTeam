@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { StyleSheet, Text, Pressable } from 'react-native';
 import { useNavigate } from 'react-router-native';
 import { signUp, createUser } from '../../../../firebase';
@@ -9,12 +9,14 @@ import PasswordIcon from '../../../../assets/svgs/PasswordIcon';
 import ShowIcon from '../../../../assets/svgs/ShowIcon';
 import { validateEmail } from '../../../../utils';
 import { useKeyboard } from '../../../../hooks/keyboard';
+import { GlobalContextConfig } from '../../../../globalContext';
 
 interface SignUpProps {
   onChangeMode: (mode: 'login' | 'signup') => void;
 }
 
 function SignUp ({ onChangeMode }: SignUpProps) {
+  const { setAuthToken } = useContext(GlobalContextConfig);
   const navigate = useNavigate();
   const keyboardShown = useKeyboard();
 
@@ -29,16 +31,16 @@ function SignUp ({ onChangeMode }: SignUpProps) {
   const isFormValid = isEmailValid && isPasswordValid && isConfirmPasswordValid;
 
   const handleSignUp = async () => {
-    // refreshToken
-    // expirationTime
-    // data.stsTokenManager.accessToken
     setIsLoading(true);
     const { error, data } = await signUp({ email, password });
+
     if (error) {
       setIsLoading(false);
       return;
     }
-
+    // @ts-ignore
+    setAuthToken && setAuthToken(data.stsTokenManager.accessToken);
+    
     // @ts-ignore
     const { error: createUserError } = await createUser({ email, id: data.uid});
 
