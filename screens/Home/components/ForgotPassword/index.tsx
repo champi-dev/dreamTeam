@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, Pressable } from 'react-native';
+import { passwordReset } from '../../../../firebase/authentication';
 import CustomInput from '../../../../components/CustomInput';
 import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
@@ -12,7 +13,21 @@ interface LoginProps {
 
 function ForgotPassword ({ onChangeMode }: LoginProps) {
   const [email, setEmail] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const keyboardShown = useKeyboard();
+
+  const handlePasswordReset = async () => {
+    setIsLoading(true);
+    const { error, data } = await passwordReset(email);
+
+    if (error) {
+      console.log('Error: ', error);
+      return;
+    }
+    setEmailSent(true);
+    setIsLoading(false);
+  }
 
   const isEmailValid = validateEmail(email);
 
@@ -34,7 +49,7 @@ function ForgotPassword ({ onChangeMode }: LoginProps) {
           <></>
         ) : (
           <>
-            <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={() => {}} text="Enviar correo" disabled={!isEmailValid}/>
+            <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handlePasswordReset} text={emailSent ? 'Revisa tu correo' : 'Enviar correo'} disabled={!isEmailValid || isLoading || emailSent}/>
 
             <Pressable onPress={() => onChangeMode('login')}>
               <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Inicia sesion</Text></Text>

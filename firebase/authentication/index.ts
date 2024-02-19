@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config";
 
 interface SignUpProps {
@@ -28,6 +28,17 @@ export const login = async ({ email, password }: LoginProps) => {
   .then((userCredential) => {
     const user = userCredential.user;
     return { error: null, data: user };
+  })
+  .catch((error) => {
+    console.log(error.message);
+    return { error, data: null };
+  });
+}
+
+export const passwordReset = async (email: string) => {
+  return sendPasswordResetEmail(auth, email)
+  .then(() => {
+    return { error: null, data: 'Email sent' };
   })
   .catch((error) => {
     console.log(error.message);
