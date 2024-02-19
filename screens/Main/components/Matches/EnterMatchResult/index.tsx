@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, StyleSheet, View, Pressable, ScrollView, Image } from "react-native";
+import { Text, StyleSheet, View, ScrollView, Image } from "react-native";
 import { useNavigate } from 'react-router-native';
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
@@ -8,6 +8,7 @@ import CustomInput from "../../../../../components/CustomInput";
 import { mockData } from "./mockData";
 import { Match } from "../../../../../models/Match";
 import CustomButton from "../../../../../components/CustomButton";
+import { PressableOpacity } from "../../../../../components/PresableOpacity";
 
 function EnterMatchResult () {
   const navigate = useNavigate();
@@ -23,9 +24,9 @@ function EnterMatchResult () {
 
   return (<>
     <View style={styles.header}>
-      <Pressable onPress={() => navigate('/main/matches')}>
+      <PressableOpacity onPress={() => navigate('/main/matches')}>
         <ArrowLeftIcon style={styles.headerIcon} />
-      </Pressable>
+      </PressableOpacity>
       <Text style={styles.title}>Resultado</Text>
     </View>
 

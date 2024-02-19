@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TextInput, Pressable, Text, TextInputProps} from 'react-native';
+import { StyleSheet, View, TextInput, Text, TextInputProps} from 'react-native';
+import { PressableOpacity } from '../PresableOpacity';
 
 interface CustomInputProps extends TextInputProps {
   placeholder: string;
@@ -41,10 +42,10 @@ function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, Bac
   return (
     <View style={[styles.inputContainer, style && style]}>
         {asButton ? (
-          <Pressable onPress={onPressIn} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]}>
+          <PressableOpacity onPress={onPressIn} style={[styles.bottomSheetInput, styling === 'secondary' && styles.bottomSheetInputSecondary]}>
             {value ? <Text style={styles.asButtonText}>{value}</Text> : <></>}
             {!value ? <Text style={[styles.asButtonText, {color: placeholderTextColor}]}>{placeholder}</Text> : <></>}
-          </Pressable>
+          </PressableOpacity>
         ) : <></>}
 
         {!asButton ? (

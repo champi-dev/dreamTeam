@@ -1,11 +1,12 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View, Image, Pressable, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomButton from '../../components/CustomButton';
 import { theme } from '../../theme';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import ForgotPassword from './components/ForgotPassword';
+import { PressableOpacity } from '../../components/PresableOpacity';
 
 type Mode = 'login' | 'signup' | 'forgotPassword';
 
@@ -42,7 +43,7 @@ function Home () {
     </SafeAreaView>
 
     {isBottomSheetOpen ? <View style={styles.backdrop}>
-      <Pressable onPress={() => handleClose()} style={{ flex: 1 }} />
+      <PressableOpacity onPress={() => handleClose()} style={{ flex: 1 }} />
     </View> : <></>}
 
       <BottomSheet

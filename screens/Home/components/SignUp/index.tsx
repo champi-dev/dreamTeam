@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { StyleSheet, Text, Pressable } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { useNavigate } from 'react-router-native';
 import { signUp, createUser } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
@@ -10,6 +10,7 @@ import ShowIcon from '../../../../assets/svgs/ShowIcon';
 import { validateEmail } from '../../../../utils';
 import { useKeyboard } from '../../../../hooks/keyboard';
 import { GlobalContextConfig } from '../../../../globalContext';
+import { PressableOpacity } from '../../../../components/PresableOpacity';
 
 interface SignUpProps {
   onChangeMode: (mode: 'login' | 'signup') => void;
@@ -97,9 +98,9 @@ function SignUp ({ onChangeMode }: SignUpProps) {
           <>
             <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" disabled={!isFormValid || isLoading}/>
       
-            <Pressable onPress={() => onChangeMode('login')}>
+            <PressableOpacity onPress={() => onChangeMode('login')}>
               <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Iniciar sesión</Text></Text>
-            </Pressable>      
+            </PressableOpacity>      
           </>
         )
       }

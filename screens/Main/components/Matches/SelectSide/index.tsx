@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, StyleSheet, View, Pressable, Image } from "react-native";
+import { Text, StyleSheet, View, Image } from "react-native";
 import { useNavigate } from 'react-router-native';
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
@@ -7,6 +7,7 @@ import CustomButton from "../../../../../components/CustomButton";
 import { mockData, mockCurrentUser } from "./mockData";
 import { Match } from "../../../../../models/Match";
 import { User } from "../../../../../models/User";
+import { PressableOpacity } from "../../../../../components/PresableOpacity";
 
 function SelectSide () {
   const navigate = useNavigate();
@@ -53,19 +54,19 @@ function SelectSide () {
 
   return (<>
     <View style={styles.header}>
-      <Pressable onPress={() => navigate('/main/matches')}>
+      <PressableOpacity onPress={() => navigate('/main/matches')}>
         <ArrowLeftIcon style={styles.headerIcon} />
-      </Pressable>
+      </PressableOpacity>
       <Text style={styles.title}>Elegir lado</Text>
     </View>
 
     <View style={styles.content}>
       <View style={styles.contentLeft}>
-        <Pressable onPress={() => handleSelectSide('white')}>
+        <PressableOpacity onPress={() => handleSelectSide('white')}>
           <View style={[styles.iconWrapper, selectedSide === 'white' && styles.iconWrapperActive]}>
             <ShirtIcon style={styles.shirtIcon} fill="#fff" />
           </View>
-        </Pressable>        
+        </PressableOpacity>        
 
         {match?.whiteTeam.length ? match.whiteTeam.map((singlePlayer, index) => (
           <View style={styles.user} key={index}>
@@ -76,11 +77,11 @@ function SelectSide () {
       </View>
 
       <View style={styles.contentRight}>
-        <Pressable onPress={() => handleSelectSide('black')}>
+        <PressableOpacity onPress={() => handleSelectSide('black')}>
           <View style={[styles.iconWrapper, selectedSide === 'black' && styles.iconWrapperActive]}>
             <ShirtIcon style={styles.shirtIcon} fill="#000" />
           </View>
-        </Pressable>        
+        </PressableOpacity>        
 
         {match?.whiteTeam.length ? match.blackTeam.map((singlePlayer, index) => (
           <View style={styles.user} key={index}>

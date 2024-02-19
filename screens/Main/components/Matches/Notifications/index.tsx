@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Text, StyleSheet, View, Pressable } from "react-native";
+import { Text, StyleSheet, View } from "react-native";
 import { useNavigate } from 'react-router-native';
 import { mockData } from "./mockData";
 import { Notification } from "../../../../../models/Notification";
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import CloseIcon from "../../../../../assets/svgs/CloseIcon";
+import { PressableOpacity } from "../../../../../components/PresableOpacity";
 
 function Notifications () {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -21,23 +22,23 @@ function Notifications () {
 
   return (<>
     <View style={styles.header}>
-      <Pressable onPress={() => navigate('/main/matches')}>
+      <PressableOpacity onPress={() => navigate('/main/matches')}>
         <ArrowLeftIcon style={styles.headerIcon} />
-      </Pressable>
+      </PressableOpacity>
       <Text style={styles.title}>Notificaciones</Text>
     </View>
   
     <View style={styles.notificationsGroup}>
       {notifications.length ? notifications.map(({ highlightedText, regularText, matchId }) => (
-        <Pressable onPress={() => navigate('/main/matches/selectSide')} key={matchId}>
+        <PressableOpacity onPress={() => navigate('/main/matches/selectSide')} key={matchId}>
           <View style={styles.notification}>
             <Text style={styles.notificationText}><Text style={styles.notificationTextHighlight}>{highlightedText}</Text> {regularText}</Text>
 
-            <Pressable onPress={() => handleDeleteNotification(matchId)}>
+            <PressableOpacity onPress={() => handleDeleteNotification(matchId)}>
               <CloseIcon />
-            </Pressable>
+            </PressableOpacity>
           </View>
-        </Pressable>        
+        </PressableOpacity>        
       )) : <></>}      
     </View>
   </>);

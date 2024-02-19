@@ -1,6 +1,7 @@
 import React from "react";
-import { Pressable, View, Text, StyleSheet, FlatList, ListRenderItemInfo } from "react-native";
+import { View, Text, StyleSheet, FlatList, ListRenderItemInfo } from "react-native";
 import { Court } from "../../../../../../../models/Court";
+import { PressableOpacity } from "../../../../../../../components/PresableOpacity";
 
 interface SelectCourtProps {
   availableCourts: Court[];
@@ -12,7 +13,7 @@ interface SelectCourtProps {
 function SelectCourt ({ availableCourts, setSelectedCourt, setSelectedModality, handleClose }: SelectCourtProps) {
   const renderItem = ({item}: ListRenderItemInfo<Court>) => {
     return (
-      <Pressable 
+      <PressableOpacity
         onPress={() => {
           setSelectedCourt(item);
           setSelectedModality(item.modalities[0]);
@@ -21,7 +22,7 @@ function SelectCourt ({ availableCourts, setSelectedCourt, setSelectedModality, 
         <View style={styles.rowLeft}>
           <Text style={styles.rowText}>{item.name}</Text>
         </View>
-      </Pressable>
+      </PressableOpacity>
     )
   }
   return (

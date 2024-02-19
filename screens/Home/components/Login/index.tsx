@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-native';
-import { StyleSheet, Text, Pressable } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { login } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
 import CustomButton from '../../../../components/CustomButton';
@@ -10,6 +10,7 @@ import ShowIcon from '../../../../assets/svgs/ShowIcon';
 import { useKeyboard } from '../../../../hooks/keyboard';
 import { validateEmail } from '../../../../utils';
 import { GlobalContextConfig } from '../../../../globalContext';
+import { PressableOpacity } from '../../../../components/PresableOpacity';
 
 interface LoginProps {
   onChangeMode: (mode: 'login' | 'signup' | 'forgotPassword') => void;
@@ -68,9 +69,9 @@ function Login ({ onChangeMode }: LoginProps) {
         errorText="Mínimo 8 caracteres"
       />
 
-      <Pressable onPress={() => onChangeMode('forgotPassword')}>
+      <PressableOpacity onPress={() => onChangeMode('forgotPassword')}>
         <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
-      </Pressable>
+      </PressableOpacity>
     
     {keyboardShown ? (
       <></>
@@ -78,9 +79,9 @@ function Login ({ onChangeMode }: LoginProps) {
       <>    
         <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleLogin} text="Iniciar sesión" disabled={!isFormValid || isLoading} />
 
-        <Pressable onPress={() => onChangeMode('signup')}>
+        <PressableOpacity onPress={() => onChangeMode('signup')}>
           <Text style={styles.footerText}>¿No tienes una cuenta? <Text style={styles.footerTextLink}>Regístrate</Text></Text>
-        </Pressable>  
+        </PressableOpacity>  
       </>
       )}     
     </>
