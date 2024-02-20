@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { GlobalContextConfig } from '../../../../globalContext';
-import { logOut } from '../../../../firebase';
+import { logOut, getUserById } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
 import EditIcon from '../../../../assets/svgs/EditIcon';
 import ProfileIcon from '../../../../assets/svgs/ProfileIcon';
@@ -25,7 +25,7 @@ function Profile() {
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState<boolean>(true);
   const [profilePicture, setProfilePicture] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const {setAuthToken} = useContext(GlobalContextConfig);
+  const {setAuthToken, userId} = useContext(GlobalContextConfig);
 
   const handleOptionPress = async () => {
     const commonOptions: ImagePicker.ImagePickerOptions = {
@@ -53,26 +53,6 @@ function Profile() {
     });
   }
 
-  const getUserInfoEndpoint = () => {
-    return new Promise<User>((resolve) => {
-      setTimeout(() => {
-        resolve(mockUser);
-      }, 500);
-    });
-  };
-
-  const getUserInfo = async () => {
-    try {
-      const response = await getUserInfoEndpoint();
-      setUserInfo(response);
-      setProfilePicture(response.avatarImgUrl || '');
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoadingUserInfo(false);
-    }
-  };
-
   const handleLogout = async () => {
     setIsLoading(true);
     const {error, data} = await logOut();
@@ -88,8 +68,20 @@ function Profile() {
   };
 
   useEffect(() => {
-    void getUserInfo();
-  }, []);
+    if (userId) {
+      setIsLoadingUserInfo(true);
+      getUserById(userId).then(({error, data}) => {
+        if (error) {
+          console.error(error);
+          setIsLoadingUserInfo(false);
+          return;
+        }
+
+        data && setUserInfo(data as User);
+        setIsLoadingUserInfo(false);
+      })
+    }
+  }, [userId, getUserById]);
 
   return (
     <SafeAreaView style={styles.container}>

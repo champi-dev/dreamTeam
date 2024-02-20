@@ -17,7 +17,7 @@ interface LoginProps {
 }
 
 function Login ({ onChangeMode }: LoginProps) {
-  const { setAuthToken } = useContext(GlobalContextConfig);
+  const { setAuthToken, setUserId } = useContext(GlobalContextConfig);
   const navigate = useNavigate();
   const keyboardShown = useKeyboard();
   
@@ -36,6 +36,8 @@ function Login ({ onChangeMode }: LoginProps) {
 
     // @ts-ignore
     setAuthToken && setAuthToken(data.stsTokenManager.accessToken);
+    // @ts-ignore
+    setUserId && setUserId(data.uid);
     setIsLoading(false);
     navigate('/main/matches');
   };
