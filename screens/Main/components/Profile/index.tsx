@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
   Image,
@@ -7,6 +7,8 @@ import {
   Text,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { GlobalContextConfig } from '../../../../globalContext';
+import { logOut } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
 import EditIcon from '../../../../assets/svgs/EditIcon';
 import ProfileIcon from '../../../../assets/svgs/ProfileIcon';
@@ -16,11 +18,14 @@ import { LoadingSkeleton } from './components/LoadingSkeleton';
 import { PressableOpacity } from '../../../../components/PresableOpacity';
 import { User } from '../../../../models/User';
 import ProfilePictureIcon from '../../../../assets/svgs/ProfilePictureIcon';
+import CustomButton from '../../../../components/CustomButton';
 
 function Profile() {
   const [userInfo, setUserInfo] = useState<User>();
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState<boolean>(true);
   const [profilePicture, setProfilePicture] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const {setAuthToken} = useContext(GlobalContextConfig);
 
   const handleOptionPress = async () => {
     const commonOptions: ImagePicker.ImagePickerOptions = {
@@ -66,6 +71,20 @@ function Profile() {
     } finally {
       setIsLoadingUserInfo(false);
     }
+  };
+
+  const handleLogout = async () => {
+    setIsLoading(true);
+    const {error, data} = await logOut();
+
+    if (error) {
+      console.error(error);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(false);
+    setAuthToken && setAuthToken('');
   };
 
   useEffect(() => {
@@ -125,6 +144,8 @@ function Profile() {
               style={styles.input}
             />
           </View>
+
+          <CustomButton style={styles.logoutBtn} type='primary' text='Cerrar sesión' onPress={handleLogout} disabled={isLoading} />
         </View>
       )}
     </SafeAreaView>
@@ -195,5 +216,9 @@ const styles = StyleSheet.create({
   },
   infoGroup: {
     width: '100%'
+  },
+  logoutBtn: {
+    width: '100%',
+    marginTop: 'auto'
   }
 });
