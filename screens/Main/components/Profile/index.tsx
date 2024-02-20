@@ -18,14 +18,15 @@ import { PressableOpacity } from '../../../../components/PresableOpacity';
 import { User } from '../../../../models/User';
 import ProfilePictureIcon from '../../../../assets/svgs/ProfilePictureIcon';
 import CustomButton from '../../../../components/CustomButton';
+import { MainScreenContextConfig } from '../../context';
 
 function Profile() {
-  const [userInfo, setUserInfo] = useState<User>();
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState<boolean>(true);
   const [profilePicture, setProfilePicture] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [nameTimeout, setNameTimeout] = useState<NodeJS.Timeout | null>(null);
   const {setAuthToken, userId} = useContext(GlobalContextConfig);
+  const {user: userInfo, setUser: setUserInfo} = useContext(MainScreenContextConfig);
 
   const handleOptionPress = async () => {
     const commonOptions: ImagePicker.ImagePickerOptions = {
@@ -94,7 +95,7 @@ function Profile() {
           return;
         }
 
-        data && setUserInfo(data as User);
+        data && setUserInfo && setUserInfo(data as User);
         setIsLoadingUserInfo(false);
       })
     }
@@ -102,7 +103,7 @@ function Profile() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {isLoadingUserInfo ? (
+      {isLoadingUserInfo && userInfo === null ? (
         <LoadingSkeleton containerStyle={styles.content} />
       ) : (
         <View style={styles.content}>
