@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "../config";
 
 interface SignUpProps {
@@ -28,6 +28,17 @@ export const login = async ({ email, password }: LoginProps) => {
   .then((userCredential) => {
     const user = userCredential.user;
     return { error: null, data: user };
+  })
+  .catch((error) => {
+    console.log(error.message);
+    return { error, data: null };
+  });
+}
+
+export const logOut = async () => {
+  return signOut(auth)
+  .then(() => {
+    return { error: null, data: 'Logged out' };
   })
   .catch((error) => {
     console.log(error.message);
