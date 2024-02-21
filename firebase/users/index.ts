@@ -1,5 +1,6 @@
-import { collection, addDoc, doc, getDoc, query, where, getDocs, updateDoc } from "firebase/firestore"; 
-import { db } from "../config";
+import { collection, addDoc, doc, query, where, getDocs, updateDoc } from "firebase/firestore";
+import { db, storage } from "../config";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export const createUser = ({ id, email }: {id: string; email: string;}) => {
   return addDoc(collection(db, "users"), {
@@ -47,11 +48,9 @@ export const updateUserPropertyById = async (userId: string, propertyToUpdate: E
   try {
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
-      // Assuming `id` is unique, there should only be one matching document.
       const userDoc = querySnapshot.docs[0];
       const userDocRef = doc(db, "users", userDoc.id);
 
-      // Update the document
       // @ts-ignore
       await updateDoc(userDocRef, propertyToUpdate);
       return { error: null, data: "User updated successfully." };
@@ -63,4 +62,17 @@ export const updateUserPropertyById = async (userId: string, propertyToUpdate: E
     console.log(error);
     return { error, data: null };
   }
+}
+
+export const uploadUserImage = ({ fileName, blob }: { fileName: string; blob: Blob; }) => {
+  const storageRef = ref(storage, `images/${fileName}`);
+
+  return uploadBytes(storageRef, blob).then((snapshot) => {
+    return getDownloadURL(snapshot.ref).then((downloadURL) => {
+      return { error: null, data: downloadURL };
+    });
+  }).catch((error) => {
+    console.error("Upload failed", error);
+    return { error, data: null };
+  });
 }

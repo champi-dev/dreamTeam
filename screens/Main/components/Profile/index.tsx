@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { GlobalContextConfig } from '../../../../globalContext';
-import { logOut, getUserById, updateUserPropertyById } from '../../../../firebase';
+import { logOut, getUserById, updateUserPropertyById, uploadUserImage } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
 import EditIcon from '../../../../assets/svgs/EditIcon';
 import ProfileIcon from '../../../../assets/svgs/ProfileIcon';
@@ -40,7 +40,26 @@ function Profile() {
     selection = await ImagePicker.launchImageLibraryAsync(commonOptions);
 
     if (selection && !selection.canceled) {
-      setProfilePicture(selection.assets[0].uri);
+      const imageUri = selection.assets[0].uri;
+      setProfilePicture(imageUri);
+
+      const fileName = selection.assets[0].fileName || `user-profile-${new Date().getTime()}`;
+      const blob = await fetch(imageUri).then(res => res.blob());
+
+      const { error, data } = await uploadUserImage({ fileName, blob });
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      if (data && userId) {
+        const { error: updateError } = await updateUserPropertyById(userId, { avatarImgUrl: data });
+
+        if (updateError) {
+          console.error(updateError);
+          return;
+        }
+      }
     }
   };
 
@@ -108,11 +127,11 @@ function Profile() {
       ) : (
         <View style={styles.content}>
           <View style={styles.profileImageContainer}>
-            {profilePicture.length ? (
+            {profilePicture.length || userInfo?.avatarImgUrl?.length ? (
               <Image
                 style={styles.profileImage}
                 source={{
-                  uri: profilePicture,
+                  uri: profilePicture || userInfo?.avatarImgUrl,
                   cache: 'force-cache'
                 }}
               />
@@ -232,3 +251,4 @@ const styles = StyleSheet.create({
     marginTop: 'auto'
   }
 });
+
