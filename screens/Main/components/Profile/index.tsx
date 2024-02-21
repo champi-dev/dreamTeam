@@ -8,24 +8,25 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { GlobalContextConfig } from '../../../../globalContext';
-import { logOut } from '../../../../firebase';
+import { logOut, getUserById, updateUserPropertyById, uploadUserImage } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
 import EditIcon from '../../../../assets/svgs/EditIcon';
 import ProfileIcon from '../../../../assets/svgs/ProfileIcon';
 import SoccerballIcon from '../../../../assets/svgs/SoccerballIcon';
-import { mockUser } from './mockData';
 import { LoadingSkeleton } from './components/LoadingSkeleton';
 import { PressableOpacity } from '../../../../components/PresableOpacity';
 import { User } from '../../../../models/User';
 import ProfilePictureIcon from '../../../../assets/svgs/ProfilePictureIcon';
 import CustomButton from '../../../../components/CustomButton';
+import { MainScreenContextConfig } from '../../context';
 
 function Profile() {
-  const [userInfo, setUserInfo] = useState<User>();
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState<boolean>(true);
   const [profilePicture, setProfilePicture] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const {setAuthToken} = useContext(GlobalContextConfig);
+  const [nameTimeout, setNameTimeout] = useState<NodeJS.Timeout | null>(null);
+  const {setAuthToken, userId} = useContext(GlobalContextConfig);
+  const {user: userInfo, setUser: setUserInfo} = useContext(MainScreenContextConfig);
 
   const handleOptionPress = async () => {
     const commonOptions: ImagePicker.ImagePickerOptions = {
@@ -39,39 +40,55 @@ function Profile() {
     selection = await ImagePicker.launchImageLibraryAsync(commonOptions);
 
     if (selection && !selection.canceled) {
-      setProfilePicture(selection.assets[0].uri);
+      const imageUri = selection.assets[0].uri;
+      setProfilePicture(imageUri);
+
+      const fileName = selection.assets[0].fileName || `user-profile-${new Date().getTime()}`;
+      const blob = await fetch(imageUri).then(res => res.blob());
+
+      const { error, data } = await uploadUserImage({ fileName, blob });
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      if (data && userId) {
+        const { error: updateError } = await updateUserPropertyById(userId, { avatarImgUrl: data });
+
+        if (updateError) {
+          console.error(updateError);
+          return;
+        }
+      }
     }
   };
 
   const handleNameInputChange = (text: string) => {
-    // @ts-ignore
-    setUserInfo((prev) => {
-      return {
-        ...prev,
-        name: text
-      };
-    });
-  }
-
-  const getUserInfoEndpoint = () => {
-    return new Promise<User>((resolve) => {
-      setTimeout(() => {
-        resolve(mockUser);
-      }, 500);
-    });
-  };
-
-  const getUserInfo = async () => {
-    try {
-      const response = await getUserInfoEndpoint();
-      setUserInfo(response);
-      setProfilePicture(response.avatarImgUrl || '');
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoadingUserInfo(false);
+    if (nameTimeout) {
+      clearTimeout(nameTimeout);
     }
-  };
+
+    const timeout = setTimeout(() => {
+      // @ts-ignore
+      setUserInfo((prev) => {
+        userId && updateUserPropertyById(userId, {name: text}).then(({ error, data }) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+
+          console.log(data);
+        })
+
+        return {
+          ...prev,
+          name: text
+        };
+      });
+    }, 500);
+  
+    setNameTimeout(timeout);
+  }
 
   const handleLogout = async () => {
     setIsLoading(true);
@@ -88,21 +105,33 @@ function Profile() {
   };
 
   useEffect(() => {
-    void getUserInfo();
-  }, []);
+    if (userId) {
+      setIsLoadingUserInfo(true);
+      getUserById(userId).then(({error, data}) => {
+        if (error) {
+          console.error(error);
+          setIsLoadingUserInfo(false);
+          return;
+        }
+
+        data && setUserInfo && setUserInfo(data as User);
+        setIsLoadingUserInfo(false);
+      })
+    }
+  }, [userId, getUserById]);
 
   return (
     <SafeAreaView style={styles.container}>
-      {isLoadingUserInfo ? (
+      {isLoadingUserInfo && userInfo === null ? (
         <LoadingSkeleton containerStyle={styles.content} />
       ) : (
         <View style={styles.content}>
           <View style={styles.profileImageContainer}>
-            {profilePicture.length ? (
+            {profilePicture.length || userInfo?.avatarImgUrl?.length ? (
               <Image
                 style={styles.profileImage}
                 source={{
-                  uri: profilePicture,
+                  uri: profilePicture || userInfo?.avatarImgUrl,
                   cache: 'force-cache'
                 }}
               />
@@ -222,3 +251,4 @@ const styles = StyleSheet.create({
     marginTop: 'auto'
   }
 });
+

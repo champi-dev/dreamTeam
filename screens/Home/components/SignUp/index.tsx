@@ -17,7 +17,7 @@ interface SignUpProps {
 }
 
 function SignUp ({ onChangeMode }: SignUpProps) {
-  const { setAuthToken } = useContext(GlobalContextConfig);
+  const { setAuthToken, setUserId } = useContext(GlobalContextConfig);
   const navigate = useNavigate();
   const keyboardShown = useKeyboard();
 
@@ -50,6 +50,8 @@ function SignUp ({ onChangeMode }: SignUpProps) {
       return;
     }
 
+    // @ts-ignore
+    setUserId && setUserId(data.uid);
     setIsLoading(false);
     navigate('/main/profile')
   }

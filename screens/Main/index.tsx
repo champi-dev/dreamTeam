@@ -10,18 +10,22 @@ import ChartIcon from "../../assets/svgs/ChartIcon";
 import SoccerballIcon from "../../assets/svgs/SoccerballIcon";
 import ProfileIcon from "../../assets/svgs/ProfileIcon";
 import { PressableOpacity } from "../../components/PresableOpacity";
+import { MainScreenContext } from "./context";
 
 function Main () {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
+
   return <View style={styles.container}>
-    <Routes>
-      <Route path="/matches/*" element={<Matches />} />
-      <Route path="/matchesStats" element={<MatchesStats />} />
-      <Route path="/playerStats" element={<PlayerStats />} />
-      <Route path="/profile" element={<Profile />} />
-    </Routes>
+    <MainScreenContext>
+      <Routes>
+        <Route path="/matches/*" element={<Matches />} />
+        <Route path="/matchesStats" element={<MatchesStats />} />
+        <Route path="/playerStats" element={<PlayerStats />} />
+        <Route path="/profile" element={<Profile />} />
+      </Routes>
+    </MainScreenContext>
 
     <View style={styles.bottomBar}>
       <View style={styles.bottomBarIcons}>

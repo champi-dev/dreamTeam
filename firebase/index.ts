@@ -1,8 +1,8 @@
-import {auth, db} from './config';
-export {auth, db};
+import {auth, db, storage} from './config';
+export {auth, db, storage};
 
 import {signUp, login, logOut} from './authentication'
 export {signUp, login, logOut};
 
-import {createUser} from './users'
-export {createUser};
+import {createUser, getUserById, updateUserPropertyById, uploadUserImage} from './users'
+export {createUser, getUserById, updateUserPropertyById, uploadUserImage};
