@@ -11,6 +11,7 @@ import { useKeyboard } from '../../../../hooks/keyboard';
 import { validateEmail } from '../../../../utils';
 import { GlobalContextConfig } from '../../../../globalContext';
 import { PressableOpacity } from '../../../../components/PresableOpacity';
+import HideIcon from '../../../../assets/svgs/HideIcon';
 
 interface LoginProps {
   onChangeMode: (mode: 'login' | 'signup' | 'forgotPassword') => void;
@@ -23,6 +24,7 @@ function Login ({ onChangeMode }: LoginProps) {
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
   const handleLogin = async () => {
@@ -64,11 +66,13 @@ function Login ({ onChangeMode }: LoginProps) {
         placeholderTextColor="#65656B" 
         value={password}
         FrontIcon={PasswordIcon}
-        BackIcon={ShowIcon}
+        BackIcon={isPasswordVisible ? ShowIcon : HideIcon}
         style={styles.input}
         onChangeText={(text) => setPassword(text)}
         isValid={isPasswordValid}
         errorText="Mínimo 8 caracteres"
+        secureTextEntry={!isPasswordVisible}
+        onBackIconPress={() => setIsPasswordVisible(prev => !prev)}
       />
 
       <PressableOpacity onPress={() => onChangeMode('forgotPassword')}>
