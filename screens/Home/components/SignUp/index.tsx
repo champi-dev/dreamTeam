@@ -11,6 +11,7 @@ import { validateEmail } from '../../../../utils';
 import { useKeyboard } from '../../../../hooks/keyboard';
 import { GlobalContextConfig } from '../../../../globalContext';
 import { PressableOpacity } from '../../../../components/PresableOpacity';
+import HideIcon from '../../../../assets/svgs/HideIcon';
 
 interface SignUpProps {
   onChangeMode: (mode: 'login' | 'signup') => void;
@@ -25,6 +26,8 @@ function SignUp ({ onChangeMode }: SignUpProps) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
 
   const isEmailValid = validateEmail(email);
   const isPasswordValid = password.length >= 8;
@@ -77,8 +80,10 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         value={password} 
         onChangeText={(text) => setPassword(text)}
         isValid={isPasswordValid}
-        BackIcon={ShowIcon}
+        BackIcon={isPasswordVisible ? ShowIcon : HideIcon}
         errorText="Contraseña Invalida"
+        secureTextEntry={!isPasswordVisible}
+        onBackIconPress={() => setIsPasswordVisible(prev => !prev)}
       />
 
       <CustomInput 
@@ -89,8 +94,10 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         value={confirmPassword}
         onChangeText={(text) => setConfirmPassword(text)}
         isValid={isConfirmPasswordValid}
-        BackIcon={ShowIcon}
+        BackIcon={isConfirmPasswordVisible ? ShowIcon : HideIcon}
         errorText="Las contraseñas deben coincidir"
+        secureTextEntry={!isConfirmPasswordVisible}
+        onBackIconPress={() => setIsConfirmPasswordVisible(prev => !prev)}
       />
     
       {

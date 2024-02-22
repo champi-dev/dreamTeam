@@ -18,9 +18,10 @@ interface CustomInputProps extends TextInputProps {
   asButton?: boolean;
   isValid?: boolean;
   errorText?: string;
+  onBackIconPress?: () => void;
 }
 
-function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled, style, onChangeText, onBlur, onFocus, onPressIn, asButton, isValid, errorText, ...rest }: CustomInputProps) {
+function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, BackIcon, styling, disabled, style, onChangeText, onBlur, onFocus, onPressIn, onBackIconPress, asButton, isValid, errorText, ...rest }: CustomInputProps) {
   const [innerValue, setInnerValue] = useState(value);
   const [innerIsValid, setInnerIsValid] = useState(true);
 
@@ -57,7 +58,7 @@ function CustomInput ({ placeholder, placeholderTextColor, value, FrontIcon, Bac
         ) : <></>}        
 
         {!!FrontIcon ? <View style={styles.inputIconFront}><FrontIcon /></View> : <></>}
-        {!!BackIcon ? <View style={styles.inputIconBack}><BackIcon /></View> : <></>}
+        {!!BackIcon ? <PressableOpacity onPress={onBackIconPress} style={styles.inputIconBack}><BackIcon /></PressableOpacity> : <></>}
       </View>
   );
 }
