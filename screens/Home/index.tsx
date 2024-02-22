@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, Keyboard } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CustomButton from '../../components/CustomButton';
 import { theme } from '../../theme';
@@ -7,6 +7,7 @@ import Login from './components/Login';
 import SignUp from './components/SignUp';
 import ForgotPassword from './components/ForgotPassword';
 import { PressableOpacity } from '../../components/PresableOpacity';
+import { useKeyboard } from '../../hooks/keyboard';
 
 type Mode = 'login' | 'signup' | 'forgotPassword';
 
@@ -14,6 +15,7 @@ function Home () {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['60%'], []);
+  const keyboardShown = useKeyboard();
 
   const [currentMode, setCurrentMode] = useState<Mode>('login');
 
@@ -32,13 +34,21 @@ function Home () {
     <SafeAreaView style={styles.screen}>
       <View style={styles.wrapper}>
         <Image style={styles.image} source={require('../../assets/soccerball.png')} />
-        <Text style={styles.text}>Dream Team</Text>
-        <Text style={styles.secondaryText}>Entra ahora y unete a los partidos de fútbol en Montería</Text>
+        {
+          keyboardShown ? (
+            <></>
+          ) : (
+            <>
+              <Text style={styles.text}>Dream Team</Text>
+              <Text style={styles.secondaryText}>Entra ahora y unete a los partidos de fútbol en Montería</Text>
 
-        <View style={styles.buttonGroup}>
-          <CustomButton type="primary" style={styles.buttonContainer} onPress={() => handleExpand('login')} text="Iniciar sesión" />
-          <CustomButton type="secondary" onPress={() => handleExpand('signup')} text="Registrarme" />
-        </View> 
+              <View style={styles.buttonGroup}>
+                <CustomButton type="primary" style={styles.buttonContainer} onPress={() => handleExpand('login')} text="Iniciar sesión" />
+                <CustomButton type="secondary" onPress={() => handleExpand('signup')} text="Registrarme" />
+              </View> 
+            </>
+          )
+        }
       </View>            
     </SafeAreaView>
 
@@ -53,7 +63,10 @@ function Home () {
         enablePanDownToClose={true}
         backgroundStyle={styles.contentContainer}
         handleIndicatorStyle={styles.handleIndicator}
-        onClose={() => setIsBottomSheetOpen(false)}
+        onClose={() => {
+          setIsBottomSheetOpen(false)
+          Keyboard.dismiss()
+        }}
         keyboardBehavior='interactive'
       >
         <View style={styles.bottomSheetContent}>
