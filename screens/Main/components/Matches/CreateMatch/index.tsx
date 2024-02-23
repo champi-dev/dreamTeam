@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { Text, StyleSheet, View, Image } from "react-native";
+import React, { useState, useContext, useEffect, useRef, useMemo, useCallback } from "react";
+import { Text, StyleSheet, View } from "react-native";
 import { useNavigate } from 'react-router-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { MainScreenContextConfig } from "../../../context";
 import CustomUserImage from "../../../../../components/CustomUserImage";
 import CustomButton from "../../../../../components/CustomButton";
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
@@ -14,24 +15,23 @@ import ClockIcon from "../../../../../assets/svgs/ClockIcon";
 import ProfileIcon from "../../../../../assets/svgs/ProfileIcon";
 import { User } from "../../../../../models/User";
 import { Court } from "../../../../../models/Court";
-import { mockCourts } from "./mockData";
 import InvitePlayers from "./components/InvitePlayers";
 import SelectCourt from "./components/SelectCourt";
 import SelectModality from "./components/SelectModality";
 import { useKeyboard } from "../../../../../hooks/keyboard";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
-import { getUsersByNamePrefix } from "../../../../../firebase";
+import { getUsersByNamePrefix, getAllCourts } from "../../../../../firebase";
 
 type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
 
 function CreateMatch () {
   const navigate = useNavigate();
+  const { availableCourts, setAvailableCourts } = useContext(MainScreenContextConfig);
   const [invitedPlayers, setInvitedPlayers] = useState<User[]>([]);
   const [searchResultPlayers, setSearchResultPlayers] = useState<User[]>([]);
   const [searchPlayerText, setSearchPlayerText] = useState<string>("");
   const [searchPlayerTextTimeout, setSearchPlayerTextTimeout] = useState<NodeJS.Timeout | null>(null);
   const [selectedBottomSheetView, setSelectedBottomSheetView] = useState<BottomSheetView>("invitePlayers");
-  const [availableCourts, setAvailableCourts] = useState<Court[]>([]);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
   const [selectedModality, setSelectedModality] = useState<string>("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -107,15 +107,23 @@ function CreateMatch () {
   }, [searchPlayerText]);
 
   useEffect(() => {
-    setAvailableCourts(mockCourts);
-  }, [])
+    if (!availableCourts || !availableCourts.length) {
+      getAllCourts().then(({error, data}) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        setAvailableCourts && setAvailableCourts(data as Court[]);
+      });
+    }
+  }, [availableCourts]);
 
   useEffect(() => {
-    if (availableCourts.length) {
+    if (availableCourts && availableCourts.length) {
       setSelectedCourt(availableCourts[0]);
       setSelectedModality(availableCourts[0].modalities[0]);
     }
-  }, [availableCourts])
+  }, [availableCourts]);
 
   return (<>
     <View style={styles.header}>
@@ -227,7 +235,7 @@ function CreateMatch () {
 
           {selectedBottomSheetView === "selectCourt" ? (
             <SelectCourt 
-              availableCourts={availableCourts} 
+              availableCourts={availableCourts || []} 
               setSelectedCourt={setSelectedCourt} 
               setSelectedModality={setSelectedModality} 
               handleClose={handleClose}

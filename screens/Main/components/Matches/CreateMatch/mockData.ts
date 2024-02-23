@@ -69,7 +69,7 @@ export const mockCourts: Court[] = [
   },
   {
     id: "test2",
-    name: "Área chica",
+    name: "Área Chica",
     address: "Calle 2",
     modalities: ["7 vs 7", "6 vs 6", "5 vs 5"],
   }
