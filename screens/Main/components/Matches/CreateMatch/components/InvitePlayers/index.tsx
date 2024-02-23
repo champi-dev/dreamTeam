@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Image, Text, StyleSheet, FlatList, ListRenderItemInfo } from "react-native";
+import { View, Text, StyleSheet, FlatList, ListRenderItemInfo } from "react-native";
 import CustomButton from "../../../../../../../components/CustomButton";
 import CustomUserImage from "../../../../../../../components/CustomUserImage";
 import { User } from "../../../../../../../models/User";
+import { capitalizeString } from "../../../../../../../utils";
 
 interface InvitePlayersProps {
   searchResultPlayers: User[];
@@ -14,7 +15,7 @@ function InvitePlayers ({ searchResultPlayers, handleInvitePlayer, isUserInInvit
   const renderItem = ({ item }: ListRenderItemInfo<User>) => (
     <View style={styles.rowLeft}>
       <CustomUserImage user={item} />
-      <Text style={styles.rowText}>{item.name || item.email}</Text>
+      <Text style={styles.rowText}>{capitalizeString(item.name || item.email)}</Text>
       <CustomButton 
         text={isUserInInvitedPlayers(item.id) ? 'Eliminar' : 'Invitar'} 
         onPress={(e) => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, StyleSheet, View, ScrollView, Image } from "react-native";
+import { Text, StyleSheet, View, ScrollView } from "react-native";
 import { useNavigate } from 'react-router-native';
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
@@ -9,6 +9,7 @@ import { mockData } from "./mockData";
 import { Match } from "../../../../../models/Match";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
+import { capitalizeString } from "../../../../../utils";
 
 function PastMatchResult () {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ function PastMatchResult () {
         {!!matchData ? matchData.whiteTeam.map((singlePlayer) => (
           <View style={styles.item} key={singlePlayer.id}>
             <CustomUserImage key={singlePlayer.id} user={singlePlayer} />
-            <Text style={styles.userName}>{singlePlayer.name}</Text>
+            <Text style={styles.userName}>{capitalizeString(singlePlayer.name || singlePlayer.email)}</Text>
             <CustomInput 
               keyboardType="numeric"
               placeholder="Goles" 
@@ -75,7 +76,7 @@ function PastMatchResult () {
         {!!matchData ? matchData.blackTeam.map((singlePlayer) => (
           <View style={styles.item} key={singlePlayer.id}>
             <CustomUserImage key={singlePlayer.id} user={singlePlayer} />
-            <Text style={styles.userName}>{singlePlayer.name}</Text>
+            <Text style={styles.userName}>{capitalizeString(singlePlayer.name || singlePlayer.email)}</Text>
             <CustomInput 
               keyboardType="numeric"
               placeholder="Goles" 

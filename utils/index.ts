@@ -6,3 +6,6 @@ export { validateEmail };
 
 import { getRandomColor } from "./color";
 export { getRandomColor };
+
+import { capitalizeString } from "./strings";
+export { capitalizeString };

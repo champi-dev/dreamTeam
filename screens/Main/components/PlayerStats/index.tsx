@@ -3,6 +3,7 @@ import { SafeAreaView, View, Text, StyleSheet, Image } from "react-native";
 import { mockData } from "./mockData";
 import { User } from "../../../../models/User";
 import CustomUserImage from "../../../../components/CustomUserImage";
+import { capitalizeString } from "../../../../utils";
 
 function PlayerStats () {
   const [players, setPlayers] = useState<User[]>([]);
@@ -30,7 +31,7 @@ function PlayerStats () {
             <View style={styles.row} key={index}>
               <View style={styles.rowLeft}>
                 <CustomUserImage user={singleUser} />
-                <Text style={styles.rowText}>{singleUser.name || singleUser.email}</Text>
+                <Text style={styles.rowText}>{capitalizeString(singleUser.name || singleUser.email)}</Text>
               </View>
               <View style={styles.rowRight}>
                 <Text style={styles.rowText}>{singleUser.goals}</Text>
