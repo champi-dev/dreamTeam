@@ -3,6 +3,7 @@ import { Text, StyleSheet, View, Image } from "react-native";
 import { useNavigate } from 'react-router-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import CustomUserImage from "../../../../../components/CustomUserImage";
 import CustomButton from "../../../../../components/CustomButton";
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import CustomInput from "../../../../../components/CustomInput";
@@ -13,12 +14,13 @@ import ClockIcon from "../../../../../assets/svgs/ClockIcon";
 import ProfileIcon from "../../../../../assets/svgs/ProfileIcon";
 import { User } from "../../../../../models/User";
 import { Court } from "../../../../../models/Court";
-import { mockusersToSearchFrom, mockCourts } from "./mockData";
+import { mockCourts } from "./mockData";
 import InvitePlayers from "./components/InvitePlayers";
 import SelectCourt from "./components/SelectCourt";
 import SelectModality from "./components/SelectModality";
 import { useKeyboard } from "../../../../../hooks/keyboard";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
+import { getUsersByNamePrefix } from "../../../../../firebase";
 
 type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
 
@@ -27,6 +29,7 @@ function CreateMatch () {
   const [invitedPlayers, setInvitedPlayers] = useState<User[]>([]);
   const [searchResultPlayers, setSearchResultPlayers] = useState<User[]>([]);
   const [searchPlayerText, setSearchPlayerText] = useState<string>("");
+  const [searchPlayerTextTimeout, setSearchPlayerTextTimeout] = useState<NodeJS.Timeout | null>(null);
   const [selectedBottomSheetView, setSelectedBottomSheetView] = useState<BottomSheetView>("invitePlayers");
   const [availableCourts, setAvailableCourts] = useState<Court[]>([]);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
@@ -84,8 +87,22 @@ function CreateMatch () {
 
   useEffect(() => {
     if (searchPlayerText.length >= 3) {
-      setSearchResultPlayers(mockusersToSearchFrom.filter((singleUser) => singleUser.name.toLowerCase().includes(searchPlayerText.toLowerCase())));
-      handleExpand();
+      if (searchPlayerTextTimeout) {
+        clearTimeout(searchPlayerTextTimeout);
+      }
+
+      const nameTimeout = setTimeout(() => {
+        getUsersByNamePrefix(searchPlayerText).then(({error, data}) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          setSearchResultPlayers(data as User[]);
+          handleExpand();
+        });
+      }, 200)
+
+      setSearchPlayerTextTimeout(nameTimeout);
     }
   }, [searchPlayerText]);
 
@@ -121,7 +138,7 @@ function CreateMatch () {
 
     {invitedPlayers.length ? <View style={styles.invitedPlayers}>
       {invitedPlayers.length ? invitedPlayers.map((singlePlayer) => (
-        <Image key={singlePlayer.id} style={[styles.userImage, styles.userImageMargin]} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+        <CustomUserImage user={singlePlayer} key={singlePlayer.id} />
       )) : <></>}
     </View> : <></>}
 
@@ -264,6 +281,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     flexWrap: "wrap",
+    marginBottom: 16
   },
   userImage: {
     width: 36,

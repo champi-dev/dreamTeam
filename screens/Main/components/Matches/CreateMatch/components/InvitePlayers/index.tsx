@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Image, Text, StyleSheet, FlatList, ListRenderItemInfo } from "react-native";
 import CustomButton from "../../../../../../../components/CustomButton";
+import CustomUserImage from "../../../../../../../components/CustomUserImage";
 import { User } from "../../../../../../../models/User";
 
 interface InvitePlayersProps {
@@ -10,11 +11,10 @@ interface InvitePlayersProps {
 }
 
 function InvitePlayers ({ searchResultPlayers, handleInvitePlayer, isUserInInvitedPlayers }: InvitePlayersProps) {
-
   const renderItem = ({ item }: ListRenderItemInfo<User>) => (
     <View style={styles.rowLeft}>
-      <Image style={styles.userImage} source={{ uri: item.avatarImgUrl, cache: "force-cache" }} />
-      <Text style={styles.rowText}>{item.name}</Text>
+      <CustomUserImage user={item} />
+      <Text style={styles.rowText}>{item.name || item.email}</Text>
       <CustomButton 
         text={isUserInInvitedPlayers(item.id) ? 'Eliminar' : 'Invitar'} 
         onPress={(e) => {

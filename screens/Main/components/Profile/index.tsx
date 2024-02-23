@@ -71,7 +71,7 @@ function Profile() {
     const timeout = setTimeout(() => {
       // @ts-ignore
       setUserInfo((prev) => {
-        userId && updateUserPropertyById(userId, {name: text}).then(({ error, data }) => {
+        userId && updateUserPropertyById(userId, {name: text.toLowerCase()}).then(({ error, data }) => {
           if (error) {
             console.error(error);
             return;

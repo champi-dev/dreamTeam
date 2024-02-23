@@ -8,6 +8,7 @@ import CustomInput from "../../../../../components/CustomInput";
 import { mockData } from "./mockData";
 import { Match } from "../../../../../models/Match";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
+import CustomUserImage from "../../../../../components/CustomUserImage";
 
 function PastMatchResult () {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ function PastMatchResult () {
 
         {!!matchData ? matchData.whiteTeam.map((singlePlayer) => (
           <View style={styles.item} key={singlePlayer.id}>
-            <Image key={singlePlayer.id} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+            <CustomUserImage key={singlePlayer.id} user={singlePlayer} />
             <Text style={styles.userName}>{singlePlayer.name}</Text>
             <CustomInput 
               keyboardType="numeric"
@@ -73,7 +74,7 @@ function PastMatchResult () {
         )) : <></>}
         {!!matchData ? matchData.blackTeam.map((singlePlayer) => (
           <View style={styles.item} key={singlePlayer.id}>
-            <Image key={singlePlayer.id} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+            <CustomUserImage key={singlePlayer.id} user={singlePlayer} />
             <Text style={styles.userName}>{singlePlayer.name}</Text>
             <CustomInput 
               keyboardType="numeric"

@@ -38,12 +38,10 @@ function SignUp ({ onChangeMode }: SignUpProps) {
     if (error) {
       setIsLoading(false);
       return;
-    }
-    // @ts-ignore
-    setAuthToken && setAuthToken(data.stsTokenManager.accessToken);
+    }    
     
     // @ts-ignore
-    const { error: createUserError } = await createUser({ email, id: data.uid});
+    const { error: createUserError } = await createUser({ email: email.toLowerCase(), id: data.uid});
 
     if (createUserError) {
       setIsLoading(false);
@@ -53,7 +51,9 @@ function SignUp ({ onChangeMode }: SignUpProps) {
     // @ts-ignore
     setUserId && setUserId(data.uid);
     setIsLoading(false);
-    navigate('/main/profile')
+    // @ts-ignore
+    setAuthToken && setAuthToken(data.stsTokenManager.accessToken);
+    navigate('/main/profile');
   }
   
   return (  
