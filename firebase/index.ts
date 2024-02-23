@@ -9,3 +9,6 @@ export {createUser, getUserById, updateUserPropertyById, uploadUserImage, getUse
 
 import { getAllCourts } from './courts';
 export { getAllCourts };
+
+import { createMatch } from './matches';
+export { createMatch };

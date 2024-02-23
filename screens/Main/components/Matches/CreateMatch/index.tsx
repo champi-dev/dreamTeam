@@ -20,12 +20,14 @@ import SelectCourt from "./components/SelectCourt";
 import SelectModality from "./components/SelectModality";
 import { useKeyboard } from "../../../../../hooks/keyboard";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
-import { getUsersByNamePrefix, getAllCourts } from "../../../../../firebase";
+import { getUsersByNamePrefix, getAllCourts, createMatch } from "../../../../../firebase";
+import { GlobalContextConfig } from "../../../../../globalContext";
 
 type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
 
 function CreateMatch () {
   const navigate = useNavigate();
+  const { userId } = useContext(GlobalContextConfig);
   const { availableCourts, setAvailableCourts } = useContext(MainScreenContextConfig);
   const [invitedPlayers, setInvitedPlayers] = useState<User[]>([]);
   const [searchResultPlayers, setSearchResultPlayers] = useState<User[]>([]);
@@ -38,6 +40,7 @@ function CreateMatch () {
   const [datePickerMode, setDatePickerMode] = useState<"date" | "time">("date");
   const [matchDate, setMatchDate] = useState<Date | null>(null);
   const [matchTime, setMatchTime] = useState<Date | null>(null);
+  const [isCreateMatchLoading, setIsCreateMatchLoading] = useState(false);
   const keyboardShown = useKeyboard()
 
   const isFormValid = selectedCourt && selectedModality && matchDate && matchTime;
@@ -80,6 +83,28 @@ function CreateMatch () {
     }
     hideDatePicker();
   };
+
+  const handleCreateMatch = async () => {
+    setIsCreateMatchLoading(true);
+    const {error, data} = await createMatch({
+      ownerId: `${userId || 0}`,
+      blackTeam: [],
+      whiteTeam: [],
+      court: `${selectedCourt?.id || 0}`,
+      date: matchDate?.toLocaleDateString() || "",
+      playersPerTeam: parseInt(selectedModality[0]),
+      time: matchTime?.toLocaleTimeString() || "",
+    });
+
+    if (error) {
+      console.error(error);
+      setIsCreateMatchLoading(false);
+      return;
+    }
+
+    setIsCreateMatchLoading(false);
+    navigate('/main/matches');
+  }
 
   const isUserInInvitedPlayers = useCallback((userId: string) => {
     return invitedPlayers.find((singlePlayer) => singlePlayer.id === userId);
@@ -212,7 +237,7 @@ function CreateMatch () {
     { 
       keyboardShown    
         ? <></>
-        : <CustomButton text="Crear partido" onPress={() => navigate('/main/matches')} type="primary" disabled={!isFormValid} />
+        : <CustomButton text="Crear partido" onPress={handleCreateMatch} type="primary" disabled={!isFormValid || isCreateMatchLoading} />
     }
 
     <BottomSheet
