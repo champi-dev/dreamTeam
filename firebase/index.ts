@@ -12,3 +12,6 @@ export { getAllCourts };
 
 import { createMatch } from './matches';
 export { createMatch };
+
+import { createNotification } from './notifications';
+export { createNotification };

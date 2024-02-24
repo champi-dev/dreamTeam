@@ -20,7 +20,7 @@ import SelectCourt from "./components/SelectCourt";
 import SelectModality from "./components/SelectModality";
 import { useKeyboard } from "../../../../../hooks/keyboard";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
-import { getUsersByNamePrefix, getAllCourts, createMatch } from "../../../../../firebase";
+import { getUsersByNamePrefix, getAllCourts, createMatch, createNotification } from "../../../../../firebase";
 import { GlobalContextConfig } from "../../../../../globalContext";
 
 type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
@@ -28,7 +28,7 @@ type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
 function CreateMatch () {
   const navigate = useNavigate();
   const { userId } = useContext(GlobalContextConfig);
-  const { availableCourts, setAvailableCourts } = useContext(MainScreenContextConfig);
+  const { availableCourts, setAvailableCourts, user } = useContext(MainScreenContextConfig);
   const [invitedPlayers, setInvitedPlayers] = useState<User[]>([]);
   const [searchResultPlayers, setSearchResultPlayers] = useState<User[]>([]);
   const [searchPlayerText, setSearchPlayerText] = useState<string>("");
@@ -86,7 +86,7 @@ function CreateMatch () {
 
   const handleCreateMatch = async () => {
     setIsCreateMatchLoading(true);
-    const {error, data} = await createMatch({
+    const { error, data: matchId } = await createMatch({
       ownerId: `${userId || 0}`,
       blackTeam: [],
       whiteTeam: [],
@@ -101,6 +101,21 @@ function CreateMatch () {
       setIsCreateMatchLoading(false);
       return;
     }
+
+    invitedPlayers.map(async (singlePlayer) => {
+      const {error} = await createNotification({
+        highlightedText: (user?.name || user?.email) as string,
+        regularText: "te ha invitado a un partido",
+        receiverId: singlePlayer.id,
+        matchId: matchId as string,
+        senderId: userId as string,
+      });
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+    });
 
     setIsCreateMatchLoading(false);
     navigate('/main/matches');
