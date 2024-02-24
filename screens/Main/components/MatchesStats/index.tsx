@@ -4,6 +4,7 @@ import ShirtIcon from "../../../../assets/svgs/ShirtIcon";
 import { Match } from "../../../../models/Match";
 import { mockData } from "./mockData";
 import { PressableOpacity } from "../../../../components/PresableOpacity";
+import CustomUserImage from "../../../../components/CustomUserImage";
 import { useNavigate } from "react-router-native";
 
 function MatchesStats () {
@@ -27,14 +28,14 @@ function MatchesStats () {
           <ScrollView contentContainerStyle={styles.topTeam} horizontal showsHorizontalScrollIndicator={false}>
             <ShirtIcon style={styles.shirtIcon} fill="#fff" />
             {singleMatch.whiteTeam.map((user, userIndex) => (
-              <Image key={userIndex} style={styles.userImage} source={{ uri: user.avatarImgUrl, cache: "force-cache" }} />
+              <CustomUserImage key={userIndex} user={user} />
             ))}
           </ScrollView>
 
           <ScrollView contentContainerStyle={styles.bottomTeam} horizontal showsHorizontalScrollIndicator={false}>
             <ShirtIcon style={styles.shirtIcon} fill="#000" />
-            {singleMatch.blackTeam.map((singleUser, userIndex) => (
-              <Image key={userIndex} style={styles.userImage} source={{ uri: singleUser.avatarImgUrl, cache: "force-cache" }} />    
+            {singleMatch.blackTeam.map((user, userIndex) => (
+              <CustomUserImage key={userIndex} user={user} /> 
             ))}
           </ScrollView>
           </View>            

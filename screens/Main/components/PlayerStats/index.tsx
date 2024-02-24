@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView, View, Text, StyleSheet, Image } from "react-native";
 import { mockData } from "./mockData";
 import { User } from "../../../../models/User";
+import CustomUserImage from "../../../../components/CustomUserImage";
+import { capitalizeString } from "../../../../utils";
 
 function PlayerStats () {
   const [players, setPlayers] = useState<User[]>([]);
@@ -25,14 +27,14 @@ function PlayerStats () {
             </View>
           </View>
 
-          {players.length ? players.map(({name, goals, avatarImgUrl}, index) => (
+          {players.length ? players.map((singleUser, index) => (
             <View style={styles.row} key={index}>
               <View style={styles.rowLeft}>
-                <Image style={styles.userImage} source={{ uri: avatarImgUrl, cache: "force-cache" }} />
-                <Text style={styles.rowText}>{name}</Text>
+                <CustomUserImage user={singleUser} />
+                <Text style={styles.rowText}>{capitalizeString(singleUser.name || singleUser.email)}</Text>
               </View>
               <View style={styles.rowRight}>
-                <Text style={styles.rowText}>{goals}</Text>
+                <Text style={styles.rowText}>{singleUser.goals}</Text>
               </View>
             </View>
           )) : <></>}

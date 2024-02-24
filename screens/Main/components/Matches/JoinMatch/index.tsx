@@ -10,6 +10,7 @@ import { Match } from "../../../../../models/Match";
 import { getDayName, convertTimeTo12HourFormat } from "../../../../../utils";
 import { User } from "../../../../../models/User";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
+import CustomUserImage from "../../../../../components/CustomUserImage";
 
 function JoinMatch () {
   const navigate = useNavigate();
@@ -42,14 +43,14 @@ function JoinMatch () {
             <ScrollView contentContainerStyle={styles.topTeam} horizontal>
               <ShirtIcon style={styles.shirtIcon} fill="#fff" />
               {item.whiteTeam.map((singlePlayer, playerIndex) => (
-                <Image key={playerIndex} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+                <CustomUserImage key={playerIndex} user={singlePlayer} />
               ))}              
             </ScrollView>
 
             <ScrollView contentContainerStyle={styles.bottomTeam} horizontal>
               <ShirtIcon style={styles.shirtIcon} fill="#000" />
               {item.blackTeam.map((singlePlayer, playerIndex) => (
-                <Image key={playerIndex} style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+                <CustomUserImage key={playerIndex} user={singlePlayer} />
               ))}    
             </ScrollView>
 

@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
-import { Text, StyleSheet, View, Image } from "react-native";
+import React, { useState, useContext, useEffect, useRef, useMemo, useCallback } from "react";
+import { Text, StyleSheet, View } from "react-native";
 import { useNavigate } from 'react-router-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { MainScreenContextConfig } from "../../../context";
+import CustomUserImage from "../../../../../components/CustomUserImage";
 import CustomButton from "../../../../../components/CustomButton";
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import CustomInput from "../../../../../components/CustomInput";
@@ -13,28 +15,32 @@ import ClockIcon from "../../../../../assets/svgs/ClockIcon";
 import ProfileIcon from "../../../../../assets/svgs/ProfileIcon";
 import { User } from "../../../../../models/User";
 import { Court } from "../../../../../models/Court";
-import { mockusersToSearchFrom, mockCourts } from "./mockData";
 import InvitePlayers from "./components/InvitePlayers";
 import SelectCourt from "./components/SelectCourt";
 import SelectModality from "./components/SelectModality";
 import { useKeyboard } from "../../../../../hooks/keyboard";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
+import { getUsersByNamePrefix, getAllCourts, createMatch, createNotification } from "../../../../../firebase";
+import { GlobalContextConfig } from "../../../../../globalContext";
 
 type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
 
 function CreateMatch () {
   const navigate = useNavigate();
+  const { userId } = useContext(GlobalContextConfig);
+  const { availableCourts, setAvailableCourts, user } = useContext(MainScreenContextConfig);
   const [invitedPlayers, setInvitedPlayers] = useState<User[]>([]);
   const [searchResultPlayers, setSearchResultPlayers] = useState<User[]>([]);
   const [searchPlayerText, setSearchPlayerText] = useState<string>("");
+  const [searchPlayerTextTimeout, setSearchPlayerTextTimeout] = useState<NodeJS.Timeout | null>(null);
   const [selectedBottomSheetView, setSelectedBottomSheetView] = useState<BottomSheetView>("invitePlayers");
-  const [availableCourts, setAvailableCourts] = useState<Court[]>([]);
   const [selectedCourt, setSelectedCourt] = useState<Court | null>(null);
   const [selectedModality, setSelectedModality] = useState<string>("");
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [datePickerMode, setDatePickerMode] = useState<"date" | "time">("date");
   const [matchDate, setMatchDate] = useState<Date | null>(null);
   const [matchTime, setMatchTime] = useState<Date | null>(null);
+  const [isCreateMatchLoading, setIsCreateMatchLoading] = useState(false);
   const keyboardShown = useKeyboard()
 
   const isFormValid = selectedCourt && selectedModality && matchDate && matchTime;
@@ -78,27 +84,86 @@ function CreateMatch () {
     hideDatePicker();
   };
 
+  const handleCreateMatch = async () => {
+    setIsCreateMatchLoading(true);
+    const { error, data: matchId } = await createMatch({
+      ownerId: `${userId || 0}`,
+      blackTeam: [],
+      whiteTeam: [],
+      court: `${selectedCourt?.id || 0}`,
+      date: matchDate?.toLocaleDateString() || "",
+      playersPerTeam: parseInt(selectedModality[0]),
+      time: matchTime?.toLocaleTimeString() || "",
+    });
+
+    if (error) {
+      console.error(error);
+      setIsCreateMatchLoading(false);
+      return;
+    }
+
+    invitedPlayers.map(async (singlePlayer) => {
+      const {error} = await createNotification({
+        highlightedText: (user?.name || user?.email) as string,
+        regularText: "te ha invitado a un partido",
+        receiverId: singlePlayer.id,
+        matchId: matchId as string,
+        senderId: userId as string,
+      });
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+    });
+
+    setIsCreateMatchLoading(false);
+    navigate('/main/matches');
+  }
+
   const isUserInInvitedPlayers = useCallback((userId: string) => {
     return invitedPlayers.find((singlePlayer) => singlePlayer.id === userId);
   }, [invitedPlayers]);  
 
   useEffect(() => {
     if (searchPlayerText.length >= 3) {
-      setSearchResultPlayers(mockusersToSearchFrom.filter((singleUser) => singleUser.name.toLowerCase().includes(searchPlayerText.toLowerCase())));
-      handleExpand();
+      if (searchPlayerTextTimeout) {
+        clearTimeout(searchPlayerTextTimeout);
+      }
+
+      const nameTimeout = setTimeout(() => {
+        getUsersByNamePrefix(searchPlayerText).then(({error, data}) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          setSearchResultPlayers(data as User[]);
+          handleExpand();
+        });
+      }, 200)
+
+      setSearchPlayerTextTimeout(nameTimeout);
     }
   }, [searchPlayerText]);
 
   useEffect(() => {
-    setAvailableCourts(mockCourts);
-  }, [])
+    if (!availableCourts || !availableCourts.length) {
+      getAllCourts().then(({error, data}) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        setAvailableCourts && setAvailableCourts(data as Court[]);
+      });
+    }
+  }, [availableCourts]);
 
   useEffect(() => {
-    if (availableCourts.length) {
+    if (availableCourts && availableCourts.length) {
       setSelectedCourt(availableCourts[0]);
       setSelectedModality(availableCourts[0].modalities[0]);
     }
-  }, [availableCourts])
+  }, [availableCourts]);
 
   return (<>
     <View style={styles.header}>
@@ -121,7 +186,7 @@ function CreateMatch () {
 
     {invitedPlayers.length ? <View style={styles.invitedPlayers}>
       {invitedPlayers.length ? invitedPlayers.map((singlePlayer) => (
-        <Image key={singlePlayer.id} style={[styles.userImage, styles.userImageMargin]} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
+        <CustomUserImage user={singlePlayer} key={singlePlayer.id} />
       )) : <></>}
     </View> : <></>}
 
@@ -187,7 +252,7 @@ function CreateMatch () {
     { 
       keyboardShown    
         ? <></>
-        : <CustomButton text="Crear partido" onPress={() => navigate('/main/matches')} type="primary" disabled={!isFormValid} />
+        : <CustomButton text="Crear partido" onPress={handleCreateMatch} type="primary" disabled={!isFormValid || isCreateMatchLoading} />
     }
 
     <BottomSheet
@@ -210,7 +275,7 @@ function CreateMatch () {
 
           {selectedBottomSheetView === "selectCourt" ? (
             <SelectCourt 
-              availableCourts={availableCourts} 
+              availableCourts={availableCourts || []} 
               setSelectedCourt={setSelectedCourt} 
               setSelectedModality={setSelectedModality} 
               handleClose={handleClose}
@@ -264,6 +329,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     flexWrap: "wrap",
+    marginBottom: 16
   },
   userImage: {
     width: 36,

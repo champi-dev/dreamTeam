@@ -5,4 +5,5 @@ export interface User {
   goals: number;
   avatarImgUrl?: string;
   goalsInMatch?: number;
+  randomColor?: string;
 }

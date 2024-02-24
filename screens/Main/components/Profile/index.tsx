@@ -19,6 +19,7 @@ import { User } from '../../../../models/User';
 import ProfilePictureIcon from '../../../../assets/svgs/ProfilePictureIcon';
 import CustomButton from '../../../../components/CustomButton';
 import { MainScreenContextConfig } from '../../context';
+import { capitalizeString } from '../../../../utils';
 
 function Profile() {
   const [isLoadingUserInfo, setIsLoadingUserInfo] = useState<boolean>(true);
@@ -71,7 +72,7 @@ function Profile() {
     const timeout = setTimeout(() => {
       // @ts-ignore
       setUserInfo((prev) => {
-        userId && updateUserPropertyById(userId, {name: text}).then(({ error, data }) => {
+        userId && updateUserPropertyById(userId, {name: text.toLowerCase()}).then(({ error, data }) => {
           if (error) {
             console.error(error);
             return;
@@ -150,13 +151,13 @@ function Profile() {
             </PressableOpacity>
           </View>
 
-          <Text style={styles.profileText}>{userInfo?.name}</Text>
+          <Text style={styles.profileText}>{capitalizeString(userInfo?.name || '')}</Text>
 
           <View style={styles.infoGroup}>
             <CustomInput
               placeholder='Nombre'
               placeholderTextColor='#65656B'
-              value={userInfo?.name ?? ''}
+              value={capitalizeString(userInfo?.name ?? '')}
               FrontIcon={ProfileIcon}
               styling='secondary'
               onChangeText={handleNameInputChange}

@@ -4,5 +4,14 @@ export {auth, db, storage};
 import {signUp, login, logOut} from './authentication'
 export {signUp, login, logOut};
 
-import {createUser, getUserById, updateUserPropertyById, uploadUserImage} from './users'
-export {createUser, getUserById, updateUserPropertyById, uploadUserImage};
+import {createUser, getUserById, updateUserPropertyById, uploadUserImage, getUsersByNamePrefix} from './users'
+export {createUser, getUserById, updateUserPropertyById, uploadUserImage, getUsersByNamePrefix};
+
+import { getAllCourts } from './courts';
+export { getAllCourts };
+
+import { createMatch } from './matches';
+export { createMatch };
+
+import { createNotification } from './notifications';
+export { createNotification };

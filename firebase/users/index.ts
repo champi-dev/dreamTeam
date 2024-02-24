@@ -1,5 +1,6 @@
-import { collection, addDoc, doc, query, where, getDocs, updateDoc } from "firebase/firestore";
+import { collection, addDoc, doc, query, where, getDocs, updateDoc, DocumentData, Query } from "firebase/firestore";
 import { db, storage } from "../config";
+import { getRandomColor } from "../../utils";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export const createUser = ({ id, email }: {id: string; email: string;}) => {
@@ -7,7 +8,8 @@ export const createUser = ({ id, email }: {id: string; email: string;}) => {
     id,
     email,
     name: '',
-    goals: 0
+    goals: 0,
+    randomColor: getRandomColor(),
   }).then((docRef) => {
     return { error: null, data: docRef.id };
   }).catch((error) => {
@@ -32,6 +34,46 @@ export const getUserById = async (id: string) => {
     console.log(error);
     return { error, data: null };
   }
+}
+
+export const getUsersByNamePrefix = async (searchText: string) => {
+  const usersRef = collection(db, "users");
+  const qName = query(
+    usersRef, 
+    where("name", ">=", searchText.toLowerCase()), 
+    where("name", "<=", searchText.toLowerCase() + '\uf8ff'),    
+  );
+  const qEmail = query(
+    usersRef, 
+    where("email", ">=", searchText.toLowerCase()), 
+    where("email", "<=", searchText.toLowerCase() + '\uf8ff'),    
+  );
+
+  const getFilteredUsers = async (q: Query<unknown, DocumentData>) => {
+    try {
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const usersData = querySnapshot.docs.map(doc => doc.data());
+        return { error: null, data: usersData };
+      } else {
+        console.log("No matching users found");
+        return { error: "No matching users found", data: null };
+      }
+    } catch (error) {
+      console.log(error);
+      return { error, data: null };
+    }
+  }
+
+  const { error: errorName, data: usersByName } = await getFilteredUsers(qName);
+
+  if (errorName) {
+    if (!usersByName || usersByName.length <= 0) {
+      return getFilteredUsers(qEmail);
+    }
+  } 
+
+  return { error: null, data: usersByName };
 }
 
 interface EditableUserProperties {

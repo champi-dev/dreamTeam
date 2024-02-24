@@ -34,7 +34,7 @@ function Notifications () {
           <View style={styles.notification}>
             <Text style={styles.notificationText}><Text style={styles.notificationTextHighlight}>{highlightedText}</Text> {regularText}</Text>
 
-            <PressableOpacity onPress={() => handleDeleteNotification(matchId)}>
+            <PressableOpacity onPress={() => handleDeleteNotification(matchId as string)}>
               <CloseIcon />
             </PressableOpacity>
           </View>

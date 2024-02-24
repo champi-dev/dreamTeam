@@ -8,6 +8,8 @@ import { mockData, mockCurrentUser } from "./mockData";
 import { Match } from "../../../../../models/Match";
 import { User } from "../../../../../models/User";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
+import CustomUserImage from "../../../../../components/CustomUserImage";
+import { capitalizeString } from "../../../../../utils";
 
 function SelectSide () {
   const navigate = useNavigate();
@@ -70,8 +72,8 @@ function SelectSide () {
 
         {match?.whiteTeam.length ? match.whiteTeam.map((singlePlayer, index) => (
           <View style={styles.user} key={index}>
-            <Image style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
-            <Text style={styles.userText}>{singlePlayer.name}</Text>
+            <CustomUserImage user={singlePlayer} />
+            <Text style={styles.userText}>{capitalizeString(singlePlayer.name || singlePlayer.email)}</Text>
           </View>
         )) : <></>}        
       </View>
@@ -85,8 +87,8 @@ function SelectSide () {
 
         {match?.whiteTeam.length ? match.blackTeam.map((singlePlayer, index) => (
           <View style={styles.user} key={index}>
-            <Image style={styles.userImage} source={{ uri: singlePlayer.avatarImgUrl, cache: "force-cache" }} />
-            <Text style={styles.userText}>{singlePlayer.name}</Text>
+            <CustomUserImage user={singlePlayer} />
+            <Text style={styles.userText}>{capitalizeString(singlePlayer.name || singlePlayer.email)}</Text>
           </View>
         )) : <></>} 
       </View>

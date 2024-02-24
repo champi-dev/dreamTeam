@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { Routes, Route, useLocation, useNavigate } from "react-router";
 import Profile from "./components/Profile";
@@ -10,21 +10,18 @@ import ChartIcon from "../../assets/svgs/ChartIcon";
 import SoccerballIcon from "../../assets/svgs/SoccerballIcon";
 import ProfileIcon from "../../assets/svgs/ProfileIcon";
 import { PressableOpacity } from "../../components/PresableOpacity";
-import { MainScreenContext } from "./context";
+import { MainScreenContext, MainScreenContextConfig } from "./context";
+import { getUserById } from "../../firebase";
+import { GlobalContextConfig } from "../../globalContext";
+import { User } from "../../models/User";
 
 function Main () {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-
   return <View style={styles.container}>
     <MainScreenContext>
-      <Routes>
-        <Route path="/matches/*" element={<Matches />} />
-        <Route path="/matchesStats" element={<MatchesStats />} />
-        <Route path="/playerStats" element={<PlayerStats />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
+      <MainRoutes />
     </MainScreenContext>
 
     <View style={styles.bottomBar}>
@@ -49,6 +46,33 @@ function Main () {
       </View>
     </View>
   </View>
+}
+
+function MainRoutes () {
+  const { userId } = useContext(GlobalContextConfig);
+  const { setUser } = useContext(MainScreenContextConfig);
+
+  useEffect(() => {
+    if (userId) {
+      getUserById(userId).then(({error, data}) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+
+        data && setUser && setUser(data as User);
+      })
+    }
+  }, [userId, getUserById]);
+
+  return (
+    <Routes>
+      <Route path="/matches/*" element={<Matches />} />
+      <Route path="/matchesStats" element={<MatchesStats />} />
+      <Route path="/playerStats" element={<PlayerStats />} />
+      <Route path="/profile" element={<Profile />} />
+    </Routes>
+  );
 }
 
 export default Main;
