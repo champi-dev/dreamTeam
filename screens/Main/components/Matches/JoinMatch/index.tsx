@@ -19,9 +19,10 @@ function JoinMatch () {
 
   const currentCourtName = (courtId: string) => availableCourts && availableCourts.find(court => court.id === courtId)?.name;
   const userOwnsMatch = (match: Match) => match.ownerId === user?.id;
+  const isUserInMatch = (match: Match) => match.whiteTeam.some(player => player.id === user?.id) || match.blackTeam.some(player => player.id === user?.id);
 
   const handleMatchPress = (match: Match) => {
-    if (userOwnsMatch(match)) {
+    if (userOwnsMatch(match) && isUserInMatch(match)) {
       navigate('/main/matches/enterMatchResult');
       return;
     }
@@ -101,7 +102,7 @@ function JoinMatch () {
           </View>            
 
           <View style={styles.actionContainer}>
-            <Text style={styles.actionText}>{userOwnsMatch(item) ? 'Ingresar resultado' : 'Elegir lado'}</Text>
+            <Text style={styles.actionText}>{userOwnsMatch(item) && isUserInMatch(item) ? 'Ingresar resultado' : 'Elegir lado'}</Text>
           </View>
         </View>
       </PressableOpacity> 
