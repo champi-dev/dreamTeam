@@ -1,39 +1,82 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router";
-import { View, Text, StyleSheet, ScrollView, Image, FlatList, ListRenderItemInfo } from "react-native";
+import { View, Text, StyleSheet, ScrollView, FlatList, ListRenderItemInfo } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import NotificationIcon from "../../../../../assets/svgs/NotificationIcon";
 import PlusIcon from "../../../../../assets/svgs/PlusIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
-import { mockData, mockUser } from "./mockData";
 import { Match } from "../../../../../models/Match";
 import { getDayName, convertTimeTo12HourFormat } from "../../../../../utils";
-import { User } from "../../../../../models/User";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
+import { MainScreenContextConfig } from "../../../context";
+import { getMatches } from "../../../../../firebase";
+import { convertDateStr } from "../../../../../utils";
 
 function JoinMatch () {
   const navigate = useNavigate();
-  const [matches, setMatches] = useState<Match[]>();
-  const [currentUser, setCurrentUser] = useState<User>();
+  const { user, availableCourts, matches, setMatches, lastVisibleMatchDoc, setLastVisibleMatchDoc } = useContext(MainScreenContextConfig);
 
-  const userOwnsMatch = (match: Match) => {
-    return match.ownerId === currentUser?.id;
-  };
+  const currentCourtName = (courtId: string) => availableCourts && availableCourts.find(court => court.id === courtId)?.name;
+  const userOwnsMatch = (match: Match) => match.ownerId === user?.id;
+  const isUserInMatch = (match: Match) => match.whiteTeam.some(player => player.id === user?.id) || match.blackTeam.some(player => player.id === user?.id);
 
   const handleMatchPress = (match: Match) => {
-    if (userOwnsMatch(match)) {
+    if (userOwnsMatch(match) && isUserInMatch(match)) {
       navigate('/main/matches/enterMatchResult');
       return;
     }
 
     navigate('/main/matches/selectSide');
-  }
+  };
+
+  const handleLoadMore = () => {
+    if (!lastVisibleMatchDoc) {
+      return;
+    }
+
+    getMatches(lastVisibleMatchDoc).then(({ error, data, lastVisible }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+
+      const sortedMatches = data && matches && [...matches, ...data].sort((a, b) => {
+        // @ts-ignore
+        const dateA = new Date(convertDateStr(a.date));
+        // @ts-ignore
+        const dateB = new Date(convertDateStr(b.date));
+        // @ts-ignore
+        return dateA - dateB;
+      });
+
+      matches && setMatches && setMatches(sortedMatches as unknown as Match[]);
+      setLastVisibleMatchDoc && setLastVisibleMatchDoc(lastVisible);
+    });
+  };
 
   useEffect(() => {
-    setMatches(mockData);
-    setCurrentUser(mockUser);
-  }, [])
+    if (!matches || matches.length === 0) {
+      getMatches().then(({ error, data, lastVisible }) => {
+        if (error) {
+          console.log(error);
+          return;
+        }
+
+        const sortedMatches = data && data.sort((a, b) => {
+          // @ts-ignore
+          const dateA = new Date(convertDateStr(a.date));
+          // @ts-ignore
+          const dateB = new Date(convertDateStr(b.date));
+          // @ts-ignore
+          return dateA - dateB;
+        });
+  
+        setLastVisibleMatchDoc && setLastVisibleMatchDoc(lastVisible);
+        setMatches && setMatches(sortedMatches as unknown as Match[]);
+      });
+    }
+  }, [matches]);
 
   const renderItem = ({item}: ListRenderItemInfo<Match>) => {
     return (
@@ -55,11 +98,11 @@ function JoinMatch () {
             </ScrollView>
 
             <Text style={styles.matchText}>{getDayName(item.date)} {convertTimeTo12HourFormat(item.time)}</Text>
-            <Text style={styles.matchText}>{item.court} {item.playersPerTeam} vs {item.playersPerTeam}</Text>
+            <Text style={styles.matchText}>{currentCourtName(item.courtId)} {item.playersPerTeam} vs {item.playersPerTeam}</Text>
           </View>            
 
           <View style={styles.actionContainer}>
-            <Text style={styles.actionText}>{userOwnsMatch(item) ? 'Ingresar resultado' : 'Elegir lado'}</Text>
+            <Text style={styles.actionText}>{userOwnsMatch(item) && isUserInMatch(item) ? 'Ingresar resultado' : 'Elegir lado'}</Text>
           </View>
         </View>
       </PressableOpacity> 
@@ -77,8 +120,11 @@ function JoinMatch () {
 
       <FlatList
         data={matches}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
+        onEndReached={() => handleLoadMore()}
+        onEndReachedThreshold={0.1}
+        showsVerticalScrollIndicator={false}
       />
     
       <View style={styles.createMatchButton}>      

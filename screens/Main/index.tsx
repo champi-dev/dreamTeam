@@ -11,9 +11,10 @@ import SoccerballIcon from "../../assets/svgs/SoccerballIcon";
 import ProfileIcon from "../../assets/svgs/ProfileIcon";
 import { PressableOpacity } from "../../components/PresableOpacity";
 import { MainScreenContext, MainScreenContextConfig } from "./context";
-import { getUserById } from "../../firebase";
+import { getAllCourts, getUserById } from "../../firebase";
 import { GlobalContextConfig } from "../../globalContext";
 import { User } from "../../models/User";
+import { Court } from "../../models/Court";
 
 function Main () {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ function Main () {
 
 function MainRoutes () {
   const { userId } = useContext(GlobalContextConfig);
-  const { setUser } = useContext(MainScreenContextConfig);
+  const { setUser, setAvailableCourts, availableCourts } = useContext(MainScreenContextConfig);
 
   useEffect(() => {
     if (userId) {
@@ -64,6 +65,18 @@ function MainRoutes () {
       })
     }
   }, [userId, getUserById]);
+
+  useEffect(() => {
+    if (!availableCourts || !availableCourts.length) {
+      getAllCourts().then(({error, data}) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        setAvailableCourts && setAvailableCourts(data as Court[]);
+      });
+    }
+  }, [availableCourts]);
 
   return (
     <Routes>

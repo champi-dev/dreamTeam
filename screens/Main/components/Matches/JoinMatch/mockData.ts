@@ -5,9 +5,11 @@ export const mockData: Match[] = [
   {
     date: "2024-02-05",
     time: "10:00",
-    court: "F8",
+    courtId: "F8",
     playersPerTeam: 4,
     ownerId: "test1",
+    createdAt: "2024-02-05T10:00:00",
+    played: false,
     whiteTeam: [
       {
         id: "test1",
@@ -72,9 +74,11 @@ export const mockData: Match[] = [
   {
     date: "2024-02-01",
     time: "14:00",
-    court: "F8",
+    courtId: "F8",
     playersPerTeam: 4,
     ownerId: "test2",
+    createdAt: "2024-02-05T10:00:00",
+    played: false,
     whiteTeam: [
       {
         id: "test1",
