@@ -1,21 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { Text, StyleSheet, View, Image } from "react-native";
-import { useNavigate } from 'react-router-native';
+import React, { useState, useEffect, useContext } from "react";
+import { Text, StyleSheet, View } from "react-native";
+import { useNavigate, useLocation } from 'react-router-native';
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
 import CustomButton from "../../../../../components/CustomButton";
-import { mockData, mockCurrentUser } from "./mockData";
 import { Match } from "../../../../../models/Match";
-import { User } from "../../../../../models/User";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
 import { capitalizeString } from "../../../../../utils";
+import { MainScreenContextConfig } from "../../../context";
+import { updateMatch, getMatchById } from "../../../../../firebase";
+import { User } from "../../../../../models/User";
 
 function SelectSide () {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user: currentUser } = useContext(MainScreenContextConfig);
+
   const [match, setMatch] = useState<Match>();
-  const [currentUser, setCurrentUser] = useState<User>();
   const [selectedSide, setSelectedSide] = useState<'white' | 'black'>('white');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSelectSide = (side: 'white' | 'black') => {
     if (side === 'white' && selectedSide !== 'white') {
@@ -39,19 +43,75 @@ function SelectSide () {
         whiteTeam: prevMatch?.whiteTeam.filter(player => player.id !== currentUser?.id)
       }));
     }
+  };
+
+  const handleSave = () => {
+    if (match) {
+      setIsLoading(true);
+      match.id && updateMatch(match.id, {
+        whiteTeam: match.whiteTeam,
+        blackTeam: match.blackTeam
+      }).then(({ error }) => {
+        if (error) {
+          console.log('Error updating match', error);
+          return;
+        }
+
+        navigate('/main/matches');
+      }).finally(() => setIsLoading(false));
+    }
   }
 
+  const handleMatchData = (match: Match) => {
+    if (isUserInMatch(match)) {
+      setMatch(match);
+      return;
+    }
+
+    if (match.whiteTeam.length < match.playersPerTeam) {
+      setMatch({
+        ...match,
+        whiteTeam: [...match.whiteTeam, currentUser as User]
+      });
+      return;
+    }
+
+    if (match.blackTeam.length < match.playersPerTeam) {
+      setMatch({
+        ...match,
+        blackTeam: [...match.whiteTeam, currentUser as User]
+      });
+      return;
+    }
+  }
+
+  const isUserInMatch = (match: Match) => match.whiteTeam.some(player => player.id === currentUser?.id) || match.blackTeam.some(player => player.id === currentUser?.id);
+
   useEffect(() => {
-    setMatch(mockData)
-    setCurrentUser(mockCurrentUser)
-  }, []);
+   if (location.state && !location.state.matchId) {
+    handleMatchData(location.state);
+   }
+  }, [location.state]);
+
+  useEffect(() => {
+    if (location.state.matchId) {
+      getMatchById(location.state.matchId).then(({error, data}) => {
+        if (error) {
+          console.log('Error getting match', error);
+          return;
+        }
+
+        data && handleMatchData(data as Match);
+      })
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (match) {
       const isUserInWhiteTeam = match.whiteTeam.some(player => player.id === currentUser?.id);
       setSelectedSide(isUserInWhiteTeam ? 'white' : 'black');
     }
-  }, [match])
+  }, [match]);
 
 
   return (<>
@@ -85,7 +145,7 @@ function SelectSide () {
           </View>
         </PressableOpacity>        
 
-        {match?.whiteTeam.length ? match.blackTeam.map((singlePlayer, index) => (
+        {match?.blackTeam.length ? match.blackTeam.map((singlePlayer, index) => (
           <View style={styles.user} key={index}>
             <CustomUserImage user={singlePlayer} />
             <Text style={styles.userText}>{capitalizeString(singlePlayer.name || singlePlayer.email)}</Text>
@@ -94,7 +154,7 @@ function SelectSide () {
       </View>
     </View>
 
-    <CustomButton text="Guardar" onPress={() => navigate('/main/matches')} type="primary" />
+    <CustomButton text="Guardar" onPress={handleSave} type="primary" disabled={isLoading} />
   </>);
 }
 

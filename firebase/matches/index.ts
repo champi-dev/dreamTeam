@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, limit, orderBy, query, where, startAfter } from "firebase/firestore";
+import { collection, addDoc, getDocs, limit, orderBy, query, where, startAfter, doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../config";
 import { Match } from "../../models/Match";
 import { convertDateStr } from "../../utils";
@@ -42,6 +42,35 @@ export const getMatches = async (lastVisible?: unknown) => {
 
     const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
     return { error: null, data: matches, lastVisible: lastVisible };
+  } catch (error) {
+    console.log(error);
+    return { error, data: null };
+  }
+}
+
+export const getMatchById = async (matchId: string) => {
+  const matchRef = doc(db, "matches", matchId);
+
+  try {
+    const docSnap = await getDoc(matchRef);
+    if (docSnap.exists()) {
+      return { error: null, data: { id: docSnap.id, ...docSnap.data() } };
+    } else {
+      console.log("No match found with the given ID");
+      return { error: "No match found", data: null };
+    }
+  } catch (error) {
+    console.log(error);
+    return { error, data: null };
+  }
+}
+
+export const updateMatch = async (matchId: string, propertiesToUpdate: Partial<Match>) => {
+  const matchRef = doc(db, "matches", matchId);
+
+  try {
+    await updateDoc(matchRef, propertiesToUpdate);
+    return { error: null, data: `Match with ID: ${matchId} updated successfully.` };
   } catch (error) {
     console.log(error);
     return { error, data: null };
