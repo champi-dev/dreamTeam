@@ -11,10 +11,11 @@ import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
 import { MainScreenContextConfig } from "../../../context";
 import { getMatches } from "../../../../../firebase";
+import { convertDateStr } from "../../../../../utils";
 
 function JoinMatch () {
   const navigate = useNavigate();
-  const { user, availableCourts, matches, setMatches } = useContext(MainScreenContextConfig);
+  const { user, availableCourts, matches, setMatches, lastVisibleMatchDoc, setLastVisibleMatchDoc } = useContext(MainScreenContextConfig);
 
   const currentCourtName = (courtId: string) => availableCourts && availableCourts.find(court => court.id === courtId)?.name;
   const userOwnsMatch = (match: Match) => match.ownerId === user?.id;
@@ -26,18 +27,55 @@ function JoinMatch () {
     }
 
     navigate('/main/matches/selectSide');
-  }
+  };
 
-  useEffect(() => {
-    getMatches().then(({ error, data, lastVisible }) => {
+  const handleLoadMore = () => {
+    if (!lastVisibleMatchDoc) {
+      return;
+    }
+
+    getMatches(lastVisibleMatchDoc).then(({ error, data, lastVisible }) => {
       if (error) {
         console.log(error);
         return;
       }
 
-      setMatches && setMatches(data as unknown as Match[]);
+      const sortedMatches = data && matches && [...matches, ...data].sort((a, b) => {
+        // @ts-ignore
+        const dateA = new Date(convertDateStr(a.date));
+        // @ts-ignore
+        const dateB = new Date(convertDateStr(b.date));
+        // @ts-ignore
+        return dateA - dateB;
+      });
+
+      matches && setMatches && setMatches(sortedMatches as unknown as Match[]);
+      setLastVisibleMatchDoc && setLastVisibleMatchDoc(lastVisible);
     });
-  }, [])
+  };
+
+  useEffect(() => {
+    if (!matches || matches.length === 0) {
+      getMatches().then(({ error, data, lastVisible }) => {
+        if (error) {
+          console.log(error);
+          return;
+        }
+
+        const sortedMatches = data && data.sort((a, b) => {
+          // @ts-ignore
+          const dateA = new Date(convertDateStr(a.date));
+          // @ts-ignore
+          const dateB = new Date(convertDateStr(b.date));
+          // @ts-ignore
+          return dateA - dateB;
+        });
+  
+        setLastVisibleMatchDoc && setLastVisibleMatchDoc(lastVisible);
+        setMatches && setMatches(sortedMatches as unknown as Match[]);
+      });
+    }
+  }, [matches]);
 
   const renderItem = ({item}: ListRenderItemInfo<Match>) => {
     return (
@@ -83,6 +121,9 @@ function JoinMatch () {
         data={matches}
         keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
+        onEndReached={() => handleLoadMore()}
+        onEndReachedThreshold={0.1}
+        showsVerticalScrollIndicator={false}
       />
     
       <View style={styles.createMatchButton}>      

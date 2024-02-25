@@ -1,6 +1,7 @@
-import { collection, addDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, limit, orderBy, query, where, startAfter } from "firebase/firestore";
 import { db } from "../config";
 import { Match } from "../../models/Match";
+import { convertDateStr } from "../../utils";
 
 export const createMatch = (match: Match) => {
   return addDoc(collection(db, "matches"), match).then((docRef) => {
@@ -11,18 +12,34 @@ export const createMatch = (match: Match) => {
   });
 }
 
-export const getMatches = async () => {
+export const getMatches = async (lastVisible?: unknown) => {
   const matchesRef = collection(db, "matches");
-  const q = query(
+  const q = !lastVisible ? query(
     matchesRef,
     where("played", "==", false),
-    orderBy("createdAt", "desc"),
-    limit(10)
+    orderBy("createdAt", "asc"),
+    limit(5)
+  ) : query(
+    matchesRef,
+    where("played", "==", false),
+    orderBy("createdAt", "asc"),
+    limit(5),
+    startAfter(lastVisible)
   );
 
   try {
     const querySnapshot = await getDocs(q);
-    const matches = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    let matches = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    matches = matches.sort((a, b) => {
+      // @ts-ignore
+      const dateA = new Date(convertDateStr(a.date));
+      // @ts-ignore
+      const dateB = new Date(convertDateStr(b.date));
+      // @ts-ignore
+      return dateA - dateB;
+    });
+
     const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
     
     return { error: null, data: matches, lastVisible: lastVisible };

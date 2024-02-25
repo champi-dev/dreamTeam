@@ -1,7 +1,11 @@
 import * as Localization from 'expo-localization';
 
+export const convertDateStr = (dateStr: string) => {
+  const [day, month, year] = dateStr.split('/');
+  return `${year}-${month}-${day}`;
+}
+
 export const getDayName = (dateStr: string) => {
-  // Convert DD/MM/YYYY to YYYY-MM-DD
   const [day, month, year] = dateStr.split('/');
   const isoFormattedDate = `${year}-${month}-${day}T00:00`;
 
