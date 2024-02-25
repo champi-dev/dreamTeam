@@ -1,28 +1,83 @@
 import React, { useState, useEffect } from "react";
 import { Text, StyleSheet, View, ScrollView } from "react-native";
-import { useNavigate } from 'react-router-native';
+import { useNavigate, useLocation } from 'react-router-native';
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
 import SoccerballIcon from "../../../../../assets/svgs/SoccerballIcon";
 import CustomInput from "../../../../../components/CustomInput";
-import { mockData } from "./mockData";
 import { Match } from "../../../../../models/Match";
 import CustomButton from "../../../../../components/CustomButton";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
 import { capitalizeString } from "../../../../../utils";
+import { updateMatch } from "../../../../../firebase";
+import { User } from "../../../../../models/User";
+
+// add form validation
 
 function EnterMatchResult () {
   const navigate = useNavigate();
+  const location = useLocation();
   const [matchData, setMatchData] = useState<Match>();
+  const [whiteTeamScore, setWhiteTeamScore] = useState<number>(0);
+  const [blackTeamScore, setBlackTeamScore] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  interface ChangePlayerGoalCountProps {
+    playerId: string;
+    goalsInMatch: number;
+    team: 'white' | 'black';
+  }
+
+  const changePlayerGoalCount = ({ playerId, goalsInMatch, team }: ChangePlayerGoalCountProps) => {
+    const newMatchData = {...matchData};
+    
+    if (team === 'white') {
+      newMatchData.whiteTeam = newMatchData.whiteTeam?.map((player) => {
+        if (player.id === playerId) {
+          player.goalsInMatch = goalsInMatch;
+        }
+        return player;
+      });
+    } else {
+      newMatchData.blackTeam = newMatchData.blackTeam?.map((player) => {
+        if (player.id === playerId) {
+          player.goalsInMatch = goalsInMatch;
+        }
+        return player;
+      });
+    }
+
+    setMatchData(newMatchData as Match);
+  };
+
+  const updatePlayerTotalGoals = (player: User) => ({...player, goals: player.goals + (player?.goalsInMatch || 0)});
+  // change this, update user info
 
   const handleSave = () => {
-    navigate('/main/matches');
+    setIsLoading(true);
+
+    matchData?.id && updateMatch(matchData.id, {
+       whiteTeamScore, 
+       blackTeamScore, 
+       whiteTeam: matchData?.whiteTeam.map(updatePlayerTotalGoals), 
+       blackTeam: matchData?.blackTeam.map(updatePlayerTotalGoals), 
+       played: true
+      }).then(({ error }) => {
+        if (error) {
+          console.log('Error updating match', error);
+          return;
+        }
+        
+        navigate('/main/matches');
+      }).finally(() => setIsLoading(false));
   }
 
   useEffect(() => {
-    setMatchData(mockData);
-  }, []);
+    if (location.state) {
+      setMatchData(location.state);
+    }
+  }, [location.state]);
 
   return (<>
     <View style={styles.header}>
@@ -37,10 +92,11 @@ function EnterMatchResult () {
         <View style={styles.item}>
           <ShirtIcon style={styles.shirtIcon} fill="#fff" />
           <CustomInput 
-          keyboardType="numeric"
+            keyboardType="numeric"
             placeholder="Goles" 
             placeholderTextColor="#65656B" 
-            value=""
+            value={whiteTeamScore.toString()}
+            onChangeText={(text) => isNaN(parseInt(text)) ? 0 : setWhiteTeamScore(parseInt(text))}
             FrontIcon={SoccerballIcon}
             styling="secondary"
             style={styles.itemInput}
@@ -50,10 +106,11 @@ function EnterMatchResult () {
         <View style={styles.item}>
           <ShirtIcon style={styles.shirtIcon} fill="#000" />
           <CustomInput
-          keyboardType="numeric" 
+            keyboardType="numeric" 
             placeholder="Goles" 
             placeholderTextColor="#65656B" 
-            value=""
+            value={blackTeamScore.toString()}
+            onChangeText={(text) => isNaN(parseInt(text)) ? 0 : setBlackTeamScore(parseInt(text))}
             FrontIcon={SoccerballIcon}
             styling="secondary"
             style={styles.itemInput}
@@ -68,7 +125,8 @@ function EnterMatchResult () {
               keyboardType="numeric"
               placeholder="Goles" 
               placeholderTextColor="#65656B" 
-              value=""
+              value={singlePlayer.goals.toString()}
+              onChangeText={(text) => changePlayerGoalCount({ playerId: singlePlayer.id, goalsInMatch: parseInt(text), team: 'white'})}
               FrontIcon={SoccerballIcon}
               styling="secondary"
               style={styles.itemInput}
@@ -83,7 +141,7 @@ function EnterMatchResult () {
               keyboardType="numeric"
               placeholder="Goles" 
               placeholderTextColor="#65656B" 
-              value=""
+              value={singlePlayer.goals.toString()}
               FrontIcon={SoccerballIcon}
               styling="secondary"
               style={styles.itemInput}
@@ -91,7 +149,7 @@ function EnterMatchResult () {
           </View>
         )) : <></>}
       </ScrollView>
-      <CustomButton text="Guardar" type="primary" onPress={handleSave} />   
+      <CustomButton text="Guardar" type="primary" onPress={handleSave} disabled={isLoading} />   
     </View>
   </>);
 }
