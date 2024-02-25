@@ -24,11 +24,11 @@ function JoinMatch () {
 
   const handleMatchPress = (match: Match) => {
     if (userOwnsMatch(match) && isUserInMatch(match)) {
-      navigate('/main/matches/enterMatchResult');
+      navigate('/main/matches/enterMatchResult', { state: match });
       return;
     }
 
-    navigate('/main/matches/selectSide');
+    navigate('/main/matches/selectSide', { state: match });
   };
 
   const handleLoadMore = () => {

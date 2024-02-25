@@ -22,9 +22,9 @@ function Notifications () {
     }
   };
 
-  const handlePress = (notificationId: string) => {
+  const handlePress = (notificationId: string, matchId: string) => {
     handleDeleteNotification(notificationId);
-    navigate('/main/matches/selectSide')
+    navigate('/main/matches/selectSide', { state: { matchId } })
   };
 
   return (<>
@@ -37,7 +37,7 @@ function Notifications () {
   
     <View style={styles.notificationsGroup}>
       {notifications?.length ? notifications.map(({ highlightedText, regularText, matchId, id }) => (
-        <PressableOpacity onPress={() => id && handlePress(id)} key={id}>
+        <PressableOpacity onPress={() => id && handlePress(id, matchId as string)} key={id}>
           <View style={styles.notification}>
             <Text style={styles.notificationText}><Text style={styles.notificationTextHighlight}>{capitalizeString(highlightedText)}</Text> {regularText}</Text>
 
