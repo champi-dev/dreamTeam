@@ -2,6 +2,7 @@ import React, { useState, createContext } from "react";
 import { User } from "../../../models/User";
 import { Court } from "../../../models/Court";
 import { Match } from "../../../models/Match";
+import { Notification } from "../../../models/Notification";
 
 interface MainScreenContextProps {
   user?: User | null;
@@ -12,6 +13,8 @@ interface MainScreenContextProps {
   setMatches?: (matches: Match[]) => void;
   lastVisibleMatchDoc?: unknown;
   setLastVisibleMatchDoc?: (doc: unknown) => void;
+  notifications?: Notification[];
+  setNotifications?: (notifications: Notification[]) => void;
 }
 
 export const MainScreenContextConfig = createContext<MainScreenContextProps>({});
@@ -21,9 +24,10 @@ export function MainScreenContext ({ children }: { children: React.ReactNode }) 
   const [availableCourts, setAvailableCourts] = useState<Court[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [lastVisibleMatchDoc, setLastVisibleMatchDoc] = useState<unknown>();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   return (
-    <MainScreenContextConfig.Provider value={{ user, setUser, availableCourts, setAvailableCourts, matches, setMatches,lastVisibleMatchDoc, setLastVisibleMatchDoc }}>
+    <MainScreenContextConfig.Provider value={{ user, setUser, availableCourts, setAvailableCourts, matches, setMatches,lastVisibleMatchDoc, setLastVisibleMatchDoc, notifications, setNotifications }}>
       {children}
     </MainScreenContextConfig.Provider>
   );

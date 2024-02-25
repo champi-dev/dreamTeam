@@ -1,4 +1,4 @@
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../config";
 import { Notification } from "../../models/Notification";
 
@@ -9,4 +9,31 @@ export const createNotification = (notification: Notification) => {
     console.log(error.message);
     return { error, data: null };
   });
+}
+
+export const getNotificationsByReceiverId = async (receiverId: string) => {
+  const notificationsRef = collection(db, "notifications");
+  const q = query(notificationsRef, where("receiverId", "==", receiverId));
+
+  try {
+    const querySnapshot = await getDocs(q);
+    const notifications = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    return { error: null, data: notifications };
+  } catch (error) {
+    console.log(error);
+    return { error, data: null };
+  }
+}
+
+export const deleteNotification = async (notificationId: string) => {
+  try {
+    await deleteDoc(doc(db, "notifications", notificationId));
+    return { error: null, data: `Notification with ID: ${notificationId} deleted successfully.` };
+  } catch (error) {
+    console.log(error);
+    return { error, data: null };
+  }
 }

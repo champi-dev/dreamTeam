@@ -6,16 +6,17 @@ import NotificationIcon from "../../../../../assets/svgs/NotificationIcon";
 import PlusIcon from "../../../../../assets/svgs/PlusIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
 import { Match } from "../../../../../models/Match";
+import { Notification } from "../../../../../models/Notification";
 import { getDayName, convertTimeTo12HourFormat } from "../../../../../utils";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
 import { MainScreenContextConfig } from "../../../context";
-import { getMatches } from "../../../../../firebase";
+import { getMatches, getNotificationsByReceiverId } from "../../../../../firebase";
 import { convertDateStr } from "../../../../../utils";
 
 function JoinMatch () {
   const navigate = useNavigate();
-  const { user, availableCourts, matches, setMatches, lastVisibleMatchDoc, setLastVisibleMatchDoc } = useContext(MainScreenContextConfig);
+  const { user, availableCourts, matches, setMatches, lastVisibleMatchDoc, setLastVisibleMatchDoc, notifications, setNotifications } = useContext(MainScreenContextConfig);
 
   const currentCourtName = (courtId: string) => availableCourts && availableCourts.find(court => court.id === courtId)?.name;
   const userOwnsMatch = (match: Match) => match.ownerId === user?.id;
@@ -55,28 +56,38 @@ function JoinMatch () {
     });
   };
 
+useEffect(() => {
+    getMatches().then(({ error, data, lastVisible }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+
+      const sortedMatches = data && data.sort((a, b) => {
+        // @ts-ignore
+        const dateA = new Date(convertDateStr(a.date));
+        // @ts-ignore
+        const dateB = new Date(convertDateStr(b.date));
+        // @ts-ignore
+        return dateA - dateB;
+      });
+
+      setLastVisibleMatchDoc && setLastVisibleMatchDoc(lastVisible);
+      setMatches && setMatches(sortedMatches as unknown as Match[]);
+    });
+  }, []);
+
   useEffect(() => {
-    if (!matches || matches.length === 0) {
-      getMatches().then(({ error, data, lastVisible }) => {
+    if (user?.id) {
+      getNotificationsByReceiverId(user.id).then(({error, data}) => {
         if (error) {
-          console.log(error);
+          console.error(error);
           return;
         }
-
-        const sortedMatches = data && data.sort((a, b) => {
-          // @ts-ignore
-          const dateA = new Date(convertDateStr(a.date));
-          // @ts-ignore
-          const dateB = new Date(convertDateStr(b.date));
-          // @ts-ignore
-          return dateA - dateB;
-        });
-  
-        setLastVisibleMatchDoc && setLastVisibleMatchDoc(lastVisible);
-        setMatches && setMatches(sortedMatches as unknown as Match[]);
+        setNotifications && setNotifications(data as unknown as Notification[]);
       });
     }
-  }, [matches]);
+  }, [user, getNotificationsByReceiverId]);
 
   const renderItem = ({item}: ListRenderItemInfo<Match>) => {
     return (
@@ -115,6 +126,7 @@ function JoinMatch () {
         <Text style={styles.title}>Partidos</Text>
         <PressableOpacity onPress={() => navigate('/main/matches/notifications')}>
           <NotificationIcon style={styles.notificationIcon}/>
+          {notifications?.length ? <View style={styles.notificationActive} /> : <></>}
         </PressableOpacity>      
       </View>
 
@@ -245,5 +257,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
     fontFamily: "Lato-Bold",
+  },
+  notificationActive: {
+    position: "absolute", 
+    top: -6, 
+    right: 0, 
+    width: 12, 
+    height: 12, 
+    borderRadius: 12, 
+    backgroundColor: "#ED6B4E", 
+    alignItems: "center", 
+    justifyContent: "center"
   }
 });

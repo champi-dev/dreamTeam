@@ -1,24 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { Text, StyleSheet, View } from "react-native";
 import { useNavigate } from 'react-router-native';
-import { mockData } from "./mockData";
-import { Notification } from "../../../../../models/Notification";
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import CloseIcon from "../../../../../assets/svgs/CloseIcon";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
+import { MainScreenContextConfig } from "../../../context";
+import { capitalizeString } from "../../../../../utils";
+import { deleteNotification } from "../../../../../firebase";
 
 function Notifications () {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const {notifications, setNotifications} = useContext(MainScreenContextConfig);
   const navigate = useNavigate();
 
-  const handleDeleteNotification = (matchId: string) => {
-    const newNotifications = notifications.filter(notification => notification.matchId !== matchId);
-    setNotifications(newNotifications);
+  const handleDeleteNotification = async (notificationId: string) => {
+    const newNotifications = notifications?.filter(({ id }) => id !== notificationId);
+    newNotifications && setNotifications && setNotifications(newNotifications);
+
+    const { error } = await deleteNotification(notificationId);
+    if (error) {
+      console.log(error);
+    }
   };
 
-  useEffect(() => {
-    setNotifications(mockData)
-  }, []);
+  const handlePress = (notificationId: string) => {
+    handleDeleteNotification(notificationId);
+    navigate('/main/matches/selectSide')
+  };
 
   return (<>
     <View style={styles.header}>
@@ -29,12 +36,12 @@ function Notifications () {
     </View>
   
     <View style={styles.notificationsGroup}>
-      {notifications.length ? notifications.map(({ highlightedText, regularText, matchId }) => (
-        <PressableOpacity onPress={() => navigate('/main/matches/selectSide')} key={matchId}>
+      {notifications?.length ? notifications.map(({ highlightedText, regularText, matchId, id }) => (
+        <PressableOpacity onPress={() => id && handlePress(id)} key={id}>
           <View style={styles.notification}>
-            <Text style={styles.notificationText}><Text style={styles.notificationTextHighlight}>{highlightedText}</Text> {regularText}</Text>
+            <Text style={styles.notificationText}><Text style={styles.notificationTextHighlight}>{capitalizeString(highlightedText)}</Text> {regularText}</Text>
 
-            <PressableOpacity onPress={() => handleDeleteNotification(matchId as string)}>
+            <PressableOpacity onPress={() => id && handleDeleteNotification(id)}>
               <CloseIcon />
             </PressableOpacity>
           </View>
