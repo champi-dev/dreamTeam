@@ -18,12 +18,12 @@ export const getMatches = async (lastVisible?: unknown) => {
     matchesRef,
     where("played", "==", false),
     orderBy("createdAt", "asc"),
-    limit(5)
+    limit(10)
   ) : query(
     matchesRef,
     where("played", "==", false),
     orderBy("createdAt", "asc"),
-    limit(5),
+    limit(10),
     startAfter(lastVisible)
   );
 
@@ -41,7 +41,6 @@ export const getMatches = async (lastVisible?: unknown) => {
     });
 
     const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-    
     return { error: null, data: matches, lastVisible: lastVisible };
   } catch (error) {
     console.log(error);
