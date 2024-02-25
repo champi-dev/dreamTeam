@@ -90,10 +90,12 @@ function CreateMatch () {
       ownerId: `${userId || 0}`,
       blackTeam: [],
       whiteTeam: [],
-      court: `${selectedCourt?.id || 0}`,
+      courtId: `${selectedCourt?.id || 0}`,
       date: matchDate?.toLocaleDateString() || "",
       playersPerTeam: parseInt(selectedModality[0]),
       time: matchTime?.toLocaleTimeString() || "",
+      createdAt: new Date().toLocaleDateString(),
+      played: false,
     });
 
     if (error) {

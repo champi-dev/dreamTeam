@@ -5,8 +5,11 @@ export const mockData: Match =
   {
     date: "2024-02-05",
     time: "10:00",
-    court: "F8",
+    courtId: "F8",
     playersPerTeam: 4,
+    createdAt: "2024-02-05T10:00:00",
+    played: false,
+    ownerId: "test2",
     whiteTeam: [
       {
         id: "test1",

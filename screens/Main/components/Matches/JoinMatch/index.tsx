@@ -1,25 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router";
-import { View, Text, StyleSheet, ScrollView, Image, FlatList, ListRenderItemInfo } from "react-native";
+import { View, Text, StyleSheet, ScrollView, FlatList, ListRenderItemInfo } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import NotificationIcon from "../../../../../assets/svgs/NotificationIcon";
 import PlusIcon from "../../../../../assets/svgs/PlusIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
-import { mockData, mockUser } from "./mockData";
 import { Match } from "../../../../../models/Match";
 import { getDayName, convertTimeTo12HourFormat } from "../../../../../utils";
-import { User } from "../../../../../models/User";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
+import { MainScreenContextConfig } from "../../../context";
+import { getMatches } from "../../../../../firebase";
 
 function JoinMatch () {
   const navigate = useNavigate();
-  const [matches, setMatches] = useState<Match[]>();
-  const [currentUser, setCurrentUser] = useState<User>();
+  const { user, availableCourts, matches, setMatches } = useContext(MainScreenContextConfig);
 
-  const userOwnsMatch = (match: Match) => {
-    return match.ownerId === currentUser?.id;
-  };
+  const currentCourtName = (courtId: string) => availableCourts && availableCourts.find(court => court.id === courtId)?.name;
+  const userOwnsMatch = (match: Match) => match.ownerId === user?.id;
 
   const handleMatchPress = (match: Match) => {
     if (userOwnsMatch(match)) {
@@ -31,8 +29,14 @@ function JoinMatch () {
   }
 
   useEffect(() => {
-    setMatches(mockData);
-    setCurrentUser(mockUser);
+    getMatches().then(({ error, data, lastVisible }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+
+      setMatches && setMatches(data as unknown as Match[]);
+    });
   }, [])
 
   const renderItem = ({item}: ListRenderItemInfo<Match>) => {
@@ -55,7 +59,7 @@ function JoinMatch () {
             </ScrollView>
 
             <Text style={styles.matchText}>{getDayName(item.date)} {convertTimeTo12HourFormat(item.time)}</Text>
-            <Text style={styles.matchText}>{item.court} {item.playersPerTeam} vs {item.playersPerTeam}</Text>
+            <Text style={styles.matchText}>{currentCourtName(item.courtId)} {item.playersPerTeam} vs {item.playersPerTeam}</Text>
           </View>            
 
           <View style={styles.actionContainer}>
@@ -77,7 +81,7 @@ function JoinMatch () {
 
       <FlatList
         data={matches}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
       />
     

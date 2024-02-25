@@ -1,8 +1,12 @@
 import * as Localization from 'expo-localization';
 
 export const getDayName = (dateStr: string) => {
-  const date = new Date(`${dateStr}T00:00`);
-  const locale = Localization.locale || 'es-ES'; 
+  // Convert DD/MM/YYYY to YYYY-MM-DD
+  const [day, month, year] = dateStr.split('/');
+  const isoFormattedDate = `${year}-${month}-${day}T00:00`;
+
+  const date = new Date(isoFormattedDate);
+  const locale = Localization.locale || 'es-ES';
   const options: Intl.DateTimeFormatOptions = {
     weekday: 'long',
     day: 'numeric',
