@@ -1,7 +1,31 @@
-import { collection, addDoc, getDocs, limit, orderBy, query, where, startAfter, doc, updateDoc, getDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, limit, orderBy, query, where, startAfter, doc, updateDoc, getDoc, onSnapshot } from "firebase/firestore";
 import { db } from "../config";
 import { Match } from "../../models/Match";
 import { convertDateStr } from "../../utils";
+
+interface ListenForMatchesProps {
+  setMatches: (matches: Match[]) => void;
+  setLastVisibleMatchDoc: (doc: unknown) => void;
+}
+
+export const listenForMatches = ({ setMatches, setLastVisibleMatchDoc }: ListenForMatchesProps) => {
+  const matchesRef = collection(db, "matches");
+  const q = query(
+    matchesRef,
+    where("played", "==", false),
+    orderBy("createdAt", "desc"),
+    limit(10)
+  );
+
+  const unsubscribe = onSnapshot(q, (querySnapshot): void => {
+    const matches = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    setLastVisibleMatchDoc(lastVisible);
+    setMatches(matches as Match[]);
+  });
+
+  return unsubscribe;
+};
 
 export const createMatch = (match: Match) => {
   return addDoc(collection(db, "matches"), match).then((docRef) => {
@@ -17,12 +41,12 @@ export const getMatches = async (lastVisible?: unknown) => {
   const q = !lastVisible ? query(
     matchesRef,
     where("played", "==", false),
-    orderBy("createdAt", "asc"),
+    orderBy("createdAt", "desc"),
     limit(10)
   ) : query(
     matchesRef,
     where("played", "==", false),
-    orderBy("createdAt", "asc"),
+    orderBy("createdAt", "desc"),
     limit(10),
     startAfter(lastVisible)
   );
@@ -53,12 +77,12 @@ export const getPlayedMatches = async (lastVisible?: unknown) => {
   const q = !lastVisible ? query(
     matchesRef,
     where("played", "==", true),
-    orderBy("createdAt", "asc"),
+    orderBy("createdAt", "desc"),
     limit(10)
   ) : query(
     matchesRef,
     where("played", "==", true),
-    orderBy("createdAt", "asc"),
+    orderBy("createdAt", "desc"),
     limit(10),
     startAfter(lastVisible)
   );

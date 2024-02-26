@@ -10,8 +10,8 @@ export {createUser, getUserById, updateUserPropertyById, uploadUserImage, getUse
 import { getAllCourts } from './courts';
 export { getAllCourts };
 
-import { createMatch, getMatches, getPlayedMatches, updateMatch, getMatchById } from './matches';
-export { createMatch, getMatches, getPlayedMatches, updateMatch, getMatchById };
+import { createMatch, getMatches, getPlayedMatches, updateMatch, getMatchById, listenForMatches } from './matches';
+export { createMatch, getMatches, getPlayedMatches, updateMatch, getMatchById, listenForMatches };
 
 import { createNotification, getNotificationsByReceiverId, deleteNotification } from './notifications';
 export { createNotification, getNotificationsByReceiverId, deleteNotification };
