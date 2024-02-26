@@ -28,8 +28,10 @@ function JoinMatch () {
       navigate('/main/matches/enterMatchResult', { state: match });
       return;
     }
-
-    !isMatchFull(match) && navigate('/main/matches/selectSide', { state: match });
+    if (isMatchFull(match) && !isUserInMatch(match)) {
+      return;
+    }
+    navigate('/main/matches/selectSide', { state: match });
   };
 
   const handleLoadMore = () => {
@@ -61,7 +63,7 @@ function JoinMatch () {
     switch (true) {
       case userOwnsMatch(match) && isUserInMatch(match):
         return 'Ingresar resultado';
-      case isMatchFull(match):
+      case isMatchFull(match) && !isUserInMatch(match):
         return 'Planilla llena';
       default:
         return 'Elegir lado';
