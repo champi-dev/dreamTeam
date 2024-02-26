@@ -48,6 +48,42 @@ export const getMatches = async (lastVisible?: unknown) => {
   }
 }
 
+export const getPlayedMatches = async (lastVisible?: unknown) => {
+  const matchesRef = collection(db, "matches");
+  const q = !lastVisible ? query(
+    matchesRef,
+    where("played", "==", true),
+    orderBy("createdAt", "asc"),
+    limit(10)
+  ) : query(
+    matchesRef,
+    where("played", "==", true),
+    orderBy("createdAt", "asc"),
+    limit(10),
+    startAfter(lastVisible)
+  );
+
+  try {
+    const querySnapshot = await getDocs(q);
+    let matches = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    matches = matches.sort((a, b) => {
+      // @ts-ignore
+      const dateA = new Date(convertDateStr(a.date));
+      // @ts-ignore
+      const dateB = new Date(convertDateStr(b.date));
+      // @ts-ignore
+      return dateA - dateB;
+    });
+
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    return { error: null, data: matches, lastVisible: lastVisible };
+  } catch (error) {
+    console.log(error);
+    return { error, data: null };
+  }
+}
+
 export const getMatchById = async (matchId: string) => {
   const matchRef = doc(db, "matches", matchId);
 

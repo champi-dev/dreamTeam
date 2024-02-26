@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Text, StyleSheet, View, ScrollView } from "react-native";
-import { useNavigate } from 'react-router-native';
+import { useNavigate, useLocation } from 'react-router-native';
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
 import SoccerballIcon from "../../../../../assets/svgs/SoccerballIcon";
 import CustomInput from "../../../../../components/CustomInput";
-import { mockData } from "./mockData";
 import { Match } from "../../../../../models/Match";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
@@ -13,15 +12,18 @@ import { capitalizeString } from "../../../../../utils";
 
 function PastMatchResult () {
   const navigate = useNavigate();
+  const location = useLocation();
   const [matchData, setMatchData] = useState<Match>();
 
   useEffect(() => {
-    setMatchData(mockData);
-  }, []);
+    if (location.state) {
+      setMatchData(location.state as Match);
+    }
+  }, [location.state]);
 
   return (<>
     <View style={styles.header}>
-      <PressableOpacity onPress={() => navigate('/main/matches')}>
+      <PressableOpacity onPress={() => navigate('/main/matchesStats')}>
         <ArrowLeftIcon style={styles.headerIcon} />
       </PressableOpacity>
       <Text style={styles.title}>Resultado</Text>
@@ -35,7 +37,7 @@ function PastMatchResult () {
           keyboardType="numeric"
             placeholder="Goles" 
             placeholderTextColor="#65656B" 
-            value={matchData?.whiteTeamScore?.toString() || ""}
+            value={matchData?.whiteTeamScore?.toString() || "0"}
             FrontIcon={SoccerballIcon}
             styling="secondary"
             style={styles.itemInput}
@@ -49,7 +51,7 @@ function PastMatchResult () {
           keyboardType="numeric" 
             placeholder="Goles" 
             placeholderTextColor="#65656B" 
-            value={matchData?.blackTeamScore?.toString() || ""}
+            value={matchData?.blackTeamScore?.toString() || "0"}
             FrontIcon={SoccerballIcon}
             styling="secondary"
             style={styles.itemInput}
@@ -65,7 +67,7 @@ function PastMatchResult () {
               keyboardType="numeric"
               placeholder="Goles" 
               placeholderTextColor="#65656B" 
-              value={singlePlayer.goalsInMatch?.toString() || ""}
+              value={singlePlayer.goalsInMatch?.toString() || "0"}
               FrontIcon={SoccerballIcon}
               styling="secondary"
               style={styles.itemInput}
@@ -81,7 +83,7 @@ function PastMatchResult () {
               keyboardType="numeric"
               placeholder="Goles" 
               placeholderTextColor="#65656B" 
-              value={singlePlayer.goalsInMatch?.toString() || ""}
+              value={singlePlayer.goalsInMatch?.toString() || "0"}
               FrontIcon={SoccerballIcon}
               styling="secondary"
               style={styles.itemInput}
