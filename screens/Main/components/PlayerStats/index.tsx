@@ -1,15 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Image } from "react-native";
-import { mockData } from "./mockData";
+import React, { useContext, useEffect } from "react";
+import { SafeAreaView, View, Text, StyleSheet } from "react-native";
 import { User } from "../../../../models/User";
 import CustomUserImage from "../../../../components/CustomUserImage";
 import { capitalizeString } from "../../../../utils";
+import { getUsersWithGoals } from "../../../../firebase";
+import { MainScreenContextConfig } from "../../context";
 
 function PlayerStats () {
-  const [players, setPlayers] = useState<User[]>([]);
+  const { usersWithGoals: players, setUsersWithGoals: setPlayers } = useContext(MainScreenContextConfig);
 
   useEffect(() => {
-    setPlayers(mockData);
+    getUsersWithGoals().then(({error, data}) => {
+      if (error) {
+        console.log('Error getting users with goals', error);
+        return;
+      }
+      setPlayers && setPlayers(data as User[]);
+    })
   }, [])
 
   return (
@@ -27,7 +34,7 @@ function PlayerStats () {
             </View>
           </View>
 
-          {players.length ? players.map((singleUser, index) => (
+          {players?.length ? players.map((singleUser, index) => (
             <View style={styles.row} key={index}>
               <View style={styles.rowLeft}>
                 <CustomUserImage user={singleUser} />

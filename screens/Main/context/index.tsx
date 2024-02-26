@@ -7,6 +7,8 @@ import { Notification } from "../../../models/Notification";
 interface MainScreenContextProps {
   user?: User | null;
   setUser?: (user: User) => void;
+  usersWithGoals?: User[];
+  setUsersWithGoals?: (users: User[]) => void;
   availableCourts?: Court[];
   setAvailableCourts?: (courts: Court[]) => void;
   matches?: Match[];
@@ -25,6 +27,7 @@ export const MainScreenContextConfig = createContext<MainScreenContextProps>({})
 
 export function MainScreenContext ({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [usersWithGoals, setUsersWithGoals] = useState<User[]>([]);
   const [availableCourts, setAvailableCourts] = useState<Court[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
   const [playedMatches, setPlayedMatches] = useState<Match[]>([]);
@@ -33,7 +36,7 @@ export function MainScreenContext ({ children }: { children: React.ReactNode }) 
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   return (
-    <MainScreenContextConfig.Provider value={{ user, setUser, availableCourts, setAvailableCourts, matches, setMatches,lastVisibleMatchDoc, setLastVisibleMatchDoc, notifications, setNotifications, playedMatches, setPlayedMatches, lastVisiblePlayedMatchDoc, setLastVisiblePlayedMatchDoc }}>
+    <MainScreenContextConfig.Provider value={{ user, setUser, usersWithGoals, setUsersWithGoals, availableCourts, setAvailableCourts, matches, setMatches,lastVisibleMatchDoc, setLastVisibleMatchDoc, notifications, setNotifications, playedMatches, setPlayedMatches, lastVisiblePlayedMatchDoc, setLastVisiblePlayedMatchDoc }}>
       {children}
     </MainScreenContextConfig.Provider>
   );
