@@ -1,4 +1,4 @@
-import { collection, addDoc, doc, query, where, getDocs, updateDoc, DocumentData, Query } from "firebase/firestore";
+import { collection, addDoc, doc, query, where, getDocs, updateDoc, DocumentData, Query, orderBy, limit } from "firebase/firestore";
 import { db, storage } from "../config";
 import { getRandomColor } from "../../utils";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -117,4 +117,26 @@ export const uploadUserImage = ({ fileName, blob }: { fileName: string; blob: Bl
     console.error("Upload failed", error);
     return { error, data: null };
   });
+}
+
+export const getUsersWithGoals = async () => {
+  const usersRef = collection(db, "users");
+  const q = query(
+    usersRef,
+    where("goals", ">", 0),
+    orderBy("goals", "desc"),
+    limit(10)
+  );
+
+  try {
+    const querySnapshot = await getDocs(q);
+    const users = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    return { error: null, data: users };
+  } catch (error) {
+    console.log(error);
+    return { error, data: null };
+  }
 }
