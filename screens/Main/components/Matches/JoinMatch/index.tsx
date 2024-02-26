@@ -11,8 +11,7 @@ import { getDayName, convertTimeTo12HourFormat } from "../../../../../utils";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
 import { MainScreenContextConfig } from "../../../context";
-import { getMatches, getNotificationsByReceiverId } from "../../../../../firebase";
-import { convertDateStr } from "../../../../../utils";
+import { getMatches, getNotificationsByReceiverId, listenForMatches } from "../../../../../firebase";
 
 function JoinMatch () {
   const navigate = useNavigate();
@@ -33,7 +32,7 @@ function JoinMatch () {
   };
 
   const handleLoadMore = () => {
-    if (!lastVisibleMatchDoc) {
+    if (!lastVisibleMatchDoc || matches && matches.length < 10) {
       return;
     }
 
@@ -43,16 +42,7 @@ function JoinMatch () {
         return;
       }
 
-      const sortedMatches = data && matches && [...matches, ...data].sort((a, b) => {
-        // @ts-ignore
-        const dateA = new Date(convertDateStr(a.date));
-        // @ts-ignore
-        const dateB = new Date(convertDateStr(b.date));
-        // @ts-ignore
-        return dateA - dateB;
-      });
-
-      matches && setMatches && setMatches(sortedMatches as unknown as Match[]);
+      matches && setMatches && setMatches([...matches as Match[], ...data as unknown as Match[]]);
       setLastVisibleMatchDoc && setLastVisibleMatchDoc(lastVisible);
     });
   };
@@ -68,25 +58,9 @@ function JoinMatch () {
     }
   }
 
-useEffect(() => {
-    getMatches().then(({ error, data, lastVisible }) => {
-      if (error) {
-        console.log(error);
-        return;
-      }
-
-      const sortedMatches = data && data.sort((a, b) => {
-        // @ts-ignore
-        const dateA = new Date(convertDateStr(a.date));
-        // @ts-ignore
-        const dateB = new Date(convertDateStr(b.date));
-        // @ts-ignore
-        return dateA - dateB;
-      });
-
-      data && data.length > 10 && setLastVisibleMatchDoc && setLastVisibleMatchDoc(lastVisible);
-      setMatches && setMatches(sortedMatches as unknown as Match[]);
-    });
+  useEffect(() => {
+    const unsubscribe = setMatches && setLastVisibleMatchDoc && listenForMatches({ setMatches, setLastVisibleMatchDoc });
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
