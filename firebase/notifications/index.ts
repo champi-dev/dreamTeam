@@ -1,4 +1,4 @@
-import { collection, addDoc, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, addDoc, query, where, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../config";
 import { Notification } from "../../models/Notification";
 
@@ -11,22 +11,20 @@ export const createNotification = (notification: Notification) => {
   });
 }
 
-export const getNotificationsByReceiverId = async (receiverId: string) => {
+export const listenForNotificationsByReceiverId = (receiverId: string, setNotifications: (notifications: Notification[]) => void) => {
   const notificationsRef = collection(db, "notifications");
   const q = query(notificationsRef, where("receiverId", "==", receiverId));
 
-  try {
-    const querySnapshot = await getDocs(q);
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const notifications = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
-    return { error: null, data: notifications };
-  } catch (error) {
-    console.log(error);
-    return { error, data: null };
-  }
-}
+    setNotifications(notifications as Notification[]);
+  });
+
+  return unsubscribe;
+};
 
 export const deleteNotification = async (notificationId: string) => {
   try {
