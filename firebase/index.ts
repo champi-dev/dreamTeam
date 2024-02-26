@@ -13,5 +13,5 @@ export { getAllCourts };
 import { createMatch, getMatches, getPlayedMatches, updateMatch, getMatchById, listenForMatches } from './matches';
 export { createMatch, getMatches, getPlayedMatches, updateMatch, getMatchById, listenForMatches };
 
-import { createNotification, getNotificationsByReceiverId, deleteNotification } from './notifications';
-export { createNotification, getNotificationsByReceiverId, deleteNotification };
+import { createNotification, deleteNotification, listenForNotificationsByReceiverId } from './notifications';
+export { createNotification, deleteNotification, listenForNotificationsByReceiverId };

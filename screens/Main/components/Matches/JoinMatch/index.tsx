@@ -11,7 +11,7 @@ import { getDayName, convertTimeTo12HourFormat } from "../../../../../utils";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
 import { MainScreenContextConfig } from "../../../context";
-import { getMatches, getNotificationsByReceiverId, listenForMatches } from "../../../../../firebase";
+import { getMatches, listenForNotificationsByReceiverId, listenForMatches } from "../../../../../firebase";
 
 function JoinMatch () {
   const navigate = useNavigate();
@@ -64,16 +64,13 @@ function JoinMatch () {
   }, []);
 
   useEffect(() => {
-    if (user?.id) {
-      getNotificationsByReceiverId(user.id).then(({error, data}) => {
-        if (error) {
-          console.error(error);
-          return;
-        }
-        setNotifications && setNotifications(data as unknown as Notification[]);
-      });
+    if (!user?.id || !setNotifications) {
+      return;
     }
-  }, [user, getNotificationsByReceiverId]);
+
+    const unsubscribe = listenForNotificationsByReceiverId(user.id, setNotifications);
+    return unsubscribe;
+  }, [user, setNotifications])
 
   const renderItem = ({item}: ListRenderItemInfo<Match>) => {
     return (
