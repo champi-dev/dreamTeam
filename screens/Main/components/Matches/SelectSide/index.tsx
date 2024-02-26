@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Text, StyleSheet, View } from "react-native";
+import { Text, StyleSheet, View, ScrollView } from "react-native";
 import { useNavigate, useLocation } from 'react-router-native';
 import ArrowLeftIcon from "../../../../../assets/svgs/ArrowLeftIcon";
 import ShirtIcon from "../../../../../assets/svgs/ShirtIcon";
@@ -46,12 +46,14 @@ function SelectSide () {
     }
   };
 
-  const handleSave = () => {
-    if (match) {
+  const handleSave = (matchFromProps?: Match) => {
+    const matchToUse = matchFromProps || match;
+
+    if (matchToUse) {
       setIsLoading(true);
-      match.id && updateMatch(match.id, {
-        whiteTeam: match.whiteTeam,
-        blackTeam: match.blackTeam
+      matchToUse.id && updateMatch(matchToUse.id, {
+        whiteTeam: matchToUse.whiteTeam,
+        blackTeam: matchToUse.blackTeam
       }).then(({ error }) => {
         if (error) {
           console.log('Error updating match', error);
@@ -60,6 +62,21 @@ function SelectSide () {
 
         navigate('/main/matches');
       }).finally(() => setIsLoading(false));
+    }
+  }
+
+  const handleCancel = () => {
+    const whiteTeam = match?.whiteTeam.filter(player => player.id !== currentUser?.id);
+    const blackTeam = match?.blackTeam.filter(player => player.id !== currentUser?.id);
+
+    if (whiteTeam && blackTeam) {
+      const updatedMatch = {
+        ...match,
+        whiteTeam,
+        blackTeam
+      } as Match;
+      setMatch(updatedMatch);
+      handleSave(updatedMatch);
     }
   }
 
@@ -131,12 +148,14 @@ function SelectSide () {
           </View>
         </PressableOpacity>        
 
+        <ScrollView showsVerticalScrollIndicator={false}>
         {match?.whiteTeam.length ? match.whiteTeam.map((singlePlayer, index) => (
           <View style={styles.user} key={index}>
             <CustomUserImage user={singlePlayer} />
             <Text style={styles.userText}>{capitalizeString(singlePlayer.name || singlePlayer.email)}</Text>
           </View>
-        )) : <></>}        
+        )) : <></>} 
+        </ScrollView>       
       </View>
 
       <View style={styles.contentRight}>
@@ -146,16 +165,19 @@ function SelectSide () {
           </View>
         </PressableOpacity>        
 
-        {match?.blackTeam.length ? match.blackTeam.map((singlePlayer, index) => (
-          <View style={styles.user} key={index}>
-            <CustomUserImage user={singlePlayer} />
-            <Text style={styles.userText}>{capitalizeString(singlePlayer.name || singlePlayer.email)}</Text>
-          </View>
-        )) : <></>} 
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {match?.blackTeam.length ? match.blackTeam.map((singlePlayer, index) => (
+            <View style={styles.user} key={index}>
+              <CustomUserImage user={singlePlayer} />
+              <Text style={styles.userText}>{capitalizeString(singlePlayer.name || singlePlayer.email)}</Text>
+            </View>
+          )) : <></>} 
+        </ScrollView>        
       </View>
     </View>
 
-    <CustomButton text="Guardar" onPress={handleSave} type="primary" disabled={isLoading || !isFormValid()} />
+    <CustomButton text="Cancelar" onPress={handleCancel} type="secondary" />
+    <CustomButton text="Guardar" onPress={() => handleSave()} type="primary" disabled={isLoading || !isFormValid()} />
   </>);
 }
 
