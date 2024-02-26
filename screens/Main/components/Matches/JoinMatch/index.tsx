@@ -72,7 +72,7 @@ useEffect(() => {
         return dateA - dateB;
       });
 
-      setLastVisibleMatchDoc && setLastVisibleMatchDoc(lastVisible);
+      data && data.length > 10 && setLastVisibleMatchDoc && setLastVisibleMatchDoc(lastVisible);
       setMatches && setMatches(sortedMatches as unknown as Match[]);
     });
   }, []);

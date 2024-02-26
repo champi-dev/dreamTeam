@@ -1,57 +1,110 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, Image } from "react-native";
+import React, { useEffect, useContext } from "react";
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, ListRenderItemInfo, FlatList } from "react-native";
 import ShirtIcon from "../../../../assets/svgs/ShirtIcon";
 import { Match } from "../../../../models/Match";
-import { mockData } from "./mockData";
 import { PressableOpacity } from "../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../components/CustomUserImage";
 import { useNavigate } from "react-router-native";
+import { getPlayedMatches } from "../../../../firebase";
+import { MainScreenContextConfig } from "../../context";
+import { convertDateStr } from "../../../../utils";
 
 function MatchesStats () {
-  const [matches, setMatches] = useState<Match[]>([]);
+  const { playedMatches: matches, setPlayedMatches: setMatches, setLastVisiblePlayedMatchDoc, lastVisiblePlayedMatchDoc } = useContext(MainScreenContextConfig);
   const navigate = useNavigate();
-  const handleMatchOverViewPress = () => {
-    navigate('/main/matches/pastMatchResult');
-  }
+  const handleMatchOverViewPress = (match: Match) => {
+    navigate('/main/matches/pastMatchResult', { state: match });
+  };
+
+  const handleLoadMore = () => {
+    if (!lastVisiblePlayedMatchDoc) {
+      return;
+    }
+
+    getPlayedMatches(lastVisiblePlayedMatchDoc).then(({ error, data, lastVisible }) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+
+      const sortedMatches = data && matches && [...matches, ...data].sort((a, b) => {
+        // @ts-ignore
+        const dateA = new Date(convertDateStr(a.date));
+        // @ts-ignore
+        const dateB = new Date(convertDateStr(b.date));
+        // @ts-ignore
+        return dateA - dateB;
+      });
+
+      matches && setMatches && setMatches(sortedMatches as unknown as Match[]);
+      setLastVisiblePlayedMatchDoc && setLastVisiblePlayedMatchDoc(lastVisible);
+    });
+  };
 
   useEffect(() => {
-    setMatches(mockData);
+    getPlayedMatches().then(({error, data, lastVisible}) => {
+      if (error) {
+        console.log(error);
+        return;
+      }
+
+      const sortedMatches = data && matches && data.sort((a, b) => {
+        // @ts-ignore
+        const dateA = new Date(convertDateStr(a.date));
+        // @ts-ignore
+        const dateB = new Date(convertDateStr(b.date));
+        // @ts-ignore
+        return dateA - dateB;
+      });
+
+      data && data.length > 10 && setLastVisiblePlayedMatchDoc && setLastVisiblePlayedMatchDoc(lastVisible);
+      data && setMatches && setMatches(sortedMatches as Match[]);
+    })
   }, []);
+
+  const renderItem = ({ item }: ListRenderItemInfo<Match>) => (
+    <PressableOpacity onPress={() => handleMatchOverViewPress(item)} style={styles.matchOverview}>
+      <View style={styles.matchOverviewContent}>
+      <ScrollView contentContainerStyle={styles.topTeam} horizontal showsHorizontalScrollIndicator={false}>
+        <ShirtIcon style={styles.shirtIcon} fill="#fff" />
+        {item.whiteTeam.map((user, userIndex) => (
+          <CustomUserImage key={userIndex} user={user} />
+        ))}
+      </ScrollView>
+
+      <ScrollView contentContainerStyle={styles.bottomTeam} horizontal showsHorizontalScrollIndicator={false}>
+        <ShirtIcon style={styles.shirtIcon} fill="#000" />
+        {item.blackTeam.map((user, userIndex) => (
+          <CustomUserImage key={userIndex} user={user} /> 
+        ))}
+      </ScrollView>
+      </View>            
+
+      <View style={styles.actionContainer}>
+        <View style={styles.actionTextContainer}>
+          <Text style={styles.actionText}>{item.whiteTeamScore}</Text>
+        </View>
+
+        <View style={styles.actionTextContainer}>
+          <Text style={styles.actionText}>{item.blackTeamScore}</Text>
+        </View>
+      </View>
+    </PressableOpacity>
+  )
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content}>
+      <View style={styles.content}>
         <Text style={styles.title}>Partidos jugados</Text>
-        {matches.length ? matches.map((singleMatch, index) => (
-          <PressableOpacity onPress={handleMatchOverViewPress} key={index} style={styles.matchOverview}>
-          <View style={styles.matchOverviewContent}>
-          <ScrollView contentContainerStyle={styles.topTeam} horizontal showsHorizontalScrollIndicator={false}>
-            <ShirtIcon style={styles.shirtIcon} fill="#fff" />
-            {singleMatch.whiteTeam.map((user, userIndex) => (
-              <CustomUserImage key={userIndex} user={user} />
-            ))}
-          </ScrollView>
-
-          <ScrollView contentContainerStyle={styles.bottomTeam} horizontal showsHorizontalScrollIndicator={false}>
-            <ShirtIcon style={styles.shirtIcon} fill="#000" />
-            {singleMatch.blackTeam.map((user, userIndex) => (
-              <CustomUserImage key={userIndex} user={user} /> 
-            ))}
-          </ScrollView>
-          </View>            
-
-          <View style={styles.actionContainer}>
-            <View style={styles.actionTextContainer}>
-              <Text style={styles.actionText}>{singleMatch.whiteTeamScore}</Text>
-            </View>
-
-            <View style={styles.actionTextContainer}>
-              <Text style={styles.actionText}>{singleMatch.blackTeamScore}</Text>
-            </View>
-          </View>
-        </PressableOpacity>
-        )) : <></>}
-      </ScrollView>
+        <FlatList 
+          data={matches}
+          keyExtractor={(_, index)=> `${index}`}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.1}
+        />
+      </View>      
     </SafeAreaView>
   );
 }
