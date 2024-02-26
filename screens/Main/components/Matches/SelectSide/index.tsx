@@ -20,6 +20,7 @@ function SelectSide () {
   const [match, setMatch] = useState<Match>();
   const [selectedSide, setSelectedSide] = useState<'white' | 'black'>('white');
   const [isLoading, setIsLoading] = useState(false);
+  const isFormValid = () => selectedSide === 'white' ? match?.whiteTeam && match?.whiteTeam.length <= match?.playersPerTeam : match?.blackTeam && match?.blackTeam.length <= match?.playersPerTeam;
 
   const handleSelectSide = (side: 'white' | 'black') => {
     if (side === 'white' && selectedSide !== 'white') {
@@ -79,7 +80,7 @@ function SelectSide () {
     if (match.blackTeam.length < match.playersPerTeam) {
       setMatch({
         ...match,
-        blackTeam: [...match.whiteTeam, currentUser as User]
+        blackTeam: [...match.blackTeam, currentUser as User]
       });
       return;
     }
@@ -154,7 +155,7 @@ function SelectSide () {
       </View>
     </View>
 
-    <CustomButton text="Guardar" onPress={handleSave} type="primary" disabled={isLoading} />
+    <CustomButton text="Guardar" onPress={handleSave} type="primary" disabled={isLoading || !isFormValid()} />
   </>);
 }
 
