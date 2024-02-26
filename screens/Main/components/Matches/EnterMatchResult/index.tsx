@@ -10,18 +10,22 @@ import CustomButton from "../../../../../components/CustomButton";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
 import { capitalizeString } from "../../../../../utils";
-import { updateMatch } from "../../../../../firebase";
+import { updateMatch, updateUserPropertyById } from "../../../../../firebase";
 import { User } from "../../../../../models/User";
-
-// add form validation
+import { useKeyboard } from "../../../../../hooks/keyboard";
 
 function EnterMatchResult () {
   const navigate = useNavigate();
   const location = useLocation();
+  const keyboardShown = useKeyboard();
   const [matchData, setMatchData] = useState<Match>();
   const [whiteTeamScore, setWhiteTeamScore] = useState<number>(0);
   const [blackTeamScore, setBlackTeamScore] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const whiteTeamGoals = matchData?.whiteTeam.reduce((prev, crr) => prev + (crr.goalsInMatch || 0), 0)
+  const blackTeamGoals = matchData?.blackTeam.reduce((prev, crr) => prev + (crr.goalsInMatch || 0), 0)
+  const isFormValid = whiteTeamGoals === whiteTeamScore && blackTeamGoals === blackTeamScore;
 
   interface ChangePlayerGoalCountProps {
     playerId: string;
@@ -51,8 +55,19 @@ function EnterMatchResult () {
     setMatchData(newMatchData as Match);
   };
 
-  const updatePlayerTotalGoals = (player: User) => ({...player, goals: player.goals + (player?.goalsInMatch || 0)});
-  // change this, update user info
+  const updatePlayerTotalGoals = (player: User) => {
+    const updatedPlayer = {...player, goals: player.goals + (player?.goalsInMatch || 0)};
+
+    updateUserPropertyById(player.id, { goals: updatedPlayer.goals })
+      .then(({ error }) => {
+        if (error) {
+          console.log('Error updating player', error);
+          return;
+        }
+      });
+
+    return updatedPlayer;
+  };
 
   const handleSave = () => {
     setIsLoading(true);
@@ -107,7 +122,7 @@ function EnterMatchResult () {
           <ShirtIcon style={styles.shirtIcon} fill="#000" />
           <CustomInput
             keyboardType="numeric" 
-            placeholder="Goles" 
+            placeholder="Goles"
             placeholderTextColor="#65656B" 
             value={blackTeamScore.toString()}
             onChangeText={(text) => isNaN(parseInt(text)) ? 0 : setBlackTeamScore(parseInt(text))}
@@ -125,8 +140,8 @@ function EnterMatchResult () {
               keyboardType="numeric"
               placeholder="Goles" 
               placeholderTextColor="#65656B" 
-              value={singlePlayer.goals.toString()}
-              onChangeText={(text) => changePlayerGoalCount({ playerId: singlePlayer.id, goalsInMatch: parseInt(text), team: 'white'})}
+              value={singlePlayer.goalsInMatch?.toString() || '0'}
+              onChangeText={(text) => changePlayerGoalCount({ playerId: singlePlayer.id, goalsInMatch: isNaN(parseInt(text)) ? 0 : parseInt(text), team: 'white'})}
               FrontIcon={SoccerballIcon}
               styling="secondary"
               style={styles.itemInput}
@@ -141,7 +156,8 @@ function EnterMatchResult () {
               keyboardType="numeric"
               placeholder="Goles" 
               placeholderTextColor="#65656B" 
-              value={singlePlayer.goals.toString()}
+              value={singlePlayer.goalsInMatch?.toString() || '0'}
+              onChangeText={(text) => changePlayerGoalCount({ playerId: singlePlayer.id, goalsInMatch: isNaN(parseInt(text)) ? 0 : parseInt(text), team: 'black'})}
               FrontIcon={SoccerballIcon}
               styling="secondary"
               style={styles.itemInput}
@@ -149,7 +165,9 @@ function EnterMatchResult () {
           </View>
         )) : <></>}
       </ScrollView>
-      <CustomButton text="Guardar" type="primary" onPress={handleSave} disabled={isLoading} />   
+      {keyboardShown ? <></> : (
+        <CustomButton text="Guardar" type="primary" onPress={handleSave} disabled={isLoading || !isFormValid} />   
+      )}      
     </View>
   </>);
 }
