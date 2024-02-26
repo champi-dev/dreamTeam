@@ -21,6 +21,7 @@ function JoinMatch () {
   const currentCourtName = (courtId: string) => availableCourts && availableCourts.find(court => court.id === courtId)?.name;
   const userOwnsMatch = (match: Match) => match.ownerId === user?.id;
   const isUserInMatch = (match: Match) => match.whiteTeam.some(player => player.id === user?.id) || match.blackTeam.some(player => player.id === user?.id);
+  const isMatchFull = (match: Match) => match.whiteTeam.length === match.playersPerTeam && match.blackTeam.length === match.playersPerTeam;
 
   const handleMatchPress = (match: Match) => {
     if (userOwnsMatch(match) && isUserInMatch(match)) {
@@ -28,7 +29,7 @@ function JoinMatch () {
       return;
     }
 
-    navigate('/main/matches/selectSide', { state: match });
+    !isMatchFull(match) && navigate('/main/matches/selectSide', { state: match });
   };
 
   const handleLoadMore = () => {
@@ -55,6 +56,17 @@ function JoinMatch () {
       setLastVisibleMatchDoc && setLastVisibleMatchDoc(lastVisible);
     });
   };
+
+  const actionText = (match: Match) => {
+    switch (true) {
+      case userOwnsMatch(match) && isUserInMatch(match):
+        return 'Ingresar resultado';
+      case isMatchFull(match):
+        return 'Planilla llena';
+      default:
+        return 'Elegir lado';
+    }
+  }
 
 useEffect(() => {
     getMatches().then(({ error, data, lastVisible }) => {
@@ -113,7 +125,7 @@ useEffect(() => {
           </View>            
 
           <View style={styles.actionContainer}>
-            <Text style={styles.actionText}>{userOwnsMatch(item) && isUserInMatch(item) ? 'Ingresar resultado' : 'Elegir lado'}</Text>
+            <Text style={styles.actionText}>{actionText(item)}</Text>
           </View>
         </View>
       </PressableOpacity> 
