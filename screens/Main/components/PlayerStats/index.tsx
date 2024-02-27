@@ -1,22 +1,16 @@
 import React, { useContext, useEffect } from "react";
 import { SafeAreaView, View, Text, StyleSheet } from "react-native";
-import { User } from "../../../../models/User";
 import CustomUserImage from "../../../../components/CustomUserImage";
 import { capitalizeString } from "../../../../utils";
-import { getUsersWithGoals } from "../../../../firebase";
+import { listenForUsersWithGoals } from "../../../../firebase";
 import { MainScreenContextConfig } from "../../context";
 
 function PlayerStats () {
   const { usersWithGoals: players, setUsersWithGoals: setPlayers } = useContext(MainScreenContextConfig);
 
   useEffect(() => {
-    getUsersWithGoals().then(({error, data}) => {
-      if (error) {
-        console.log('Error getting users with goals', error);
-        return;
-      }
-      setPlayers && setPlayers(data as User[]);
-    })
+    const unsubscribe = setPlayers && listenForUsersWithGoals({ setUsers: setPlayers });
+    return unsubscribe;
   }, [])
 
   return (
