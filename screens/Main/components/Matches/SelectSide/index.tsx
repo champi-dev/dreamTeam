@@ -9,7 +9,7 @@ import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../../components/CustomUserImage";
 import { capitalizeString } from "../../../../../utils";
 import { MainScreenContextConfig } from "../../../context";
-import { updateMatch, getMatchById } from "../../../../../firebase";
+import { updateMatch, getMatchById, listenForMatchById } from "../../../../../firebase";
 import { User } from "../../../../../models/User";
 
 function SelectSide () {
@@ -123,6 +123,15 @@ function SelectSide () {
       })
     }
   }, [location.state]);
+
+  useEffect(() => {
+    if (!match?.id) {
+      return;
+    }
+
+    const unsubscribe = listenForMatchById({ matchId: match.id, setMatch: handleMatchData });
+    return unsubscribe;
+  }, [match]);
 
   useEffect(() => {
     if (match) {

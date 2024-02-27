@@ -125,6 +125,25 @@ export const getMatchById = async (matchId: string) => {
   }
 }
 
+interface ListenForMatchByIdProps {
+  matchId: string;
+  setMatch: (match: Match) => void;
+}
+
+export const listenForMatchById = ({ matchId, setMatch }: ListenForMatchByIdProps) => {
+  const matchRef = doc(db, "matches", matchId);
+
+  const unsubscribe = onSnapshot(matchRef, (doc) => {
+    if (doc.exists()) {
+      setMatch({ id: doc.id, ...doc.data() } as Match);
+    } else {
+      console.log("No such document!");
+    }
+  });
+
+  return unsubscribe;
+};
+
 export const updateMatch = async (matchId: string, propertiesToUpdate: Partial<Match>) => {
   const matchRef = doc(db, "matches", matchId);
 
