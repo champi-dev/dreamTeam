@@ -1,7 +1,8 @@
-import { collection, addDoc, doc, query, where, getDocs, updateDoc, DocumentData, Query, orderBy, limit } from "firebase/firestore";
+import { collection, addDoc, doc, query, where, getDocs, updateDoc, DocumentData, Query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db, storage } from "../config";
 import { getRandomColor } from "../../utils";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { User } from "../../models/User";
 
 export const createUser = ({ id, email }: {id: string; email: string;}) => {
   return addDoc(collection(db, "users"), {
@@ -119,7 +120,11 @@ export const uploadUserImage = ({ fileName, blob }: { fileName: string; blob: Bl
   });
 }
 
-export const getUsersWithGoals = async () => {
+interface ListenForUsersWithGoalsProps {
+  setUsers: (users: User[]) => void;
+}
+
+export const listenForUsersWithGoals = ({ setUsers }: ListenForUsersWithGoalsProps) => {
   const usersRef = collection(db, "users");
   const q = query(
     usersRef,
@@ -128,15 +133,14 @@ export const getUsersWithGoals = async () => {
     limit(10)
   );
 
-  try {
-    const querySnapshot = await getDocs(q);
-    const users = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const users: User[] = querySnapshot.docs.map((doc) => ({
+      ...doc.data() as User,
     }));
-    return { error: null, data: users };
-  } catch (error) {
-    console.log(error);
-    return { error, data: null };
-  }
-}
+    setUsers(users);
+  }, (error) => {
+    console.error("Failed to listen for users with goals: ", error);
+  });
+
+  return unsubscribe;
+};
