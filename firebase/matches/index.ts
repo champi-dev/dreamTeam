@@ -27,6 +27,25 @@ export const listenForMatches = ({ setMatches, setLastVisibleMatchDoc }: ListenF
   return unsubscribe;
 };
 
+export const listenForPlayedMatches = ({ setMatches, setLastVisibleMatchDoc }: ListenForMatchesProps) => {
+  const matchesRef = collection(db, "matches");
+  const q = query(
+    matchesRef,
+    where("played", "==", true),
+    orderBy("playedAt", "desc"),
+    limit(10)
+  );
+
+  const unsubscribe = onSnapshot(q, (querySnapshot): void => {
+    const matches = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    setLastVisibleMatchDoc(lastVisible);
+    setMatches(matches as Match[]);
+  });
+
+  return unsubscribe;
+};
+
 export const createMatch = (match: Match) => {
   return addDoc(collection(db, "matches"), match).then((docRef) => {
     return { error: null, data: docRef.id };
@@ -77,12 +96,12 @@ export const getPlayedMatches = async (lastVisible?: unknown) => {
   const q = !lastVisible ? query(
     matchesRef,
     where("played", "==", true),
-    orderBy("createdAt", "desc"),
+    orderBy("playedAt", "desc"),
     limit(10)
   ) : query(
     matchesRef,
     where("played", "==", true),
-    orderBy("createdAt", "desc"),
+    orderBy("playedAt", "desc"),
     limit(10),
     startAfter(lastVisible)
   );

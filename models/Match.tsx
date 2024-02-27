@@ -12,5 +12,6 @@ export interface Match {
   blackTeamScore?: number;
   playersPerTeam: number;
   createdAt: string;
+  playedAt?: string;
   played: boolean;
 }
