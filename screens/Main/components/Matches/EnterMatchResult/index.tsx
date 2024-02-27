@@ -77,7 +77,8 @@ function EnterMatchResult () {
        blackTeamScore, 
        whiteTeam: matchData?.whiteTeam.map(updatePlayerTotalGoals), 
        blackTeam: matchData?.blackTeam.map(updatePlayerTotalGoals), 
-       played: true
+       played: true,
+       playedAt: new Date().toLocaleDateString(),
       }).then(({ error }) => {
         if (error) {
           console.log('Error updating match', error);

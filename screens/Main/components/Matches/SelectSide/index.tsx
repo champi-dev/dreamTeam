@@ -125,7 +125,7 @@ function SelectSide () {
   }, [location.state]);
 
   useEffect(() => {
-    if (!match?.id) {
+    if (!match?.id || Object.keys(match).length > 0){
       return;
     }
 

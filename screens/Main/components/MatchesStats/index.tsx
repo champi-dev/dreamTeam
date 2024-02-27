@@ -5,7 +5,7 @@ import { Match } from "../../../../models/Match";
 import { PressableOpacity } from "../../../../components/PresableOpacity";
 import CustomUserImage from "../../../../components/CustomUserImage";
 import { useNavigate } from "react-router-native";
-import { getPlayedMatches } from "../../../../firebase";
+import { getPlayedMatches, listenForPlayedMatches } from "../../../../firebase";
 import { MainScreenContextConfig } from "../../context";
 import { convertDateStr } from "../../../../utils";
 
@@ -17,7 +17,7 @@ function MatchesStats () {
   };
 
   const handleLoadMore = () => {
-    if (!lastVisiblePlayedMatchDoc) {
+    if (!lastVisiblePlayedMatchDoc || (matches && matches?.length < 10)) {
       return;
     }
 
@@ -42,24 +42,8 @@ function MatchesStats () {
   };
 
   useEffect(() => {
-    getPlayedMatches().then(({error, data, lastVisible}) => {
-      if (error) {
-        console.log(error);
-        return;
-      }
-
-      const sortedMatches = data && matches && data.sort((a, b) => {
-        // @ts-ignore
-        const dateA = new Date(convertDateStr(a.date));
-        // @ts-ignore
-        const dateB = new Date(convertDateStr(b.date));
-        // @ts-ignore
-        return dateA - dateB;
-      });
-
-      data && data.length > 10 && setLastVisiblePlayedMatchDoc && setLastVisiblePlayedMatchDoc(lastVisible);
-      data && setMatches && setMatches(sortedMatches as Match[]);
-    })
+    const unsubscribe = setMatches && setLastVisiblePlayedMatchDoc && listenForPlayedMatches({ setMatches, setLastVisibleMatchDoc: setLastVisiblePlayedMatchDoc });
+    return unsubscribe;
   }, []);
 
   const renderItem = ({ item }: ListRenderItemInfo<Match>) => (
