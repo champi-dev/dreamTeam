@@ -44,7 +44,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
     }    
     
     // @ts-ignore
-    const { error: createUserError } = await createUser({ email: email.toLowerCase(), id: data.uid});
+    const { error: createUserError, data: createUserData } = await createUser({ email: email.toLowerCase() });
 
     if (createUserError) {
       setIsLoading(false);
@@ -52,7 +52,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
     }
 
     // @ts-ignore
-    setUserId && setUserId(data.uid);
+    setUserId && setUserId(createUserData.id);
     setIsLoading(false);
     // @ts-ignore
     setAuthToken && setAuthToken(data.stsTokenManager.accessToken);

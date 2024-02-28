@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "900530912526",
+    "project_id": "dreamteam-c33ca",
+    "storage_bucket": "dreamteam-c33ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900530912526:android:195f7f0cd9079a5d46eb5f",
+        "android_client_info": {
+          "package_name": "com.champi.dreamteam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCo_3yTJflG7iGCALTpcl50afefSlH3t5Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

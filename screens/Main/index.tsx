@@ -1,6 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { View, StyleSheet } from "react-native";
 import { Routes, Route, useLocation, useNavigate } from "react-router";
+import * as Notifications from 'expo-notifications';
 import Profile from "./components/Profile";
 import Matches from "./components/Matches";
 import MatchesStats from "./components/MatchesStats";
@@ -11,10 +12,11 @@ import SoccerballIcon from "../../assets/svgs/SoccerballIcon";
 import ProfileIcon from "../../assets/svgs/ProfileIcon";
 import { PressableOpacity } from "../../components/PresableOpacity";
 import { MainScreenContext, MainScreenContextConfig } from "./context";
-import { getAllCourts, getUserById } from "../../firebase";
+import { getAllCourts, getUserById, updateUserPropertyById } from "../../firebase";
 import { GlobalContextConfig } from "../../globalContext";
 import { User } from "../../models/User";
 import { Court } from "../../models/Court";
+import { registerForPushNotificationsAsync } from "../../utils";
 
 function Main () {
   const navigate = useNavigate();
@@ -50,8 +52,46 @@ function Main () {
 }
 
 function MainRoutes () {
+  const notificationListener = useRef<Notifications.Subscription | null>(null);
+  const responseListener = useRef<Notifications.Subscription | null>(null);
   const { userId } = useContext(GlobalContextConfig);
-  const { setUser, setAvailableCourts, availableCourts } = useContext(MainScreenContextConfig);
+  const { user, setUser, setAvailableCourts, availableCourts } = useContext(MainScreenContextConfig);
+
+  const handlePushToken = async () => {
+    const pushToken = await registerForPushNotificationsAsync();
+
+    if (pushToken) {
+      user && setUser && setUser({...user, pushToken});
+      user?.id && updateUserPropertyById(user.id, { pushToken }).then(({ error }) => {
+        if (error) {
+          console.error(error);
+        }
+      })
+    }
+  }
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
+
+  useEffect(() => {
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      console.log(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      notificationListener.current && Notifications.removeNotificationSubscription(notificationListener.current);
+      responseListener.current && Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (userId) {
@@ -77,6 +117,12 @@ function MainRoutes () {
       });
     }
   }, [availableCourts]);
+
+  useEffect(() => {
+    if (!user?.pushToken) {
+      handlePushToken();
+    }
+  }, [user]);
 
   return (
     <Routes>
