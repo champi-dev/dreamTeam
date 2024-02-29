@@ -57,7 +57,7 @@ function MainRoutes () {
   const { userId } = useContext(GlobalContextConfig);
   const { user, setUser, setAvailableCourts, availableCourts } = useContext(MainScreenContextConfig);
 
- /*  const handlePushToken = async () => {
+ const handlePushToken = async () => {
     const pushToken = await registerForPushNotificationsAsync();
 
     if (pushToken) {
@@ -68,17 +68,17 @@ function MainRoutes () {
         }
       })
     }
-  } */
+  }
 
-/*   Notifications.setNotificationHandler({
+  Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
       shouldPlaySound: false,
       shouldSetBadge: false,
     }),
-  }); */
+  });
 
-  /* useEffect(() => {
+  useEffect(() => {
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       console.log(notification);
     });
@@ -91,7 +91,7 @@ function MainRoutes () {
       notificationListener.current && Notifications.removeNotificationSubscription(notificationListener.current);
       responseListener.current && Notifications.removeNotificationSubscription(responseListener.current);
     };
-  }, []); */
+  }, []);
 
   useEffect(() => {
     if (userId) {
@@ -118,11 +118,11 @@ function MainRoutes () {
     }
   }, [availableCourts]);
 
-  /* useEffect(() => {
+  useEffect(() => {
     if (!user?.pushToken) {
       handlePushToken();
     }
-  }, [user]); */
+  }, [user]);
 
   return (
     <Routes>

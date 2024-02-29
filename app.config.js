@@ -1,15 +1,6 @@
 import 'dotenv/config';
 
 export default {
-  name: "MyApp",
-  slug: "my-app",
-  version: "1.0.0",
-  android: {
-    package: "com.champi.dreamteam"
-  },
-  ios: {
-    "bundleIdentifier": "com.champi.dreamteam"
-  },
   extra: {
     apiKey: process.env.apiKey,
     authDomain: process.env.authDomain,
@@ -18,7 +9,52 @@ export default {
     messagingSenderId: process.env.messagingSenderId,
     appId: process.env.appId,
     "eas": {
-      "projectId": "10819dba-f5b6-4eef-abd4-234f3093e7c0"
+      "projectId": "c5dc094c-e017-46cb-8d6b-70c6e4f2b6d2"
     }
   },
+  name: "dreamTeam",
+  slug: "dreamTeam",
+  version: "1.0.0",
+  orientation: "portrait",
+  icon: "./assets/icon.png",
+  userInterfaceStyle: "automatic",
+  splash: {
+    "image": "./assets/splash.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#ffffff"
+  },
+  assetBundlePatterns: [
+    "**/*"
+  ],
+  ios: {
+    "supportsTablet": true,
+    "googleServicesFile": "./GoogleService-Info.plist",
+    "bundleIdentifier": "com.champi.dreamteam"
+  },
+  android: {
+    "package": "com.champi.dreamteam",
+    "googleServicesFile": "./google-services.json",
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/adaptive-icon.png",
+      "backgroundColor": "#ffffff"
+    },
+    "permissions": [
+      "android.permission.RECORD_AUDIO"
+    ]
+  },
+  web: {
+    "favicon": "./assets/favicon.png"
+  },
+  plugins: [
+    "expo-font",
+    [
+      "expo-image-picker",
+      {
+        "photosPermission": "Allow dreamTeam to access your photos",
+        "cameraPermission": "Allow dreamTeam to take pictures",
+        "microphonePermission": "Allow dreamTeam to access your microphone"
+      }
+    ],
+    "expo-localization"
+  ]
 };
