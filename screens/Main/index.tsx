@@ -12,7 +12,7 @@ import SoccerballIcon from "../../assets/svgs/SoccerballIcon";
 import ProfileIcon from "../../assets/svgs/ProfileIcon";
 import { PressableOpacity } from "../../components/PresableOpacity";
 import { MainScreenContext, MainScreenContextConfig } from "./context";
-import { getAllCourts, getUserById, updateUserPropertyById } from "../../firebase";
+import { deleteNotification, getAllCourts, getUserById, updateUserPropertyById } from "../../firebase";
 import { GlobalContextConfig } from "../../globalContext";
 import { User } from "../../models/User";
 import { Court } from "../../models/Court";
@@ -52,6 +52,7 @@ function Main () {
 }
 
 function MainRoutes () {
+  const navigate = useNavigate();
   const notificationListener = useRef<Notifications.Subscription | null>(null);
   const responseListener = useRef<Notifications.Subscription | null>(null);
   const { userId } = useContext(GlobalContextConfig);
@@ -83,8 +84,12 @@ function MainRoutes () {
       console.log(notification);
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(async ({ notification }) => {
+      console.log('mondanime!', JSON.stringify(notification, null, 2));
+      const { id, matchId } = notification.content.data;
+      // is this data not undefined?
+      await deleteNotification(id); // why is this not being called?
+      navigate('/main/matches/selectSide', { state: { matchId } }); // is the redirect not happening? interfering with the one from protected route?
     });
 
     return () => {
@@ -119,10 +124,10 @@ function MainRoutes () {
   }, [availableCourts]);
 
   useEffect(() => {
-    if (!user?.pushToken) {
+    if (user?.id) {
       handlePushToken();
     }
-  }, [user]);
+  }, [user?.id]);
 
   return (
     <Routes>

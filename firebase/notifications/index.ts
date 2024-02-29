@@ -38,7 +38,7 @@ export const deleteNotification = async (notificationId: string) => {
 
 interface SendPushNotificationProps {
   notification: Notification;
-  receiverId: string;
+  receiverId?: string;
 }
 
 export const sendPushNotification = async ({ notification, receiverId }: SendPushNotificationProps) => {
@@ -62,7 +62,7 @@ const userRef = doc(db, "users", receiverId);
     sound: 'default',
     title: notification.highlightedText,
     body: notification.regularText,
-    data: { withSome: 'data' },
+    data: notification,
   };
 
   try {

@@ -1,6 +1,10 @@
+// import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
+
+// const manifest = Constants.manifest2 ?? Constants.manifest;
+// const { expoProjectId } = manifest?.extra?.expoClient?.extra;
 
 export async function registerForPushNotificationsAsync() {
   let token;
@@ -22,14 +26,13 @@ export async function registerForPushNotificationsAsync() {
       finalStatus = status;
     }
     if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
       return;
     }
     token = await Notifications.getExpoPushTokenAsync({
       projectId: process.env.expoProjectId,
     });
   } else {
-    alert('Must use physical device for Push Notifications');
+    console.log('Must use physical device for Push Notifications');
   }
 
   return token?.data;

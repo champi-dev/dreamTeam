@@ -8,12 +8,13 @@ export default {
     storageBucket: process.env.storageBucket,
     messagingSenderId: process.env.messagingSenderId,
     appId: process.env.appId,
+    expoProjectId: process.env.expoProjectId,
     "eas": {
       "projectId": "c5dc094c-e017-46cb-8d6b-70c6e4f2b6d2"
     }
   },
   name: "dreamTeam",
-  slug: "dreamTeam",
+  slug: "dreamteam",
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
@@ -34,6 +35,7 @@ export default {
   android: {
     "package": "com.champi.dreamteam",
     "googleServicesFile": "./google-services.json",
+    "useNextNotificationsApi": true,
     "adaptiveIcon": {
       "foregroundImage": "./assets/adaptive-icon.png",
       "backgroundColor": "#ffffff"

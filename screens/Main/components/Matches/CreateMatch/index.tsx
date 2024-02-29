@@ -22,6 +22,7 @@ import { useKeyboard } from "../../../../../hooks/keyboard";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
 import { getUsersByNamePrefix, getAllCourts, createMatch, createNotification, sendPushNotification } from "../../../../../firebase";
 import { GlobalContextConfig } from "../../../../../globalContext";
+import { capitalizeString } from "../../../../../utils";
 
 type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
 
@@ -106,20 +107,20 @@ function CreateMatch () {
 
     invitedPlayers.map(async (singlePlayer) => {
       const notification = {
-        highlightedText: (user?.name || user?.email) as string,
+        highlightedText: capitalizeString((user?.name || user?.email) as string),
         regularText: "te ha invitado a un partido",
         receiverId: singlePlayer.id,
         matchId: matchId as string,
         senderId: userId as string,
       };
 
-      const {error} = await createNotification(notification);
+      const {error, data: notificationId} = await createNotification(notification);
       if (error) {
         console.error(error);
         return;
       }
 
-      const {error: pushError} = await sendPushNotification({ notification, receiverId: singlePlayer.id });
+      const {error: pushError} = await sendPushNotification({ receiverId: singlePlayer.id, notification: { id: notificationId, ...notification } });
       if (pushError) {
         console.error(pushError);
         return;
