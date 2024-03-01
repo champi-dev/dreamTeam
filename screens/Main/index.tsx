@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { View, StyleSheet } from "react-native";
 import { Routes, Route, useLocation, useNavigate } from "react-router";
-import * as Notifications from 'expo-notifications';
 import Profile from "./components/Profile";
 import Matches from "./components/Matches";
 import MatchesStats from "./components/MatchesStats";
@@ -12,9 +11,8 @@ import SoccerballIcon from "../../assets/svgs/SoccerballIcon";
 import ProfileIcon from "../../assets/svgs/ProfileIcon";
 import { PressableOpacity } from "../../components/PresableOpacity";
 import { MainScreenContext, MainScreenContextConfig } from "./context";
-import { deleteNotification, getAllCourts, getUserById, updateUserPropertyById } from "../../firebase";
+import { getAllCourts, listenForUserById, updateUserPropertyById } from "../../firebase";
 import { GlobalContextConfig } from "../../globalContext";
-import { User } from "../../models/User";
 import { Court } from "../../models/Court";
 import { registerForPushNotificationsAsync } from "../../utils";
 
@@ -53,9 +51,8 @@ function Main () {
 
 function MainRoutes () {
   const navigate = useNavigate();
-  const notificationListener = useRef<Notifications.Subscription | null>(null);
-  const responseListener = useRef<Notifications.Subscription | null>(null);
-  const { userId } = useContext(GlobalContextConfig);
+  const { pathname } = useLocation();
+  const { userId, authToken } = useContext(GlobalContextConfig);
   const { user, setUser, setAvailableCourts, availableCourts } = useContext(MainScreenContextConfig);
 
  const handlePushToken = async () => {
@@ -71,45 +68,14 @@ function MainRoutes () {
     }
   }
 
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: false,
-      shouldSetBadge: false,
-    }),
-  });
-
   useEffect(() => {
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-      console.log(notification);
-    });
-
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(async ({ notification }) => {
-      console.log('mondanime!', JSON.stringify(notification, null, 2));
-      const { id, matchId } = notification.content.data;
-      // is this data not undefined?
-      await deleteNotification(id); // why is this not being called?
-      navigate('/main/matches/selectSide', { state: { matchId } }); // is the redirect not happening? interfering with the one from protected route?
-    });
-
-    return () => {
-      notificationListener.current && Notifications.removeNotificationSubscription(notificationListener.current);
-      responseListener.current && Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (userId) {
-      getUserById(userId).then(({error, data}) => {
-        if (error) {
-          console.error(error);
-          return;
-        }
-
-        data && setUser && setUser(data as User);
-      })
+    if (!userId || !setUser) {
+      return;
     }
-  }, [userId, getUserById]);
+
+    const unsubscribe = listenForUserById({ userId, setUser, authToken });
+    return unsubscribe;
+  }, [userId, listenForUserById, setUser]);
 
   useEffect(() => {
     if (!availableCourts || !availableCourts.length) {
@@ -128,6 +94,19 @@ function MainRoutes () {
       handlePushToken();
     }
   }, [user?.id]);
+
+  useEffect(() => {
+    if (user?.id && user?.matchIdForNotification && user?.redirectToForNotification) {
+      navigate(user.redirectToForNotification, { state: { matchId: user.matchIdForNotification } });
+      updateUserPropertyById(user.id, { redirectToForNotification: '', matchIdForNotification: '' });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (pathname === '/') {
+      navigate('/main/matches');
+    }
+  }, [pathname]);
 
   return (
     <Routes>

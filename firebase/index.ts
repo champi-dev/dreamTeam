@@ -4,8 +4,8 @@ export {auth, db, storage};
 import {signUp, login, logOut} from './authentication'
 export {signUp, login, logOut};
 
-import {createUser, getUserById, getUserByEmail, updateUserPropertyById, uploadUserImage, getUsersByNamePrefix, listenForUsersWithGoals} from './users'
-export {createUser, getUserById, getUserByEmail, updateUserPropertyById, uploadUserImage, getUsersByNamePrefix, listenForUsersWithGoals};
+import {createUser, listenForUserById, getUserByEmail, updateUserPropertyById, uploadUserImage, getUsersByNamePrefix, listenForUsersWithGoals} from './users'
+export {createUser, listenForUserById, getUserByEmail, updateUserPropertyById, uploadUserImage, getUsersByNamePrefix, listenForUsersWithGoals};
 
 import { getAllCourts } from './courts';
 export { getAllCourts };

@@ -4,6 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface GlobalContextConfigProps {
   authToken?: string | null;
   setAuthToken?: (token: string) => Promise<void>;
+  isLoadingAuthToken?: boolean;
+  setIsLoadingAuthToken?: (isLoading: boolean) => void;
   userId?: string | null;
   setUserId?: (userId: string) => void;
 }
@@ -11,6 +13,7 @@ interface GlobalContextConfigProps {
 export const GlobalContextConfig = createContext<GlobalContextConfigProps>({});
 
 export function GlobalContext ({ children }: { children: React.ReactNode }) {
+  const [isLoadingAuthToken, setIsLoadingAuthToken] = useState<boolean>(true);
   const [authToken, _setAuthToken] = useState<string | null>(null);
   const [userId, _setUserId] = useState<string | null>(null);
 
@@ -34,6 +37,7 @@ export function GlobalContext ({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const getAuthToken = async () => {
+      setIsLoadingAuthToken(true);
       try {
         const token = await AsyncStorage.getItem('authToken');
         if (token) {
@@ -42,6 +46,7 @@ export function GlobalContext ({ children }: { children: React.ReactNode }) {
       } catch (e) {
         console.log(e);
       }
+      setIsLoadingAuthToken(false);
     }
 
     getAuthToken();
@@ -63,7 +68,7 @@ export function GlobalContext ({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <GlobalContextConfig.Provider value={{ authToken, setAuthToken, userId, setUserId }}>
+    <GlobalContextConfig.Provider value={{ authToken, setAuthToken, isLoadingAuthToken, userId, setUserId }}>
       {children}
     </GlobalContextConfig.Provider>
   );

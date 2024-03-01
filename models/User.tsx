@@ -7,4 +7,6 @@ export interface User {
   goalsInMatch?: number;
   randomColor?: string;
   pushToken?: string;
+  redirectToForNotification?: string;
+  matchIdForNotification?: string;
 }

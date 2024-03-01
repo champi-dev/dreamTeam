@@ -18,21 +18,32 @@ export const createUser = ({ email }: { email: string; }) => {
   });
 }
 
-export const getUserById = async (id: string) => {
-  const userRef = doc(db, "users", id);
-  try {
-    const docSnap = await getDoc(userRef);
-    if (docSnap.exists()) {
-      return { error: null, data: { id: docSnap.id, ...docSnap.data()} };
-    } else {
-      console.log("No such user!");
-      return { error: "No such user!", data: null };
-    }
-  } catch (error) {
-    console.log(error);
-    return { error, data: null };
-  }
+interface ListenForUserByIdProps {
+  authToken?: string | null;
+  userId: string;
+  setUser: (user: User) => void;
 }
+
+export const listenForUserById = ({ userId, setUser, authToken }: ListenForUserByIdProps) => {
+  if (!authToken) {
+    return;
+  }
+
+  const userDocRef = doc(db, "users", userId);
+
+  const unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
+    if (docSnapshot.exists()) {
+      const userData = { id: docSnapshot.id, ...docSnapshot.data() } as User;
+      setUser(userData);
+    } else {
+      console.log("No such user exists!");
+    }
+  }, (error) => {
+    console.error("Failed to listen for user: ", error);
+  });
+
+  return unsubscribe;
+};
 
 export const getUserByEmail = async (email: string) => {
   const usersRef = collection(db, "users");
@@ -99,6 +110,8 @@ interface EditableUserProperties {
   avatarImgUrl?: string;
   goalsInMatch?: number;
   pushToken?: string;
+  redirectToForNotification?: string;
+  matchIdForNotification?: string;
   [key: string]: any;
 }
 

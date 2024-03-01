@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Image,
@@ -6,23 +6,23 @@ import {
   SafeAreaView,
   Text,
 } from 'react-native';
+import { useNavigate } from 'react-router-native';
 import * as ImagePicker from 'expo-image-picker';
 import { GlobalContextConfig } from '../../../../globalContext';
-import { logOut, getUserById, updateUserPropertyById, uploadUserImage } from '../../../../firebase';
+import { logOut, updateUserPropertyById, uploadUserImage } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
 import EditIcon from '../../../../assets/svgs/EditIcon';
 import ProfileIcon from '../../../../assets/svgs/ProfileIcon';
 import SoccerballIcon from '../../../../assets/svgs/SoccerballIcon';
 import { LoadingSkeleton } from './components/LoadingSkeleton';
 import { PressableOpacity } from '../../../../components/PresableOpacity';
-import { User } from '../../../../models/User';
 import ProfilePictureIcon from '../../../../assets/svgs/ProfilePictureIcon';
 import CustomButton from '../../../../components/CustomButton';
 import { MainScreenContextConfig } from '../../context';
 import { capitalizeString } from '../../../../utils';
 
 function Profile() {
-  const [isLoadingUserInfo, setIsLoadingUserInfo] = useState<boolean>(true);
+  const navigate = useNavigate();
   const [profilePicture, setProfilePicture] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [nameTimeout, setNameTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -101,27 +101,13 @@ function Profile() {
 
     setIsLoading(false);
     setAuthToken && setAuthToken('');
+    navigate('/');
   };
 
-  useEffect(() => {
-    if (userId) {
-      setIsLoadingUserInfo(true);
-      getUserById(userId).then(({error, data}) => {
-        if (error) {
-          console.error(error);
-          setIsLoadingUserInfo(false);
-          return;
-        }
-
-        data && setUserInfo && setUserInfo(data as User);
-        setIsLoadingUserInfo(false);
-      })
-    }
-  }, [userId, getUserById]);
 
   return (
     <SafeAreaView style={styles.container}>
-      {isLoadingUserInfo && userInfo === null ? (
+      { userInfo === null ? (
         <LoadingSkeleton containerStyle={styles.content} />
       ) : (
         <View style={styles.content}>
