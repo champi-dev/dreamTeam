@@ -4,5 +4,5 @@ export interface Notification {
   regularText: string;
   matchId?: string;
   senderId?: string;
-  receiverId: string;
+  receiverId?: string;
 }

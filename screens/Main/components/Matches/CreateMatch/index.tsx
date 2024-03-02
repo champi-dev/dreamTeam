@@ -20,8 +20,9 @@ import SelectCourt from "./components/SelectCourt";
 import SelectModality from "./components/SelectModality";
 import { useKeyboard } from "../../../../../hooks/keyboard";
 import { PressableOpacity } from "../../../../../components/PresableOpacity";
-import { getUsersByNamePrefix, getAllCourts, createMatch, createNotification } from "../../../../../firebase";
+import { getUsersByNamePrefix, getAllCourts, createMatch, createNotification, sendPushNotification } from "../../../../../firebase";
 import { GlobalContextConfig } from "../../../../../globalContext";
+import { capitalizeString } from "../../../../../utils";
 
 type BottomSheetView = "invitePlayers" | "selectCourt" | "selectModality";
 
@@ -105,16 +106,23 @@ function CreateMatch () {
     }
 
     invitedPlayers.map(async (singlePlayer) => {
-      const {error} = await createNotification({
-        highlightedText: (user?.name || user?.email) as string,
+      const notification = {
+        highlightedText: capitalizeString((user?.name || user?.email) as string),
         regularText: "te ha invitado a un partido",
         receiverId: singlePlayer.id,
         matchId: matchId as string,
         senderId: userId as string,
-      });
+      };
 
+      const {error, data: notificationId} = await createNotification(notification);
       if (error) {
         console.error(error);
+        return;
+      }
+
+      const {error: pushError} = await sendPushNotification({ receiverId: singlePlayer.id, notification: { id: notificationId, ...notification } });
+      if (pushError) {
+        console.error(pushError);
         return;
       }
     });

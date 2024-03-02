@@ -9,3 +9,6 @@ export { getRandomColor };
 
 import { capitalizeString } from "./strings";
 export { capitalizeString };
+
+import { registerForPushNotificationsAsync } from "./pushNotifications";
+export { registerForPushNotificationsAsync };

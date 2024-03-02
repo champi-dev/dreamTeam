@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { View, StyleSheet } from "react-native";
 import { Routes, Route, useLocation, useNavigate } from "react-router";
 import Profile from "./components/Profile";
@@ -11,10 +11,10 @@ import SoccerballIcon from "../../assets/svgs/SoccerballIcon";
 import ProfileIcon from "../../assets/svgs/ProfileIcon";
 import { PressableOpacity } from "../../components/PresableOpacity";
 import { MainScreenContext, MainScreenContextConfig } from "./context";
-import { getAllCourts, getUserById } from "../../firebase";
+import { getAllCourts, listenForUserById, updateUserPropertyById } from "../../firebase";
 import { GlobalContextConfig } from "../../globalContext";
-import { User } from "../../models/User";
 import { Court } from "../../models/Court";
+import { registerForPushNotificationsAsync } from "../../utils";
 
 function Main () {
   const navigate = useNavigate();
@@ -50,21 +50,32 @@ function Main () {
 }
 
 function MainRoutes () {
-  const { userId } = useContext(GlobalContextConfig);
-  const { setUser, setAvailableCourts, availableCourts } = useContext(MainScreenContextConfig);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const { userId, authToken } = useContext(GlobalContextConfig);
+  const { user, setUser, setAvailableCourts, availableCourts } = useContext(MainScreenContextConfig);
 
-  useEffect(() => {
-    if (userId) {
-      getUserById(userId).then(({error, data}) => {
+ const handlePushToken = async () => {
+    const pushToken = await registerForPushNotificationsAsync();
+
+    if (pushToken) {
+      user && setUser && setUser({...user, pushToken});
+      user?.id && updateUserPropertyById(user.id, { pushToken }).then(({ error }) => {
         if (error) {
           console.error(error);
-          return;
         }
-
-        data && setUser && setUser(data as User);
       })
     }
-  }, [userId, getUserById]);
+  }
+
+  useEffect(() => {
+    if (!userId || !setUser) {
+      return;
+    }
+
+    const unsubscribe = listenForUserById({ userId, setUser, authToken });
+    return unsubscribe;
+  }, [userId, listenForUserById, setUser]);
 
   useEffect(() => {
     if (!availableCourts || !availableCourts.length) {
@@ -77,6 +88,25 @@ function MainRoutes () {
       });
     }
   }, [availableCourts]);
+
+  useEffect(() => {
+    if (user?.id) {
+      handlePushToken();
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (user?.id && user?.matchIdForNotification && user?.redirectToForNotification) {
+      navigate(user.redirectToForNotification, { state: { matchId: user.matchIdForNotification } });
+      updateUserPropertyById(user.id, { redirectToForNotification: '', matchIdForNotification: '' });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (pathname === '/') {
+      navigate('/main/matches');
+    }
+  }, [pathname]);
 
   return (
     <Routes>

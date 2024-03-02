@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-native';
 import { StyleSheet, Text } from 'react-native';
-import { login } from '../../../../firebase';
+import { login, getUserByEmail } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
 import CustomButton from '../../../../components/CustomButton';
 import EmailIcon from '../../../../assets/svgs/EmailIcon';
@@ -29,9 +29,15 @@ function Login ({ onChangeMode }: LoginProps) {
   
   const handleLogin = async () => {
     setIsLoading(true);
-    const { error, data } = await login({ email, password });
 
+    const { error, data } = await login({ email, password });
     if (error) {
+      setIsLoading(false);
+      return;
+    }
+
+    const { error: userError, data: userData } = await getUserByEmail(email);
+    if (userError) {
       setIsLoading(false);
       return;
     }
@@ -39,7 +45,7 @@ function Login ({ onChangeMode }: LoginProps) {
     // @ts-ignore
     setAuthToken && setAuthToken(data.stsTokenManager.accessToken);
     // @ts-ignore
-    setUserId && setUserId(data.uid);
+    setUserId && setUserId(userData?.id);
     setIsLoading(false);
     navigate('/main/matches');
   };

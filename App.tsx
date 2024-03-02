@@ -1,4 +1,6 @@
 import * as Font from 'expo-font';
+import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React, { useState, useEffect, useContext } from 'react';
 import { NativeRouter, Route, Routes, useNavigate } from 'react-router-native';
@@ -8,6 +10,30 @@ import { GlobalContext, GlobalContextConfig } from './globalContext';
 import { theme } from './theme';
 import Home from './screens/Home';
 import Main from './screens/Main';
+import { deleteNotification, updateUserPropertyById } from './firebase';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
+Notifications.addNotificationResponseReceivedListener(async ({notification}) => {  
+  const { id, matchId } = notification.request.content.data
+  await deleteNotification(id);
+
+  try {
+    const userId = await AsyncStorage.getItem('userId');
+    userId && updateUserPropertyById(userId, {
+      redirectToForNotification: '/main/matches/selectSide',
+      matchIdForNotification: matchId
+    });
+  } catch (e) {
+    console.log(e);
+  }
+});
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -41,41 +67,30 @@ export default function App() {
 }
 
 function Router() {
-  const { authToken } = useContext(GlobalContextConfig);
+  const { authToken, isLoadingAuthToken } = useContext(GlobalContextConfig);
 
-  return (
+  const authenticatedRouter = (
     <NativeRouter>
       <Routes>         
-        <Route path="/" element={
-          <ProtectedRoute 
-            isValid={!!authToken === false} 
-            redirectTo="/main/matches" 
-            Component={<Home />}
-          />   
-        } />    
-
-        <Route path="/main/*" element={
-          <ProtectedRoute 
-            isValid={!!authToken === true} 
-            redirectTo="/" 
-            Component={ <Main />}
-          />          
-        } />
+        <Route path="*" element={<Main />} />
+        <Route path="/main/*" element={<Main />} />
       </Routes>
     </NativeRouter>
   );
-}
 
-function ProtectedRoute ({ isValid, redirectTo, Component }: { isValid: boolean, redirectTo: string; Component: React.ReactNode }) {
-  const navigate = useNavigate();
+  const unauthenticatedRouter = (
+    <NativeRouter>
+      <Routes>         
+        <Route path="*" element={<Home />} />
+      </Routes>
+    </NativeRouter>
+  );
 
-  useEffect(() => {
-    if (!isValid) {
-      navigate(redirectTo);
-    }
-  }, [isValid]);
+  if (isLoadingAuthToken) {
+    return <></>;
+  }
 
-  return Component;
+  return authToken ? authenticatedRouter : unauthenticatedRouter;
 }
 
 const styles = StyleSheet.create({
