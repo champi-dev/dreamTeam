@@ -26,6 +26,7 @@ function Login ({ onChangeMode }: LoginProps) {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState(false);
   
   const handleLogin = async () => {
     setIsLoading(true);
@@ -33,12 +34,14 @@ function Login ({ onChangeMode }: LoginProps) {
     const { error, data } = await login({ email, password });
     if (error) {
       setIsLoading(false);
+      setLoginError(true);
       return;
     }
 
     const { error: userError, data: userData } = await getUserByEmail(email);
     if (userError) {
       setIsLoading(false);
+      setLoginError(true);
       return;
     }
 
@@ -48,6 +51,11 @@ function Login ({ onChangeMode }: LoginProps) {
     setUserId && setUserId(userData?.id);
     setIsLoading(false);
     navigate('/main/matches');
+  };
+
+  const resetLoginError = (callback: () => void) => {
+    setLoginError(false);
+    callback();
   };
 
   const isEmailValid = validateEmail(email);
@@ -62,7 +70,7 @@ function Login ({ onChangeMode }: LoginProps) {
         value={email}
         FrontIcon={EmailIcon}
         style={styles.input}
-        onChangeText={(text) => setEmail(text)}
+        onChangeText={(text) => resetLoginError(() => setEmail(text))}
         isValid={isEmailValid}
         errorText="Correo electrónico inválido"
       />
@@ -74,7 +82,7 @@ function Login ({ onChangeMode }: LoginProps) {
         FrontIcon={PasswordIcon}
         BackIcon={isPasswordVisible ? ShowIcon : HideIcon}
         style={styles.input}
-        onChangeText={(text) => setPassword(text)}
+        onChangeText={(text) => resetLoginError(() => setPassword(text))}
         isValid={isPasswordValid}
         errorText="Mínimo 8 caracteres"
         secureTextEntry={!isPasswordVisible}
@@ -89,7 +97,11 @@ function Login ({ onChangeMode }: LoginProps) {
       <></>
       ) : (
       <>    
-        <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleLogin} text="Iniciar sesión" disabled={!isFormValid || isLoading} />
+        {loginError && (
+          <Text style={styles.errorText}>Correo o contraseña incorrectos</Text>
+        )}
+
+        <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleLogin} text="Iniciar sesión" disabled={!isFormValid || isLoading || loginError} />
 
         <PressableOpacity onPress={() => onChangeMode('signup')}>
           <Text style={styles.footerText}>¿No tienes una cuenta? <Text style={styles.footerTextLink}>Regístrate</Text></Text>
@@ -154,5 +166,11 @@ const styles = StyleSheet.create({
   },
   footerTextLink: {
     color: '#246BFD'
+  },
+  errorText: {
+    color: '#FF4D4F',
+    fontSize: 12,
+    fontFamily: 'Lato-Regular',
+    marginTop: 'auto' 
   }
 });
