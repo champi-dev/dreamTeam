@@ -120,7 +120,7 @@ function CreateMatch () {
         return;
       }
 
-      const {error: pushError} = await sendPushNotification({ receiverId: singlePlayer.id, notification: { id: notificationId, ...notification } });
+      const {error: pushError} = await sendPushNotification({ receiverId: singlePlayer.id, notification: { id: notificationId as string, ...notification } });
       if (pushError) {
         console.error(pushError);
         return;
