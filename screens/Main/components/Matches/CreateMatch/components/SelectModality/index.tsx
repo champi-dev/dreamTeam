@@ -28,6 +28,7 @@ function SelectModality ({ selectedCourt, setSelectedModality, handleClose }: Se
       data={selectedCourt?.modalities}
       keyExtractor={item => item}
       renderItem={renderItem}
+      showsVerticalScrollIndicator={false}
     />
   );
 }

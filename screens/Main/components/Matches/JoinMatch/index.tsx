@@ -77,14 +77,14 @@ function JoinMatch () {
       <PressableOpacity onPress={() => handleMatchPress(item)}>
         <View style={styles.matchOverview}>
           <View style={styles.matchOverviewContent}>
-            <ScrollView contentContainerStyle={styles.topTeam} horizontal>
+            <ScrollView contentContainerStyle={styles.topTeam} horizontal showsHorizontalScrollIndicator={false}>
               <ShirtIcon style={styles.shirtIcon} fill="#fff" />
               {item.whiteTeam.map((singlePlayer, playerIndex) => (
                 <CustomUserImage key={playerIndex} user={singlePlayer} />
               ))}              
             </ScrollView>
 
-            <ScrollView contentContainerStyle={styles.bottomTeam} horizontal>
+            <ScrollView contentContainerStyle={styles.bottomTeam} horizontal showsHorizontalScrollIndicator={false}>
               <ShirtIcon style={styles.shirtIcon} fill="#000" />
               {item.blackTeam.map((singlePlayer, playerIndex) => (
                 <CustomUserImage key={playerIndex} user={singlePlayer} />

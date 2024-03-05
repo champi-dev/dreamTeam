@@ -39,7 +39,7 @@ export const listenForUserById = ({ userId, setUser, authToken }: ListenForUserB
       console.log("No such user exists!");
     }
   }, (error) => {
-    console.error("Failed to listen for user: ", error);
+    console.log("Failed to listen for user: ", error);
   });
 
   return unsubscribe;
@@ -135,7 +135,7 @@ export const uploadUserImage = ({ fileName, blob }: { fileName: string; blob: Bl
       return { error: null, data: downloadURL };
     });
   }).catch((error) => {
-    console.error("Upload failed", error);
+    console.log("Upload failed", error);
     return { error, data: null };
   });
 }
@@ -160,7 +160,7 @@ export const listenForUsersWithGoals = ({ setUsers }: ListenForUsersWithGoalsPro
     }));
     setUsers(users);
   }, (error) => {
-    console.error("Failed to listen for users with goals: ", error);
+    console.log("Failed to listen for users with goals: ", error);
   });
 
   return unsubscribe;

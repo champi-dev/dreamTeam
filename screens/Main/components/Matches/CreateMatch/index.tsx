@@ -100,7 +100,7 @@ function CreateMatch () {
     });
 
     if (error) {
-      console.error(error);
+      console.log(error);
       setIsCreateMatchLoading(false);
       return;
     }
@@ -116,13 +116,13 @@ function CreateMatch () {
 
       const {error, data: notificationId} = await createNotification(notification);
       if (error) {
-        console.error(error);
+        console.log(error);
         return;
       }
 
       const {error: pushError} = await sendPushNotification({ receiverId: singlePlayer.id, notification: { id: notificationId as string, ...notification } });
       if (pushError) {
-        console.error(pushError);
+        console.log(pushError);
         return;
       }
     });
@@ -144,7 +144,8 @@ function CreateMatch () {
       const nameTimeout = setTimeout(() => {
         getUsersByNamePrefix(searchPlayerText).then(({error, data}) => {
           if (error) {
-            console.error(error);
+            setSearchResultPlayers([]);
+            handleExpand();
             return;
           }
           setSearchResultPlayers(data as User[]);
@@ -160,7 +161,6 @@ function CreateMatch () {
     if (!availableCourts || !availableCourts.length) {
       getAllCourts().then(({error, data}) => {
         if (error) {
-          console.error(error);
           return;
         }
         setAvailableCourts && setAvailableCourts(data as Court[]);
