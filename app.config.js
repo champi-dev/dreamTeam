@@ -17,12 +17,12 @@ export default {
   slug: "dreamteam",
   version: "1.0.0",
   orientation: "portrait",
-  icon: "./assets/icon.png",
+  icon: "./assets/icon_dreamteam.png",
   userInterfaceStyle: "automatic",
   splash: {
-    "image": "./assets/splash.png",
-    "resizeMode": "contain",
-    "backgroundColor": "#ffffff"
+    "image": "./assets/splash_screen_dreamteam.png",
+    "resizeMode": "cover",
+    "backgroundColor": "#181829"
   },
   assetBundlePatterns: [
     "**/*"
@@ -37,8 +37,8 @@ export default {
     "googleServicesFile": "./google-services.json",
     "useNextNotificationsApi": true,
     "adaptiveIcon": {
-      "foregroundImage": "./assets/adaptive-icon.png",
-      "backgroundColor": "#ffffff"
+      "foregroundImage": "./assets/icon_dreamteam.png",
+      "backgroundColor": "#181829"
     },
     "permissions": [
       "android.permission.RECORD_AUDIO"
