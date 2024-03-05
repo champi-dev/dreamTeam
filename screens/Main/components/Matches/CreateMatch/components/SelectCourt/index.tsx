@@ -30,6 +30,7 @@ function SelectCourt ({ availableCourts, setSelectedCourt, setSelectedModality, 
       data={availableCourts}
       keyExtractor={item => item.id}
       renderItem={renderItem}
+      showsVerticalScrollIndicator={false}
     />
   );
 }

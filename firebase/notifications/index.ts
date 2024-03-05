@@ -42,7 +42,7 @@ interface SendPushNotificationProps {
 }
 
 export const sendPushNotification = async ({ notification, receiverId }: SendPushNotificationProps) => {
-const userRef = doc(db, "users", receiverId);
+const userRef = doc(db, "users", receiverId as string);
   const userDocSnap = await getDoc(userRef);
   if (!userDocSnap.exists()) {
     console.log('No user found for ID:', receiverId);
@@ -79,7 +79,7 @@ const userRef = doc(db, "users", receiverId);
     console.log('Notification sent successfully:', data);
     return { error: null, data };
   } catch (error) {
-    console.error('Error sending notification:', error);
+    console.log('Error sending notification:', error);
     return { error, data: null };
   }
 };

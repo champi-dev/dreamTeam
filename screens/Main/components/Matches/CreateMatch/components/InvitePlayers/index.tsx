@@ -17,24 +17,27 @@ function InvitePlayers ({ searchResultPlayers, handleInvitePlayer, isUserInInvit
       <CustomUserImage user={item} />
       <Text style={styles.rowText}>{capitalizeString(item.name || item.email)}</Text>
       <CustomButton 
-        text={isUserInInvitedPlayers(item.id) ? 'Eliminar' : 'Invitar'} 
+        text={isUserInInvitedPlayers(item.id as string) ? 'Eliminar' : 'Invitar'} 
         onPress={(e) => {
           e.stopPropagation();
           handleInvitePlayer(item);
         }} 
         type="primary" 
-        buttonStyle={[styles.inviteBtn, isUserInInvitedPlayers(item.id) && styles.inviteBtnDelete]} 
+        buttonStyle={[styles.inviteBtn, isUserInInvitedPlayers(item.id as string) && styles.inviteBtnDelete]} 
         textStyle={styles.inviteBtnText} 
       />
     </View>
   );
 
-  return (
+  return searchResultPlayers.length ? (
     <FlatList 
       data={searchResultPlayers}
-      keyExtractor={item => item.id}
+      keyExtractor={item => item.id as string}
       renderItem={renderItem}
+      showsVerticalScrollIndicator={false}
     />
+  ) : (
+    <Text style={styles.rowText}>No se encontraron jugadores</Text>
   ); 
 }
 

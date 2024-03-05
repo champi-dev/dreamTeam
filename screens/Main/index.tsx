@@ -62,7 +62,7 @@ function MainRoutes () {
       user && setUser && setUser({...user, pushToken});
       user?.id && updateUserPropertyById(user.id, { pushToken }).then(({ error }) => {
         if (error) {
-          console.error(error);
+          console.log(error);
         }
       })
     }
@@ -81,7 +81,7 @@ function MainRoutes () {
     if (!availableCourts || !availableCourts.length) {
       getAllCourts().then(({error, data}) => {
         if (error) {
-          console.error(error);
+          console.log(error);
           return;
         }
         setAvailableCourts && setAvailableCourts(data as Court[]);

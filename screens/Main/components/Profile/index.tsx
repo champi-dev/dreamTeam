@@ -56,7 +56,7 @@ function Profile() {
 
       const { error, data } = await uploadUserImage({ fileName, blob });
       if (error) {
-        console.error(error);
+        console.log(error);
         return;
       }
 
@@ -64,7 +64,7 @@ function Profile() {
         const { error: updateError } = await updateUserPropertyById(userId, { avatarImgUrl: data });
 
         if (updateError) {
-          console.error(updateError);
+          console.log(updateError);
           return;
         }
       }
@@ -81,7 +81,7 @@ function Profile() {
       setUserInfo((prev) => {
         userId && updateUserPropertyById(userId, {name: text.toLowerCase()}).then(({ error, data }) => {
           if (error) {
-            console.error(error);
+            console.log(error);
             return;
           }
         })
@@ -101,7 +101,7 @@ function Profile() {
     const {error, data} = await logOut();
 
     if (error) {
-      console.error(error);
+      console.log(error);
       setIsLoading(false);
       return;
     }
