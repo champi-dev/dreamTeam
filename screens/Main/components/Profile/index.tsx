@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useNavigate } from 'react-router-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Image as CompressorImage} from 'react-native-compressor';
 import { GlobalContextConfig } from '../../../../globalContext';
 import { logOut, updateUserPropertyById, uploadUserImage } from '../../../../firebase';
 import CustomInput from '../../../../components/CustomInput';
@@ -44,10 +45,14 @@ function Profile() {
 
     if (selection && !selection.canceled) {
       const imageUri = selection.assets[0].uri;
-      setProfilePicture(imageUri);
+      const compressedImage = await CompressorImage.compress(imageUri, {
+        maxHeight: 200,
+        maxWidth: 200,
+      });
+      setProfilePicture(compressedImage);
 
       const fileName = selection.assets[0].fileName || `user-profile-${new Date().getTime()}`;
-      const blob = await fetch(imageUri).then(res => res.blob());
+      const blob = await fetch(compressedImage).then(res => res.blob());
 
       const { error, data } = await uploadUserImage({ fileName, blob });
       if (error) {

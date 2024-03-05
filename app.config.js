@@ -57,6 +57,7 @@ export default {
         "microphonePermission": "Allow dreamTeam to access your microphone"
       }
     ],
-    "expo-localization"
+    "expo-localization",
+    "react-native-compressor"
   ]
 };
