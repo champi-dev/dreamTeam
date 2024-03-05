@@ -28,6 +28,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
+  const [signUpError, setSignUpError] = useState(false);
 
   const isEmailValid = validateEmail(email);
   const isPasswordValid = password.length >= 8;
@@ -40,6 +41,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
 
     if (error) {
       setIsLoading(false);
+      setSignUpError(true);
       return;
     }    
     
@@ -48,6 +50,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
 
     if (createUserError) {
       setIsLoading(false);
+      setSignUpError(true);
       return;
     }
 
@@ -58,6 +61,11 @@ function SignUp ({ onChangeMode }: SignUpProps) {
     setAuthToken && setAuthToken(data.stsTokenManager.accessToken);
     navigate('/main/profile');
   }
+
+  const resetSignUpError = (callback: () => void) => {
+    setSignUpError(false);
+    callback();
+  }
   
   return (  
     <>
@@ -67,7 +75,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         FrontIcon={EmailIcon}
         style={styles.input}
         value={email}
-        onChangeText={(text) => setEmail(text)}
+        onChangeText={(text) => resetSignUpError(() => setEmail(text))}
         isValid={isEmailValid}
         errorText="Correo electrónico inválido"
       />
@@ -78,7 +86,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         FrontIcon={PasswordIcon}
         style={styles.input}
         value={password} 
-        onChangeText={(text) => setPassword(text)}
+        onChangeText={(text) => resetSignUpError(() => setPassword(text))}
         isValid={isPasswordValid}
         BackIcon={isPasswordVisible ? ShowIcon : HideIcon}
         errorText="Contraseña Invalida"
@@ -92,7 +100,7 @@ function SignUp ({ onChangeMode }: SignUpProps) {
         FrontIcon={PasswordIcon}
         style={styles.input}
         value={confirmPassword}
-        onChangeText={(text) => setConfirmPassword(text)}
+        onChangeText={(text) => resetSignUpError(() => setConfirmPassword(text))}
         isValid={isConfirmPasswordValid}
         BackIcon={isConfirmPasswordVisible ? ShowIcon : HideIcon}
         errorText="Las contraseñas deben coincidir"
@@ -105,7 +113,13 @@ function SignUp ({ onChangeMode }: SignUpProps) {
           <></>
         ) : (
           <>
-            <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" disabled={!isFormValid || isLoading}/>
+            {signUpError && (
+              <Text style={styles.errorText}>
+                Hubo un error al registrarte, por favor intenta de nuevo
+              </Text>
+            )}
+
+            <CustomButton type="primary" style={styles.bottomSheetButton}  onPress={handleSignUp} text="Registrarme" disabled={!isFormValid || isLoading || signUpError}/>
       
             <PressableOpacity onPress={() => onChangeMode('login')}>
               <Text style={styles.footerText}>¿Ya tienes una cuenta? <Text style={styles.footerTextLink}>Iniciar sesión</Text></Text>
@@ -171,5 +185,11 @@ const styles = StyleSheet.create({
   },
   footerTextLink: {
     color: '#246BFD'
+  },
+  errorText: {
+    color: '#FF4D4F',
+    fontSize: 12,
+    fontFamily: 'Lato-Regular',
+    marginTop: 'auto' 
   }
 });
