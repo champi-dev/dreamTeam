@@ -20,8 +20,10 @@ import ProfilePictureIcon from '../../../../assets/svgs/ProfilePictureIcon';
 import CustomButton from '../../../../components/CustomButton';
 import { MainScreenContextConfig } from '../../context';
 import { capitalizeString } from '../../../../utils';
+import { useKeyboard } from '../../../../hooks/keyboard';
 
 function Profile() {
+  const keyboardShown = useKeyboard();
   const navigate = useNavigate();
   const [profilePicture, setProfilePicture] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -159,7 +161,9 @@ function Profile() {
             />
           </View>
 
-          <CustomButton style={styles.logoutBtn} type='primary' text='Cerrar sesión' onPress={handleLogout} disabled={isLoading} />
+          {keyboardShown ? <></> : (
+            <CustomButton style={styles.logoutBtn} type='primary' text='Cerrar sesión' onPress={handleLogout} disabled={isLoading} />
+          )}          
         </View>
       )}
     </SafeAreaView>
